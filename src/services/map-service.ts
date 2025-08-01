@@ -45,4 +45,15 @@ export class MapService {
             ],
         };
     }
+
+    static boundsCenter (bounds: PositionArray): Position {
+        const [topRight, bottomLeft] = bounds;
+        const [lng1, lat1] = bottomLeft;
+        const [lng2, lat2] = topRight;
+
+        const centerLng = (lng1 + lng2) / 2;
+        const centerLat = (lat1 + lat2) / 2;
+
+        return [centerLng, centerLat];
+    }        
 }

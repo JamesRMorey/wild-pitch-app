@@ -22,6 +22,11 @@ export const text = StyleSheet.create({
         fontSize: normalise(15),
         fontWeight: 500
     },
+    label: {
+        fontSize: normalise(15),
+        fontWeight: 500,
+        marginBottom: normalise(5)
+    },
     xxl: {
         fontSize: normalise(40),
     },

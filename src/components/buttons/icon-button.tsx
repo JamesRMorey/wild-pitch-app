@@ -11,7 +11,8 @@ export default function IconButton({ icon, onPress, disabled=false, active=false
             style={[
                 styles.button,
                 active && styles.active,
-                iconOnly && styles.iconOnly
+                iconOnly && styles.iconOnly,
+                disabled && styles.disabled
             ]}
             activeOpacity={0.7}
             disabled={disabled}
@@ -43,5 +44,8 @@ const styles = StyleSheet.create({
         width: 'auto',
         height: 'auto',
         backgroundColor: COLOUR.transparent
+    },
+    disabled: {
+        opacity: 0.6
     }
 })

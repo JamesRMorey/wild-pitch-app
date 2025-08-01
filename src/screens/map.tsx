@@ -120,7 +120,7 @@ export default function MapScreen({}) {
 					<MapStyleControls/>
 					<MapSearchControls />
 					<IconButton
-						icon={'location-pin'}
+						icon={'target'}
 						onPress={() => reCenter()}
 						disabled={followUserLocation}
 						active={followUserLocation}
