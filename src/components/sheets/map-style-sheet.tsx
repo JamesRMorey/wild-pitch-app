@@ -4,15 +4,15 @@ import { MapSetting, MapStyle } from "../../types";
 import { ASSET, SHEET } from "../../consts";
 import Mapbox from "@rnmapbox/maps";
 import { COLOUR, TEXT } from "../../styles";
-import { useMapContext } from "../../contexts/map-context";
+import { useMapActions, useMapState } from "../../contexts/map-context";
 import { normalise } from "../../functions/helpers";
-import { useState } from "react";
 import Switch from "../buttons/switch";
 
 
 export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }) {
 
-    const { styleURL, setStyleURL, enable3DMode, setEnable3DMode} = useMapContext();
+    const { styleURL, enable3DMode } = useMapState();
+    const { setStyleURL, setEnable3DMode } = useMapActions();
 
     const STYLES: Array<MapStyle> = [
         {

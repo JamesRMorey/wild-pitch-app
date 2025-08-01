@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View } from "react-native"
-import { PACK_GROUPS, SHEET } from "../consts"
+import { SHEET } from "../consts"
 import MapPackSheet from "../components/sheets/map-pack-sheet"
 import { useMapPackContext } from "../contexts/map-pack-context"
 
@@ -14,7 +14,10 @@ export default function PacksScreen({}) {
             >
                 
             </ScrollView>
-            <MapPackSheet id={SHEET.MAP_PACKS} packGroup={selectedPackGroup}/>
+            <MapPackSheet 
+                id={SHEET.MAP_PACKS} 
+                packGroup={selectedPackGroup}
+            />
         </View>
     )
 }

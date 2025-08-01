@@ -6,7 +6,7 @@ import { COLOUR, TEXT } from "../../styles";
 import MapPack from "../map-packs/map-pack";
 import { normalise } from "../../functions/helpers";
 import IconButton from "../buttons/icon-button";
-import { useMapContext } from "../../contexts/map-context";
+import { useMapActions } from "../../contexts/map-context";
 import { useNavigation } from "@react-navigation/native";
 
 
@@ -14,7 +14,7 @@ export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?:
 
     if (!packGroup) return;
 
-    const { flyTo, setActivePackGroup } = useMapContext();
+    const { flyTo, setActivePackGroup } = useMapActions();
     const navigation = useNavigation();
 
     const close = () => {

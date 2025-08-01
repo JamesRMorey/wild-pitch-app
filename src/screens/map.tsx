@@ -5,7 +5,7 @@ import MapStyleControls from "../components/map/map-style-controls";
 import UserPosition from "../components/map/user-position";
 import IconButton from "../components/buttons/icon-button";
 import { delay, normalise } from "../functions/helpers";
-import { useMapContext } from "../contexts/map-context";
+import { useMapActions, useMapState } from "../contexts/map-context";
 import MapArea from "../components/map/map-area";
 import ActiveItemControls from "../components/map/active-item-controls";
 import MapSearchControls from "../components/map/map-search-controls";
@@ -14,6 +14,8 @@ import MapPackSheet from "../components/sheets/map-pack-sheet";
 import { SETTING, SHEET } from "../consts";
 import MapMarker from "../components/map/map-marker";
 import { MapMarker as MapMarkerType } from "../types";
+import MapMarkerSheet from "../components/sheets/map-marker-sheet";
+import { SheetManager } from "react-native-actions-sheet";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -24,11 +26,12 @@ const MARKER: MapMarkerType = {
 
 export default function MapScreen({}) {
 
-	const { styleURL, center, activePackGroup, clearActivePackGroup, cameraRef, enable3DMode } = useMapContext();
+	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation } = useMapState();
+	const { clearActivePackGroup, flyTo, setFollowUserLocation } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
 	const [showUserLocation, setShowUserLocation] = useState<boolean>(false);
-	const [followUserLocation, setFollowUserLocation] = useState<boolean>(false);
-	const [markers, setMarkers] = useState<Array<MapMarkerType>>([MARKER])
+	const [markers, setMarkers] = useState<Array<MapMarkerType>>([MARKER]);
+	const [activeMarker, setActiveMarker] = useState<MapMarkerType>(MARKER);
 
 
 	const reCenter = async () => {
@@ -43,8 +46,14 @@ export default function MapScreen({}) {
 			type: 'area'
 		}
 		setMarkers([...markers, marker]);
+		flyTo(marker.coordinate, SETTING.MAP_MARKER_ZOOM)
+		setActiveMarker(marker);
+		openMarkerSheet();
 	}
 
+	const openMarkerSheet = () => {
+		SheetManager.show(SHEET.MAP_MARKER);
+	}
 
 	useEffect(() => {
 		if (!showUserLocation) {
@@ -119,6 +128,7 @@ export default function MapScreen({}) {
 				</View>
 			</View>
 			<MapPackSheet id={SHEET.MAP_PACKS_SEARCH} packGroup={selectedPackGroup}/>
+			<MapMarkerSheet id={SHEET.MAP_MARKER} marker={activeMarker}/>
         </View>
     )
 }

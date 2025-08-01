@@ -12,7 +12,7 @@ export default function MainTabs({}) {
     return (
         <Tab.Navigator tabBar={props => <CustomTabNavigator {...props} />} >
             <Tab.Screen name="map" component={MapScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'map'}}/>
-            <Tab.Screen name="packs" component={PacksScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'cloud-download'}}/>
+            <Tab.Screen name="packs" component={PacksScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder'}}/>
         </Tab.Navigator>
     )
 }

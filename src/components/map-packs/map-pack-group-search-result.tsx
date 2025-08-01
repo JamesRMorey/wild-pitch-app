@@ -5,14 +5,14 @@ import { COLOUR, TEXT } from "../../styles";
 import { SheetManager } from "react-native-actions-sheet";
 import { SHEET } from "../../consts";
 import { useMapPackContext } from "../../contexts/map-pack-context";
-import { useMapContext } from "../../contexts/map-context";
+import { useMapActions } from "../../contexts/map-context";
 import IconBadge from "../misc/icon-badge";
 
 
 export default function MapPackGroupSearchResult({ group } : { group: MapPackGroupType }) {
 
     const { setSelectedPackGroup } = useMapPackContext();
-    const { setActivePackGroup, flyTo } = useMapContext();
+    const { setActivePackGroup, flyTo } = useMapActions();
 
     const openPackSheet = async () => {
         setSelectedPackGroup(group);

@@ -1,93 +1,81 @@
-import React, { createContext, RefObject, useContext, useRef, useState } from 'react';
+import React, { createContext,useContext,RefObject } from 'react';
 import Mapbox from '@rnmapbox/maps';
 import { Coordinate, MapPackGroup } from '../types';
-import { delay } from '../functions/helpers';
-import { SETTING } from '../consts';
+import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
+import { useMapCameraControls } from '../hooks/useMapCameraControls';
+import { useMapSettings } from '../hooks/useMapSettings';
 
-type MapContextType = {
-    styleURL: Mapbox.StyleURL,
-    setStyleURL: Function,
-    center: Coordinate,
-    setCenter: Function,
-    moveTo: Function,
-    activePackGroup: MapPackGroup,
-    setActivePackGroup: Function,
-    clearActivePackGroup: Function,
-    cameraRef: RefObject<Mapbox.Camera>
-    zoomTo: Function,
-    flyTo: Function,
-    reCenter: Function,
-    enable3DMode: boolean,
-    setEnable3DMode: Function
+type MapContextState = {
+    styleURL: Mapbox.StyleURL;
+    center: Coordinate;
+    activePackGroup?: MapPackGroup;
+    cameraRef: RefObject<Mapbox.Camera>;
+    enable3DMode: boolean;
+    followUserLocation: boolean;
 };
 
-const MapContext = createContext<MapContextType | undefined>(undefined);
+type MapContextActions = {
+    setStyleURL: (url: Mapbox.StyleURL) => void;
+    setCenter: (coord: Coordinate) => void;
+    setActivePackGroup: (pack: MapPackGroup) => void;
+    clearActivePackGroup: () => void;
+    moveTo: (coord: Coordinate) => void;
+    zoomTo: (zoom: number) => void;
+    flyTo: (coord: Position, zoom?: number, duration?: number,) => void;
+    reCenter: () => void;
+    setEnable3DMode: (enabled: boolean) => void;
+    setFollowUserLocation: (enabled: boolean) => void;
+};
+
+const StateContext = createContext<MapContextState | undefined>(undefined);
+const ActionsContext = createContext<MapContextActions | undefined>(undefined);
 
 export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
-    const [styleURL, setStyleURL] = useState<Mapbox.StyleURL>(Mapbox.StyleURL.Outdoors);
-    const [center, setCenter] = useState<Coordinate>([-1.865014, 53.450585]);
-    const [activePackGroup, setActivePackGroup] = useState<MapPackGroup>()
-    const cameraRef = useRef<Mapbox.Camera>(null);
-    const [enable3DMode, setEnable3DMode] = useState<boolean>(false);
+    const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode, followUserLocation, setFollowUserLocation } = useMapSettings();
+    const { flyTo, zoomTo, moveTo, cameraRef } = useMapCameraControls();
 
-    const clearActivePackGroup = () => {
-        setActivePackGroup(undefined);
-    }
+    const clearActivePackGroup = () => setActivePackGroup(undefined);
 
-    const moveTo = (coordinate: Coordinate) => {
-        if (!cameraRef.current) return;
-        cameraRef.current.moveTo(coordinate);
-    }
-
-    const flyTo = (coordinate: Coordinate, duration:number = 1000) => {
-        if (!cameraRef.current) return;
-        cameraRef.current.setCamera({
-            centerCoordinate: coordinate,
-            zoomLevel: SETTING.MAP_CLOSE_ZOOM,
-            animationMode: 'flyTo',
-            animationDuration: duration
-        });
-    }
-
-    const zoomTo = ( zoom: number ) => {
-        if (!cameraRef.current) return;
-        cameraRef.current.zoomTo(zoom)
-    }
-
-    const reCenter = () => {
-
-    }
 
     return (
-        <MapContext.Provider
+        <StateContext.Provider
             value={{
                 styleURL,
                 center,
                 activePackGroup,
                 cameraRef,
                 enable3DMode,
-
-                setStyleURL,
-                setCenter,
-                setActivePackGroup,
-                clearActivePackGroup,
-                moveTo,
-                zoomTo,
-                flyTo,
-                reCenter,
-                setEnable3DMode
+                followUserLocation,
             }}
         >
-            {children}
-        </MapContext.Provider>
+            <ActionsContext.Provider
+                value={{
+                    setStyleURL,
+                    setCenter,
+                    setActivePackGroup,
+                    clearActivePackGroup,
+                    moveTo,
+                    zoomTo,
+                    flyTo,
+                    setEnable3DMode,
+                    setFollowUserLocation,
+                }}
+            >
+                {children}
+            </ActionsContext.Provider>
+        </StateContext.Provider>
     );
 };
 
-export const useMapContext = (): MapContextType => {
-    const context = useContext(MapContext);
-    if (!context) {
-        throw new Error('useMapContext must be used within a MapProvider');
-    }
+export const useMapState = (): MapContextState => {
+    const context = useContext(StateContext);
+    if (!context) throw new Error('useMapState must be used within a MapProvider');
+    return context;
+};
+
+export const useMapActions = (): MapContextActions => {
+    const context = useContext(ActionsContext);
+    if (!context) throw new Error('useMapActions must be used within a MapProvider');
     return context;
 };
