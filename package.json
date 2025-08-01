@@ -10,9 +10,18 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-vector-icons/ionicons": "^12.2.0",
+    "@react-native-vector-icons/simple-line-icons": "^12.2.0",
+    "@react-native/new-app-screen": "0.80.2",
+    "@react-navigation/bottom-tabs": "^7.4.4",
+    "@react-navigation/native": "^7.1.16",
+    "@rnmapbox/maps": "^10.1.39",
     "react": "19.1.0",
     "react-native": "0.80.2",
-    "@react-native/new-app-screen": "0.80.2"
+    "react-native-actions-sheet": "^0.9.7",
+    "react-native-gesture-handler": "^2.27.2",
+    "react-native-safe-area-context": "^5.5.2",
+    "react-native-screens": "^4.13.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
