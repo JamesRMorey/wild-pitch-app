@@ -1,8 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import PacksScreen from '../screens/packs';
 import MapScreen from '../screens/map';
 import CustomTabNavigator from '../components/navigation/custom-tab-navigator';
-import BuilderScreen from '../screens/builder/builder';
+import SavedStack from './saved-stack';
 
 const Tab = createBottomTabNavigator();
 
@@ -12,9 +11,8 @@ export default function MainTabs({}) {
 
     return (
         <Tab.Navigator tabBar={props => <CustomTabNavigator {...props} />} >
-            <Tab.Screen name="builder" component={BuilderScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'directions'}}/>
             <Tab.Screen name="map" component={MapScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'map'}}/>
-            <Tab.Screen name="packs" component={PacksScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder'}}/>
+            <Tab.Screen name="saved" component={SavedStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder'}}/>
         </Tab.Navigator>
     )
 }

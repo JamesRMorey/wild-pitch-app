@@ -16,6 +16,7 @@ export default function MapSearchControls() {
             <IconButton
                 icon={'magnifier'}
                 onPress={() => openSearchSheet()}
+                shadow={true}
             />
             <MapSearchSheet />
         </View>

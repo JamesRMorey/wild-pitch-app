@@ -4,7 +4,7 @@ import { MapService } from "../../services/map-service";
 import { useEffect, useState } from "react";
 
 
-export default function MapArea({ id, bounds } : { id: string, bounds: PositionArray }) {
+export default function MapArea({ id, bounds, onPress=()=>{} } : { id: string, bounds: PositionArray, onPress?: Function }) {
     
     const [areaGeoJson, setAreaGeoJson] = useState(MapService.squareAreaGeoJson(bounds));
 
@@ -16,6 +16,7 @@ export default function MapArea({ id, bounds } : { id: string, bounds: PositionA
         <Mapbox.ShapeSource 
             id={id}
             shape={areaGeoJson}
+            onPress={() => onPress()}
         >
             <Mapbox.FillLayer
                 id="square-fill"

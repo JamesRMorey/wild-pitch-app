@@ -47,7 +47,7 @@ export default function MapPack({ pack, size } : { pack: MapPack, size: number }
     useEffect(() => {
         checkOfflinePacks();
     }, [])
-
+    console.log(pack)
 
     return (
         <View style={styles.container}>
@@ -55,7 +55,7 @@ export default function MapPack({ pack, size } : { pack: MapPack, size: number }
                 style={{ flex: 1 }}
                 source={
                     pack.styleURL == Mapbox.StyleURL.Outdoors ? ASSET.ICON_OUTDOORS_MAP :
-                    pack.styleURL == Mapbox.StyleURL.Satellite ? ASSET.ICON_SATELLITE_MAP :
+                    pack.styleURL == Mapbox.StyleURL.SatelliteStreet ? ASSET.ICON_SATELLITE_MAP :
                     pack.styleURL == Mapbox.StyleURL.Street ? ASSET.ICON_STREET_MAP : 
                     null
                 }

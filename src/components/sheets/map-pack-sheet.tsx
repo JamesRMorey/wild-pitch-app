@@ -29,6 +29,7 @@ export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?:
         setTimeout(() => flyTo(packGroup.center), 100)
     }
 
+    
     return (
         <ActionSheet
             id={id}

@@ -43,7 +43,7 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
             },
             {
                 name: 'PEAK_DISTRICT_BLEAKLOW_SATELLITE',
-                styleURL: Mapbox.StyleURL.Satellite,
+                styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 320,
             },
             {
@@ -68,7 +68,7 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
             },
             {
                 name: 'PEAK_DISTRICT_KINDER_SCOUT_SATELLITE',
-                styleURL: Mapbox.StyleURL.Satellite,
+                styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 340,
             },
             {
@@ -93,7 +93,7 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
             },
             {
                 name: 'PEAK_DISTRICT_DERWENT_VALLEY_SATELLITE',
-                styleURL: Mapbox.StyleURL.Satellite,
+                styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 390,
             },
             {
@@ -118,7 +118,7 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
             },
             {
                 name: 'PEAK_DISTRICT_EDALE_SATELLITE',
-                styleURL: Mapbox.StyleURL.Satellite,
+                styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 300,
             },
             {
@@ -143,7 +143,7 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
             },
             {
                 name: 'PEAK_DISTRICT_WINNATS_PASS_SATELLITE',
-                styleURL: Mapbox.StyleURL.Satellite,
+                styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 280,
             },
             {

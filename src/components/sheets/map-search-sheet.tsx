@@ -2,15 +2,33 @@ import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { TouchableOpacity, View, StyleSheet, Text, TextInput, ScrollView } from "react-native";
 import { PACK_GROUPS, SHEET } from "../../consts";
 import { COLOUR, TEXT } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import { delay, normalise } from "../../functions/helpers";
 import { SimpleLineIcons as Icon } from "@react-native-vector-icons/simple-line-icons";
-import MapPackGroupSearchResult from "../map-packs/map-pack-group-search-result";
+import { useMapPackContext } from "../../contexts/map-pack-context";
+import { useMapActions } from "../../contexts/map-context";
+import { MapPackGroup as MapPackGroupType } from "../../types";
+import MapPackGroup from "../map-packs/map-pack-group";
 
 
 export default function MapSearchSheet ({ id=SHEET.MAP_SEARCH } : { id?: string }) {
 
+    const { setSelectedPackGroup } = useMapPackContext();
+    const { setActivePackGroup, flyTo } = useMapActions();
+
     const close = () => {
         SheetManager.hide(id);
+    }
+
+    const openPackSheet = async ( group: MapPackGroupType ) => {
+        setSelectedPackGroup(group);
+        setActivePackGroup(group);
+
+        SheetManager.hide(SHEET.MAP_SEARCH);
+
+        await delay(500);
+        SheetManager.show(SHEET.MAP_PACKS_SEARCH);
+
+        flyTo(group.center);
     }
 
 
@@ -46,9 +64,10 @@ export default function MapSearchSheet ({ id=SHEET.MAP_SEARCH } : { id?: string 
                 >
                     {PACK_GROUPS.map((group, i) => {
                         return (
-                            <MapPackGroupSearchResult 
+                            <MapPackGroup 
                                 key={i}
                                 group={group}
+                                onPress={() => openPackSheet(group)}
                             />
                         )
                     })}

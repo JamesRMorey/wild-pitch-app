@@ -1,21 +1,19 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
-import { TouchableOpacity, View, StyleSheet, Text, TextInput } from "react-native";
+import { View, StyleSheet, Text, TextInput } from "react-native";
 import { SETTING, SHEET } from "../../../consts";
 import { COLOUR, TEXT } from "../../../styles";
 import { normalise } from "../../../functions/helpers";
 import { MapPackGroup, PositionArray } from "../../../types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MapPackService } from "../../../services/map-pack-service";
 import { MapService } from "../../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
 import Button from "../../buttons/button";
-import IconButton from "../../buttons/icon-button";
 
 
-export default function BuilderAreaCreateEditSheet ({ id=SHEET.BUILDER_AREA_CREATE_EDIT_SHEET, bounds } : { id?: string, bounds: PositionArray }) {
+export default function BuilderAreaCreateEditSheet ({ id=SHEET.BUILDER_AREA_CREATE_EDIT, bounds, onSave } : { id?: string, bounds: PositionArray, onSave: Function }) {
 
     // if (!bounds) return;
-
     const [data, setData] = useState<any>({
         name: null,
         description: null
@@ -27,32 +25,33 @@ export default function BuilderAreaCreateEditSheet ({ id=SHEET.BUILDER_AREA_CREA
 
     const save = () => {
         if (!data.name || !data.description) return;
-        const mapPackGroup: MapPackGroup = {
+        const group: MapPackGroup = {
             name: data.name,
             description: data.description,
             minZoom: SETTING.MAP_PACK_MIN_ZOOM,
             maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
             center: MapService.boundsCenter(bounds),
+            bounds: bounds,
             packs: [
                 {
                     name: MapPackService.getPackName(data.name, Mapbox.StyleURL.Outdoors),
-                    styleURl: Mapbox.StyleURL.Outdoors
+                    styleURL: Mapbox.StyleURL.Outdoors
                 },
                 {
                     name: MapPackService.getPackName(data.name, Mapbox.StyleURL.SatelliteStreet),
-                    styleURl: Mapbox.StyleURL.SatelliteStreet
+                    styleURL: Mapbox.StyleURL.SatelliteStreet
                 },
                 {
                     name: MapPackService.getPackName(data.name, Mapbox.StyleURL.Street),
-                    styleURl: Mapbox.StyleURL.Street
+                    styleURL: Mapbox.StyleURL.Street
                 }
             ]
         }
+        
+        onSave(group);
+        close();
     }
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
 
     return (
         <ActionSheet
@@ -73,10 +72,20 @@ export default function BuilderAreaCreateEditSheet ({ id=SHEET.BUILDER_AREA_CREA
                         value={data.name}
                     />
                 </View>
+                <View style={styles.inputGroup}>
+                    <Text style={TEXT.label}>Description</Text>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="A description of the area..."
+                        placeholderTextColor={COLOUR.gray[600]}
+                        onChangeText={(text: string) => setData({...data, description: text})}
+                        value={data.description}
+                    />
+                </View>
                 
                 <View style={styles.buttons}>
-                    <IconButton
-                        icon="folder"
+                    <Button
+                        title="Save"
                         onPress={save}
                     />    
                 </View>        
@@ -121,6 +130,7 @@ const styles = StyleSheet.create({
         borderColor: COLOUR.gray[300]
     },
     inputGroup: {
+        marginBottom: normalise(15)
     },
     buttons: {
         marginTop: normalise(15),

@@ -16,6 +16,7 @@ export default function MapStyleControls() {
             <IconButton
                 icon={'layers'}
                 onPress={() => openStyleSheet()}
+                shadow={true}
             />
             <MapStyleSheet/>
         </View>

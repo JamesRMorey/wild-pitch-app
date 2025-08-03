@@ -32,10 +32,16 @@ const ActionsContext = createContext<MapContextActions | undefined>(undefined);
 
 export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
-    const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode, followUserLocation, setFollowUserLocation } = useMapSettings();
-    const { flyTo, zoomTo, moveTo, cameraRef } = useMapCameraControls();
+    const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
+    const { flyTo, zoomTo, moveTo, resetHeading, cameraRef } = useMapCameraControls();
 
     const clearActivePackGroup = () => setActivePackGroup(undefined);
+    const setEnable3DMode = ( enabled: boolean ) => {
+        cameraRef.current?.setCamera({
+            pitch: 0
+        });
+        toggle3dMode(enabled)
+    }
 
 
     return (
@@ -60,6 +66,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     flyTo,
                     setEnable3DMode,
                     setFollowUserLocation,
+                    resetHeading
                 }}
             >
                 {children}

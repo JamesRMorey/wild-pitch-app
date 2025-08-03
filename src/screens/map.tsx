@@ -27,7 +27,7 @@ const MARKER: MapMarkerType = {
 export default function MapScreen({}) {
 
 	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation } = useMapState();
-	const { clearActivePackGroup, flyTo, setFollowUserLocation } = useMapActions();
+	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
 	const [showUserLocation, setShowUserLocation] = useState<boolean>(false);
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([MARKER]);
@@ -36,7 +36,7 @@ export default function MapScreen({}) {
 
 	const reCenter = async () => {
 		setFollowUserLocation(true);
-		await delay(3000);
+		await delay(4000);
 		setFollowUserLocation(false)
 	}
 
@@ -55,6 +55,12 @@ export default function MapScreen({}) {
 		SheetManager.show(SHEET.MAP_MARKER);
 	}
 
+	const openActivePackGroupSheet = () => {
+		if (!activePackGroup) return;
+		flyTo(activePackGroup.center)
+		SheetManager.show(SHEET.MAP_PACKS);
+	}
+
 	useEffect(() => {
 		if (!showUserLocation) {
 			setTimeout(() => setShowUserLocation(true), 5000);
@@ -64,10 +70,12 @@ export default function MapScreen({}) {
 
     return (
         <View style={styles.container}>
-            <Mapbox.MapView 
+            <Mapbox.MapView
                 style={styles.map}
                 styleURL={styleURL}
 				onLongPress={(e) => addMarkerFromLongPress(e)}
+				pitchEnabled={enable3DMode}
+				attributionEnabled={false}
             >
 				{enable3DMode && (
 					<>
@@ -103,6 +111,7 @@ export default function MapScreen({}) {
 					<MapArea 
 						id='test'
 						bounds={activePackGroup.bounds}
+						onPress={() => openActivePackGroupSheet()}
 					/>
 				)}
                 {showUserLocation && (
@@ -124,11 +133,25 @@ export default function MapScreen({}) {
 						onPress={() => reCenter()}
 						disabled={followUserLocation}
 						active={followUserLocation}
+						shadow={true}
 					/>
 				</View>
 			</View>
-			<MapPackSheet id={SHEET.MAP_PACKS_SEARCH} packGroup={selectedPackGroup}/>
-			<MapMarkerSheet id={SHEET.MAP_MARKER} marker={activeMarker}/>
+			<View style={styles.bottomRightControls}>
+				<IconButton
+					icon={'compass'}
+					onPress={() => resetHeading()}
+					shadow={true}
+				/>
+			</View>
+			<MapPackSheet 
+				id={SHEET.MAP_PACKS} 
+				packGroup={selectedPackGroup}
+			/>
+			<MapMarkerSheet 
+				id={SHEET.MAP_MARKER} 
+				marker={activeMarker}
+			/>
         </View>
     )
 }
@@ -150,5 +173,10 @@ const styles = StyleSheet.create({
 	},
 	controls: {
 		gap: normalise(8),
+	},
+	bottomRightControls: {
+		position: 'absolute',
+		bottom: normalise(10),
+		right: normalise(10)
 	}
 });

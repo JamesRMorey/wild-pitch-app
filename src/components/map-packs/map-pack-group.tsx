@@ -1,37 +1,17 @@
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { MapPackGroup as MapPackGroupType } from "../../types";
-import { delay, normalise } from "../../functions/helpers";
+import { normalise } from "../../functions/helpers";
 import { COLOUR, TEXT } from "../../styles";
-import { SheetManager } from "react-native-actions-sheet";
-import { SHEET } from "../../consts";
-import { useMapPackContext } from "../../contexts/map-pack-context";
-import { useMapActions } from "../../contexts/map-context";
 import IconBadge from "../misc/icon-badge";
 
 
-export default function MapPackGroupSearchResult({ group } : { group: MapPackGroupType }) {
-
-    const { setSelectedPackGroup } = useMapPackContext();
-    const { setActivePackGroup, flyTo } = useMapActions();
-
-    const openPackSheet = async () => {
-        setSelectedPackGroup(group);
-        setActivePackGroup(group);
-
-        SheetManager.hide(SHEET.MAP_SEARCH);
-
-        await delay(500);
-        SheetManager.show(SHEET.MAP_PACKS_SEARCH);
-
-        flyTo(group.center);
-    }
-
+export default function MapPackGroup({ group, onPress } : { group: MapPackGroupType, onPress: Function }) {
     
     return (
         <TouchableOpacity 
             style={styles.container}
             activeOpacity={0.8}
-            onPress={() => openPackSheet()}
+            onPress={() => onPress()}
         >
             <View>
                 <IconBadge

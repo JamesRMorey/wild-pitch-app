@@ -21,11 +21,11 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.black,
         paddingHorizontal: normalise(20),
         paddingVertical: normalise(10),
-        borderRadius: normalise(10)
+        borderRadius: normalise(50)
     },
     text: {
         color: COLOUR.white,
-        ...TEXT.lg,
+        ...TEXT.md,
         textAlign: 'center'
     }
 })
