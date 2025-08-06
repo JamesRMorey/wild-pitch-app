@@ -10,11 +10,11 @@ import MapArea from "../components/map/map-area";
 import ActiveItemControls from "../components/map/active-item-controls";
 import MapSearchControls from "../components/map/map-search-controls";
 import { useMapPackContext } from "../contexts/map-pack-context";
-import MapPackSheet from "../components/sheets/map-pack-sheet";
+import MapPackSheet from "../sheets/map-pack-sheet";
 import { SETTING, SHEET } from "../consts";
 import PointOfInterestMarker from "../components/map/map-marker";
 import { PointOfInterest } from "../types";
-import MapPointOfInterestSheet from "../components/sheets/map-point-of-interest/map-point-of-interest-sheet";
+import MapPointOfInterestSheet from "../sheets/map-point-of-interest/map-point-of-interest-sheet";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../services/formatter";
 
@@ -22,10 +22,9 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdT
 
 export default function MapScreen({}) {
 
-	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest } = useMapState();
+	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest, showPointsOfInterest } = useMapState();
 	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
-	const [showUserLocation, setShowUserLocation] = useState<boolean>(false);
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 
 
@@ -64,13 +63,7 @@ export default function MapScreen({}) {
 		flyTo(activePackGroup.center)
 		SheetManager.show(SHEET.MAP_PACKS);
 	}
-
-	useEffect(() => {
-		if (!showUserLocation) {
-			setTimeout(() => setShowUserLocation(true), 5000);
-		}
-	}, []);
-
+	
 
     return (
         <View style={styles.container}>
@@ -103,6 +96,7 @@ export default function MapScreen({}) {
 					followUserLocation={followUserLocation}
                 />
                 {pointsOfInterest.map((point, i) => {
+					if (!showPointsOfInterest) return;
 					return (
 						<PointOfInterestMarker
 							key={point.id}
@@ -130,9 +124,7 @@ export default function MapScreen({}) {
 						onPress={() => openActivePackGroupSheet()}
 					/>
 				)}
-                {showUserLocation && (
-					<UserPosition />
-				)}
+				<UserPosition />
             </Mapbox.MapView>
 			<View style={styles.controlsContainer}>
 				{activePackGroup && (

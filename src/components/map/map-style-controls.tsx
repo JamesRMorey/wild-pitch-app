@@ -2,7 +2,7 @@ import { SHEET } from "../../consts"
 import { StyleSheet, View } from "react-native"
 import IconButton from "../buttons/icon-button";
 import { SheetManager } from "react-native-actions-sheet";
-import MapStyleSheet from "../sheets/map-style-sheet";
+import MapStyleSheet from "../../sheets/map-style-sheet";
 
 
 export default function MapStyleControls() {

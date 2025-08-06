@@ -1,13 +1,13 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { TouchableOpacity, View, StyleSheet, Text, TextInput, ScrollView } from "react-native";
-import { PACK_GROUPS, SHEET } from "../../consts";
-import { COLOUR, TEXT } from "../../styles";
-import { delay, normalise } from "../../functions/helpers";
-import { useMapPackContext } from "../../contexts/map-pack-context";
-import { useMapActions } from "../../contexts/map-context";
+import { PACK_GROUPS, SHEET } from "../consts";
+import { COLOUR, TEXT } from "../styles";
+import { delay, normalise } from "../functions/helpers";
+import { useMapPackContext } from "../contexts/map-pack-context";
+import { useMapActions } from "../contexts/map-context";
 import { MapPackGroup as MapPackGroupType } from "../../types";
-import MapPackGroup from "../map-packs/map-pack-group";
-import Icon from "../misc/icon";
+import MapPackGroup from "../components/map-packs/map-pack-group";
+import Icon from "../components/misc/icon";
 
 
 export default function MapSearchSheet ({ id=SHEET.MAP_SEARCH } : { id?: string }) {

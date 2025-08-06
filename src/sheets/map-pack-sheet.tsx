@@ -1,12 +1,12 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { View, StyleSheet, Text } from "react-native";
-import { MapPackGroup } from "../../types";
-import { SHEET } from "../../consts";
-import { COLOUR, TEXT } from "../../styles";
-import MapPack from "../map-packs/map-pack";
-import { normalise } from "../../functions/helpers";
-import IconButton from "../buttons/icon-button";
-import { useMapActions } from "../../contexts/map-context";
+import { MapPackGroup } from "../types";
+import { SHEET } from "../consts";
+import { COLOUR, TEXT } from "../styles";
+import MapPack from "../components/map-packs/map-pack";
+import { normalise } from "../functions/helpers";
+import IconButton from "../components/buttons/icon-button";
+import { useMapActions } from "../contexts/map-context";
 import { useNavigation } from "@react-navigation/native";
 
 

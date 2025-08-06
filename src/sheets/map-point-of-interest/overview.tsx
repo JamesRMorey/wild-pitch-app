@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
-import { COLOUR, OPACITY, TEXT } from "../../../styles"
-import { normalise } from "../../../functions/helpers";
-import { PointOfInterest } from "../../../types";
-import Icon from "../../misc/icon";
-import Button from "../../buttons/button";
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Share } from "react-native"
+import { COLOUR, OPACITY, TEXT } from "../../styles"
+import { normalise } from "../../functions/helpers";
+import { PointOfInterest } from "../../types";
+import Icon from "../../components/misc/icon";
+import Button from "../../components/buttons/button";
 
 
 export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, onDelete=(point: PointOfInterest) => point, } : { point: PointOfInterest, onSeeDetails?:()=>void, onSave?: ()=>void, onEdit?: ()=>void, onDelete?: (point: PointOfInterest)=>PointOfInterest }) {
@@ -17,14 +17,30 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
         {
             icon: 'navigate-outline',
             title: 'Get directions',
-            onPress: () => {}
+            onPress: () => getDirections()
         },
         {
             icon: 'share',
             title: 'Share location',
-            onPress: () => {}
+            onPress: () => shareLocation()
         }
     ];
+
+    const getDirections = async () => {
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`;
+
+        Linking.openURL(mapsUrl);
+    }
+
+    const shareLocation = async () => {
+        try {
+            await Share.share({
+                message: `Here\'s a location i've plotted on Wild Pitch Maps (${point.latitude, point.longitude}) - https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`,
+            });
+        } 
+        catch (error: any) {
+        }
+    }
 
     return (
         <View style={styles.container}>

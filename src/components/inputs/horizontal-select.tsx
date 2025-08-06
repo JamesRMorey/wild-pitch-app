@@ -4,9 +4,9 @@ import { normalise } from '../../functions/helpers';
 import Icon from '../misc/icon';
 
 
-type PropsType = { label?: string, value?: string, options: Array<{ label: string, value: string|number, icon: string}>, onSelect: (value: string|number)=>void };
+type PropsType = { label?: string, value?: string, options: Array<{ label: string, value: string|number, icon: string }>, onSelect: (value: string|number)=>void, error?: string };
 
-export default function HorizontalSelect ({ value, label, options, onSelect } : PropsType) {
+export default function HorizontalSelect ({ value, label, options, onSelect, error } : PropsType) {
 
     return (
         <View style={{ gap: normalise(10)}}>
@@ -45,6 +45,9 @@ export default function HorizontalSelect ({ value, label, options, onSelect } : 
                     )
                 })}
             </ScrollView>
+            {error && (
+                <Text style={styles.errorText}>{error}</Text>
+            )}
         </View>
     )
 }
@@ -75,5 +78,9 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.green[500],
         borderRadius: normalise(50),
         padding: normalise(3)
-    }
+    },
+    errorText: {
+        ...TEXT.xs,
+        color: COLOUR.red[500],
+    },
 })

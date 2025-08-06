@@ -52,15 +52,11 @@ export type PointOfInterest = {
     latitude: number,
     longitude: number,
     name: string,
-    notes?: string,
-    point_type_id?: number,
-    point_type?: PointType
     id?: number
 }
 
-export type PointType = {
-    id: number,
-    name: string,
-    icon: string,
-    colour: string
+export type FormErrors = {
+    [key: string]: {
+        message: string
+    }
 }

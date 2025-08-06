@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
-import { PointOfInterest } from "../../../types";
-import { normalise } from "../../../functions/helpers";
-import { COLOUR, TEXT } from "../../../styles";
+import { PointOfInterest } from "../../types";
+import { normalise } from "../../functions/helpers";
+import { TEXT } from "../../styles";
 import Header from "../header";
 
 

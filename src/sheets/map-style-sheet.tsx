@@ -1,18 +1,18 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { TouchableOpacity, View, Image, StyleSheet, Text } from "react-native";
-import { MapSetting, MapStyle } from "../../types";
-import { ASSET, SHEET } from "../../consts";
+import { MapSetting, MapStyle } from "../types";
+import { ASSET, SHEET } from "../consts";
 import Mapbox from "@rnmapbox/maps";
-import { COLOUR, TEXT } from "../../styles";
-import { useMapActions, useMapState } from "../../contexts/map-context";
-import { normalise } from "../../functions/helpers";
-import Switch from "../buttons/switch";
+import { COLOUR, TEXT } from "../styles";
+import { useMapActions, useMapState } from "../contexts/map-context";
+import { normalise } from "../functions/helpers";
+import Switch from "../components/buttons/switch";
 
 
 export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }) {
 
-    const { styleURL, enable3DMode } = useMapState();
-    const { setStyleURL, setEnable3DMode } = useMapActions();
+    const { styleURL, enable3DMode, showPointsOfInterest } = useMapState();
+    const { setStyleURL, setEnable3DMode, setShowPointsOfInterest } = useMapActions();
 
     const STYLES: Array<MapStyle> = [
         {
@@ -82,6 +82,15 @@ export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }
                         <Switch
                             active={enable3DMode}
                             onPress={() => setEnable3DMode(!enable3DMode)}
+                        />
+                    </View>
+                    <View 
+                        style={styles.settingContainer}
+                    >
+                        <Text>Show Points of Interest</Text>
+                        <Switch
+                            active={showPointsOfInterest}
+                            onPress={() => setShowPointsOfInterest(!showPointsOfInterest)}
                         />
                     </View>
                 </View>

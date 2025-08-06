@@ -3,9 +3,9 @@ import { COLOUR, TEXT } from '../../styles';
 import { normalise } from '../../functions/helpers';
 
 
-type PropsType = { placeHolder?: string, label?: string, value?: string, onChangeText: (text: string)=>void };
+type PropsType = { placeHolder?: string, label?: string, value?: string, onChangeText: (text: string)=>void, error?: string };
 
-export default function TextInput ({ placeHolder, value, label, onChangeText } : PropsType) {
+export default function TextInput ({ placeHolder, value, label, onChangeText, error } : PropsType) {
 
     return (
         <View>
@@ -14,10 +14,17 @@ export default function TextInput ({ placeHolder, value, label, onChangeText } :
             )}
             <RNTextInput
                 placeholder={placeHolder}
-                style={styles.input}
+                style={[
+                    styles.input,
+                    error && styles.error
+                ]}
                 value={value}
+                placeholderTextColor={COLOUR.gray[500]}
                 onChangeText={onChangeText}
             />
+            {error && (
+                <Text style={styles.errorText}>{error}</Text>
+            )}
         </View>
     )
 }
@@ -26,6 +33,16 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: COLOUR.gray[200],
         borderRadius: normalise(10),
-        padding: normalise(15)
+        padding: normalise(15),
+        borderWidth: normalise(1),
+        borderColor: COLOUR.gray[200]
+    },
+    errorText: {
+        ...TEXT.xs,
+        color: COLOUR.red[500],
+        marginTop: normalise(5)
+    },
+    error: {
+        borderColor: COLOUR.red[500]
     }
 })

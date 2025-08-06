@@ -1,22 +1,43 @@
-import { StyleSheet, Text, View } from "react-native";
-import { PointOfInterest } from "../../../types";
-import { normalise } from "../../../functions/helpers";
-import { COLOUR, TEXT } from "../../../styles";
+import { StyleSheet, View } from "react-native";
+import { PointOfInterest } from "../../types";
+import { normalise } from "../../functions/helpers";
+import { COLOUR, TEXT } from "../../styles";
 import Header from "../header";
-import TextInput from "../../inputs/text-input";
+import TextInput from "../../components/inputs/text-input";
 import { useEffect, useState } from "react";
-import Button from "../../buttons/button";
-import TextArea from "../../inputs/text-area";
-import { ScrollView } from "react-native-actions-sheet";
-import { usePointTypes } from "../../../hooks/usePointType";
-import HorizontalSelect from "../../inputs/horizontal-select";
+import Button from "../../components/buttons/button";
+import TextArea from "../../components/inputs/text-area";
+import { usePointTypes } from "../../hooks/usePointType";
+import HorizontalSelect from "../../components/inputs/horizontal-select";
+import { FormErrors } from "../../types";
 
 type PropsType = { point: PointOfInterest, onBack: ()=>void, onSave: (data: PointOfInterest)=>void };
 
 export default function Edit({ point, onBack, onSave } : PropsType) {
 
     const [data, setData] = useState<PointOfInterest>(point);
+    const [errors, setErrors] = useState<FormErrors>()
     const { pointTypes } = usePointTypes();
+
+    const validate = () => {
+        const err = {};
+
+        if (!data.name || data.name.length == 0) {
+            err.name = { message: 'Please enter a name' }
+        }
+        if (!data.notes || data.notes.length == 0) {
+            err.notes = { message: 'Please enter a short description' }
+        }
+        if (!data.point_type_id) {
+            err.point_type_id = { message: 'Please select a category' }
+        }
+        
+        setErrors(err);
+
+        if (Object.keys(err).length == 0) {
+            onSave(data);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -30,23 +51,26 @@ export default function Edit({ point, onBack, onSave } : PropsType) {
                     placeHolder="Name your point..."
                     value={data.name}
                     onChangeText={(text: string) => setData({...data, name: text})}
+                    error={errors?.name?.message ?? undefined}
                 />
                 <HorizontalSelect
                     label="Category"
                     options={pointTypes.map(p => { return {label: p.name, value: p.id, icon: p.icon} })}
                     onSelect={(id: any) => setData({...data, point_type_id: id})}
                     value={data.point_type_id}
+                    error={errors?.point_type_id?.message ?? undefined}
                 />
                 <TextArea
                     label="Notes"
                     placeHolder="Notes about your point..."
                     value={data.notes}
                     onChangeText={(text: string) => setData({...data, notes: text})}
+                    error={errors?.notes?.message ?? undefined}
                 />
             </View>
             <View style={styles.buttons}>
                 <Button
-                    onPress={() => onSave(data)}
+                    onPress={() => validate()}
                     title="Save"
                 />
             </View>

@@ -1,9 +1,9 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
-import { StyleSheet } from "react-native";
-import { PointOfInterest, PointOfInterestSheetSection } from "../../../types";
-import { SHEET } from "../../../consts";
-import { COLOUR, OPACITY } from "../../../styles";
-import { normalise } from "../../../functions/helpers";
+import { StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { PointOfInterest, PointOfInterestSheetSection } from "../../types";
+import { SHEET } from "../../consts";
+import { COLOUR, OPACITY } from "../../styles";
+import { normalise } from "../../functions/helpers";
 import { useState } from "react";
 import Details from "./details";
 import OverView from "./overview";
@@ -39,27 +39,29 @@ export default function MapPointOfInterestSheet ({ id=SHEET.MAP_MARKER, pointOfI
             onBeforeClose={() => setActiveSection(undefined)}
         >
             {pointOfInterest && (
-                <>
-                    {activeSection == 'details' ? 
-                    <Details 
-                        point={pointOfInterest}
-                        onBack={() => setActiveSection(undefined)}
-                    />    
-                    :activeSection == 'edit' ?
-                    <Edit
-                        point={pointOfInterest}
-                        onBack={() => setActiveSection(undefined)}
-                        onSave={(data: PointOfInterest) => save(data)}
-                    />
-                    :
-                    <OverView 
-                        point={pointOfInterest}
-                        onSeeDetails={() => setActiveSection('details')}
-                        onEdit={() => setActiveSection('edit')}
-                        onDelete={() => onDelete(pointOfInterest)}
-                    />
-                    }
-                </>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <KeyboardAvoidingView behavior="padding" enabled>
+                        {activeSection == 'details' ? 
+                        <Details 
+                            point={pointOfInterest}
+                            onBack={() => setActiveSection(undefined)}
+                        />    
+                        :activeSection == 'edit' ?
+                        <Edit
+                            point={pointOfInterest}
+                            onBack={() => setActiveSection(undefined)}
+                            onSave={(data: PointOfInterest) => save(data)}
+                        />
+                        :
+                        <OverView 
+                            point={pointOfInterest}
+                            onSeeDetails={() => setActiveSection('details')}
+                            onEdit={() => setActiveSection('edit')}
+                            onDelete={() => onDelete(pointOfInterest)}
+                        />
+                        }
+                    </KeyboardAvoidingView>
+                </TouchableWithoutFeedback>
             )}
         </ActionSheet>
     )

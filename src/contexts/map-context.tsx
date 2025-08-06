@@ -1,4 +1,4 @@
-import React, { createContext,useContext,RefObject } from 'react';
+import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
 import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
@@ -13,6 +13,7 @@ type MapContextState = {
     cameraRef: RefObject<Mapbox.Camera>;
     enable3DMode: boolean;
     followUserLocation: boolean;
+    showPointsOfInterest: boolean;
     pointsOfInterest: Array<PointOfInterest>
 };
 
@@ -26,6 +27,7 @@ type MapContextActions = {
     flyTo: (coord: Position, zoom?: number, duration?: number,) => void;
     reCenter: () => void;
     setEnable3DMode: (enabled: boolean) => void;
+    setShowPointsOfInterest: (enabled: boolean) => void;
     setFollowUserLocation: (enabled: boolean) => void;
     resetHeading: () => void;
     createPointOfInterest:( data: PointOfInterest) => PointOfInterest|void;
@@ -42,14 +44,17 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const { flyTo, zoomTo, moveTo, resetHeading, cameraRef } = useMapCameraControls();
     const { pointsOfInterest, create: createPointOfInterest, update: updatePointOfInterest, remove: deletePointOfInterest } = usePointsOfInterest();
 
+    const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
+
     const clearActivePackGroup = () => setActivePackGroup(undefined);
+    
     const setEnable3DMode = ( enabled: boolean ) => {
         cameraRef.current?.setCamera({
             pitch: 0
         });
         toggle3dMode(enabled)
     }
-
+    
 
     return (
         <StateContext.Provider
@@ -60,7 +65,8 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 cameraRef,
                 enable3DMode,
                 followUserLocation,
-                pointsOfInterest
+                pointsOfInterest,
+                showPointsOfInterest
             }}
         >
             <ActionsContext.Provider
@@ -77,7 +83,8 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     resetHeading,
                     createPointOfInterest,
                     updatePointOfInterest,
-                    deletePointOfInterest
+                    deletePointOfInterest,
+                    setShowPointsOfInterest
                 }}
             >
                 {children}

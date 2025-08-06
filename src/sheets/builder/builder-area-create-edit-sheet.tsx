@@ -1,14 +1,14 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { View, StyleSheet, Text, TextInput } from "react-native";
-import { SETTING, SHEET } from "../../../consts";
-import { COLOUR, TEXT } from "../../../styles";
-import { normalise } from "../../../functions/helpers";
-import { MapPackGroup, PositionArray } from "../../../types";
+import { SETTING, SHEET } from "../../consts";
+import { COLOUR, TEXT } from "../../styles";
+import { normalise } from "../../functions/helpers";
+import { MapPackGroup, PositionArray } from "../../types";
 import { useState } from "react";
-import { MapPackService } from "../../../services/map-pack-service";
-import { MapService } from "../../../services/map-service";
+import { MapPackService } from "../../services/map-pack-service";
+import { MapService } from "../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
-import Button from "../../buttons/button";
+import Button from "../../components/buttons/button";
 
 
 export default function BuilderAreaCreateEditSheet ({ id=SHEET.BUILDER_AREA_CREATE_EDIT, bounds, onSave } : { id?: string, bounds: PositionArray, onSave: Function }) {
