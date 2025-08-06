@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { normalise } from "../../functions/helpers";
 import { COLOUR, OPACITY, TEXT } from "../../styles";
-import { Ionicons as Icon } from '@react-native-vector-icons/ionicons';
+import Icon from "../misc/icon";
 
 
 export default function ActiveItemControls({ name, onPress } : { name: string, onPress: Function }) {
@@ -14,9 +14,9 @@ export default function ActiveItemControls({ name, onPress } : { name: string, o
         >
             <Text style={styles.text}>{name.slice(0,20)}...</Text>
             <Icon
-                name="close"
+                icon="close"
                 size={normalise(22)}
-                color={COLOUR.white}
+                colour={COLOUR.white}
             />
 
         </TouchableOpacity>

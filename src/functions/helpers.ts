@@ -61,7 +61,7 @@ export const randomNumberBetween = (min, max) => {
     return Math.random() * (max - min) + min;
 }
 
-export const randomIntBetween = (min, max) => {
+export const randomIntBetween = (min, max): number => {
     min = Math.ceil(min);
     max = Math.floor(max) + 0.49;
     return Math.round(Math.random() * (max - min) + min);

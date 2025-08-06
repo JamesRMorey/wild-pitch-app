@@ -1,0 +1,155 @@
+import { open } from 'react-native-nitro-sqlite'
+import { PointOfInterest } from '../../types';
+import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
+import { PointTypeRepository } from './point-type-repository';
+
+
+export class PointOfInterestRepository {
+
+    db;
+    tableName;
+
+    constructor () {
+        const db = open({ name: `database.sqlite` })
+        this.db = db;
+        this.tableName = 'point_of_interests';
+        this.createTable();
+    }
+
+    createTable (): void {
+        const pointTypeRepo = new PointTypeRepository();
+        this.db.execute(`
+            CREATE TABLE IF NOT EXISTS ${this.tableName} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                notes LONGTEXT,
+                point_type_id INTEGER NOT NULL DEFAULT 1,
+                latitude DECIMAL(8,6) NOT NULL,
+                longitude DECIMAL(8,6) NOT NULL,
+
+                FOREIGN KEY (point_type_id) REFERENCES point_types(id)
+            )
+        `);        
+    }
+
+    get ( limit: number=100 ): Array<PointOfInterest>  {
+        const data = this.db.execute(`
+            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
+            FROM ${this.tableName} t
+            JOIN point_types pt ON pt.id = t.point_type_id
+            LIMIT ${limit}
+        `);
+        
+        return data.rows?._array ? 
+            data.rows._array.map(row => ({
+                id: row.id,
+                name: row.name,
+                notes: row.notes,
+                point_type_id: row.point_type_id,
+                point_type: {
+                    icon: row.pt_icon,
+                    colour: row.pt_colour,
+                    name: row.pt_name
+                },
+                latitude: row.latitude,
+                longitude: row.longitude
+            })) as PointOfInterest[]
+            : [];
+    }
+
+    find ( id: number ): PointOfInterest|void  {
+        const record = this.db.execute(`
+            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
+            FROM ${this.tableName} t
+            JOIN point_types pt ON pt.id = t.point_type_id
+            WHERE t.id = ${id}
+        `);
+        
+        const row = record.rows?._array[0] ?? null
+
+        if (!row) return;
+
+        return {
+            id: row.id,
+            name: row.name,
+            notes: row.notes,
+            point_type_id: row.point_type_id,
+            point_type: {
+                icon: row.pt_icon,
+                colour: row.pt_colour,
+                name: row.pt_name
+            },
+            latitude: row.latitude,
+            longitude: row.longitude
+        }
+    }
+
+    create ( data: PointOfInterest ): PointOfInterest|void {
+        const record = this.db.execute(`
+            INSERT INTO "point_of_interests" (name, notes, point_type_id, latitude, longitude) VALUES (?, ?, ?, ?, ?)
+            RETURNING *
+        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude]);
+
+        const newPoint = record.rows?._array[0] ?? null
+
+        if (!newPoint) return;
+
+        const row = this.find(newPoint.id);
+
+        return {
+            id: row.id,
+            name: row.name,
+            notes: row.notes,
+            point_type_id: row.point_type_id,
+            point_type: {
+                id: row.point_type_id,
+                icon: row.pt_icon,
+                colour: row.pt_colour,
+                name: row.pt_name
+            },
+            latitude: row.latitude,
+            longitude: row.longitude
+        }
+    }
+
+    update ( id: number, data: PointOfInterest ): PointOfInterest|void {
+        const record = this.db.execute(`
+            UPDATE "point_of_interests" 
+            SET name = ?, 
+                notes = ?,
+                point_type_id = ?, 
+                latitude = ?, 
+                longitude = ?
+            WHERE id = ?
+            RETURNING *
+        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, id]);
+
+        const updatedPoint = record.rows?._array[0] ?? null
+
+        if (!updatedPoint) return;
+
+        const row = this.find(updatedPoint.id);
+
+        return {
+            id: row.id,
+            name: row.name,
+            notes: row.notes,
+            point_type_id: row.point_type_id,
+            point_type: {
+                id: row.point_type_id,
+                icon: row.pt_icon,
+                colour: row.pt_colour,
+                name: row.pt_name
+            },
+            latitude: row.latitude,
+            longitude: row.longitude
+        }
+    }
+
+    delete ( id: number ): void {
+        this.db.execute(`
+            DELETE FROM ${this.tableName}
+            WHERE id = ?
+        `, [id]);
+    }
+}

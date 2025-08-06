@@ -13,7 +13,7 @@ import { useMapPackContext } from "../../contexts/map-pack-context";
 import MapPackSheet from "../../components/sheets/map-pack-sheet";
 import { SETTING, SHEET } from "../../consts";
 import MapMarker from "../../components/map/map-marker";
-import { MapMarker as MapMarkerType, MapPack, MapPackGroup, PositionArray } from "../../types";
+import { MapMarker as MapMarkerType, PositionArray } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import MapPointAnnotation from "../../components/map/map-point-annotation";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
@@ -27,18 +27,14 @@ const MARKER: MapMarkerType = {
 	type: 'area'
 }
 
-export default function AreaBuilderScreen({ navigation }) {
+export default function AreaBuilderScreen({}) {
 
-	const { styleURL, center, cameraRef, enable3DMode, followUserLocation } = useMapState();
+	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation } = useMapState();
 	const { clearActivePackGroup, flyTo, setFollowUserLocation } = useMapActions();
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([]);
 	const [activeMarker, setActiveMarker] = useState<MapMarkerType>();
 	const [areaBounds, setAreaBounds] = useState<PositionArray>();
-	const [activePackGroup, setActivePackGroup] = useState<MapPackGroup>();
 
-	const back = () => {
-		navigation.goBack();
-	}
 
 	const addMarkerFromLongPress = ( e: any ) => {
 		if (markers.length >= 2) return;
@@ -58,14 +54,12 @@ export default function AreaBuilderScreen({ navigation }) {
 		// console.log(e, point)
 	}
 
-	const createPackGroup = async( packGroup: MapPackGroup ) => {
-		setActivePackGroup(packGroup);
-		await delay(500);
-		SheetManager.show(SHEET.BUILDER_MAP_PACKS)
+	const saveAreaBounds = () => {
+		
 	}
 
 	const openCreateEditSheet = () => {
-		SheetManager.show(SHEET.BUILDER_AREA_CREATE_EDIT);
+		SheetManager.show(SHEET.BUILDER_AREA_CREATE_EDIT_SHEET);
 	}
 
 	const onPointDragEnd = (e: any, point: MapMarkerType) => {
@@ -82,13 +76,11 @@ export default function AreaBuilderScreen({ navigation }) {
 		setMarkers(newMarkers);
 	}
 
-
 	useEffect(() => {
 		if (markers.length == 2) {
 			updateAreaBounds([markers[0].coordinate, markers[1].coordinate])
 		}
-	}, [markers]);
-
+	}, [markers])
 
 
     return (
@@ -125,14 +117,6 @@ export default function AreaBuilderScreen({ navigation }) {
 					/>
 				)}
             </Mapbox.MapView>
-			<View style={styles.back}>
-				<IconButton
-					icon={'close'}
-					small={true}
-					onPress={() => back()}
-					active={true}
-				/>
-			</View>
 			<View style={styles.controlsContainer}>
 				<View style={styles.controls}>
 					<IconButton
@@ -146,11 +130,7 @@ export default function AreaBuilderScreen({ navigation }) {
 					/>
 				</View>
 			</View>
-			<BuilderAreaCreateEditSheet 
-				bounds={areaBounds} 
-				onSave={(group: MapPackGroup) => createPackGroup(group)}
-			/>
-			<MapPackSheet id={SHEET.BUILDER_MAP_PACKS} packGroup={activePackGroup} />
+			<BuilderAreaCreateEditSheet bounds={areaBounds} />
         </View>
     )
 }
@@ -172,10 +152,5 @@ const styles = StyleSheet.create({
 	},
 	controls: {
 		gap: normalise(8),
-	},
-	back: {
-		position: 'absolute',
-		left: normalise(10),
-		top: normalise(50),
 	}
 });

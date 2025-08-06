@@ -2,12 +2,15 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
 import { normalise } from "../../functions/helpers";
 
-export default function Button ({ title, onPress, disabled=false, active=false } : { title: string, onPress: Function, disabled?: boolean, active?: boolean }) {
+export default function Button ({ title, onPress, disabled=false, active=false, style='standard' } : { title: string, onPress: Function, disabled?: boolean, active?: boolean, style?: string }) {
 
     return (
         <TouchableOpacity
             onPress={() => onPress()}
-            style={styles.button}
+            style={[
+                styles.button,
+                style == 'large' && { paddingVertical: normalise(15) }
+            ]}
             activeOpacity={0.8}
             disabled={disabled}
         >
@@ -26,6 +29,7 @@ const styles = StyleSheet.create({
     text: {
         color: COLOUR.white,
         ...TEXT.md,
+        fontWeight: 600,
         textAlign: 'center'
     }
 })

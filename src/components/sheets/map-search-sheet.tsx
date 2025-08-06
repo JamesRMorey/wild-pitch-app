@@ -3,11 +3,11 @@ import { TouchableOpacity, View, StyleSheet, Text, TextInput, ScrollView } from 
 import { PACK_GROUPS, SHEET } from "../../consts";
 import { COLOUR, TEXT } from "../../styles";
 import { delay, normalise } from "../../functions/helpers";
-import { SimpleLineIcons as Icon } from "@react-native-vector-icons/simple-line-icons";
 import { useMapPackContext } from "../../contexts/map-pack-context";
 import { useMapActions } from "../../contexts/map-context";
 import { MapPackGroup as MapPackGroupType } from "../../types";
 import MapPackGroup from "../map-packs/map-pack-group";
+import Icon from "../misc/icon";
 
 
 export default function MapSearchSheet ({ id=SHEET.MAP_SEARCH } : { id?: string }) {
@@ -41,7 +41,7 @@ export default function MapSearchSheet ({ id=SHEET.MAP_SEARCH } : { id?: string 
                 <View style={styles.headerContainer}>
                     <View style={styles.searchBar}>
                         <Icon
-                            name="magnifier"
+                            icon="search"
                             size={normalise(20)}
                         />
                         <TextInput

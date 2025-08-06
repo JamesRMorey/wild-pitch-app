@@ -1,7 +1,6 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { SimpleLineIcons as Icon } from "@react-native-vector-icons/simple-line-icons";
 import { COLOUR, OPACITY, SHADOW } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import Icon from "../misc/icon";
 
 
 export default function IconButton({ icon, onPress, disabled=false, active=false, iconOnly=false, small=false, shadow=false } : { icon: any, onPress: Function, disabled?: boolean, active?: boolean, iconOnly?: boolean, small?: boolean, shadow?: boolean }) {
@@ -21,10 +20,10 @@ export default function IconButton({ icon, onPress, disabled=false, active=false
             disabled={disabled}
         >
             <Icon
-                name={icon}
-                size={small ? 20 : 22}
-                color={active ? COLOUR.white : COLOUR.black}
-            ></Icon>
+                icon={icon}
+                size={small ? 20 : 24}
+                colour={active ? COLOUR.white : COLOUR.black}
+            />
         </TouchableOpacity>
     )
 }
@@ -38,7 +37,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: COLOUR.white,
         borderRadius: 50,
-        borderWidth: normalise(1),
     },
     active: {
         backgroundColor: COLOUR.black

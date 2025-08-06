@@ -47,5 +47,17 @@ export const text = StyleSheet.create({
     },
     xxs: {
         fontSize: normalise(8),
+    },
+    bold: {
+        fontWeight: 800
+    },
+    semiBold: {
+        fontWeight: 700
+    },
+    medium: {
+        fontWeight: 600
+    },
+    thin: {
+        fontWeight: 300
     }
 })

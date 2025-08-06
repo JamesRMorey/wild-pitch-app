@@ -12,26 +12,21 @@ import MapSearchControls from "../components/map/map-search-controls";
 import { useMapPackContext } from "../contexts/map-pack-context";
 import MapPackSheet from "../components/sheets/map-pack-sheet";
 import { SETTING, SHEET } from "../consts";
-import MapMarker from "../components/map/map-marker";
-import { MapMarker as MapMarkerType } from "../types";
-import MapMarkerSheet from "../components/sheets/map-marker-sheet";
+import PointOfInterestMarker from "../components/map/map-marker";
+import { PointOfInterest } from "../types";
+import MapPointOfInterestSheet from "../components/sheets/map-point-of-interest/map-point-of-interest-sheet";
 import { SheetManager } from "react-native-actions-sheet";
+import { Format } from "../services/formatter";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
-const MARKER: MapMarkerType = {
-	coordinate: [-1.865014, 53.450585],
-	type: 'area'
-}
-
 export default function MapScreen({}) {
 
-	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation } = useMapState();
-	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading } = useMapActions();
+	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest } = useMapState();
+	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
 	const [showUserLocation, setShowUserLocation] = useState<boolean>(false);
-	const [markers, setMarkers] = useState<Array<MapMarkerType>>([MARKER]);
-	const [activeMarker, setActiveMarker] = useState<MapMarkerType>(MARKER);
+	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 
 
 	const reCenter = async () => {
@@ -41,14 +36,23 @@ export default function MapScreen({}) {
 	}
 
 	const addMarkerFromLongPress = ( e: any ) => {
-		const marker: MapMarkerType = {
-			coordinate: e.geometry.coordinates,
-			type: 'area'
-		}
-		setMarkers([...markers, marker]);
-		flyTo(marker.coordinate, SETTING.MAP_MARKER_ZOOM)
-		setActiveMarker(marker);
+		const now = new Date();
+		const poi: PointOfInterest = {
+			name: `New Location - ${Format.dateToDateTime(now)}`,
+			latitude: e.geometry.coordinates[1],
+			longitude: e.geometry.coordinates[0]
+		};
+
+		if (!poi) return;
+
+		flyTo([poi.longitude, poi.latitude], SETTING.MAP_MARKER_ZOOM);
+
+		setActivePOI(poi);
 		openMarkerSheet();
+	}
+
+	const closeMarkerSheet = () => {
+		SheetManager.hide(SHEET.MAP_MARKER);
 	}
 
 	const openMarkerSheet = () => {
@@ -98,15 +102,27 @@ export default function MapScreen({}) {
                     zoomLevel={SETTING.MAP_DEFAULT_ZOOM}
 					followUserLocation={followUserLocation}
                 />
-                {markers.map((marker, i) => {
+                {pointsOfInterest.map((point, i) => {
 					return (
-						<MapMarker
-							key={i}
-							coordinate={marker.coordinate}
-							type={marker.type}
+						<PointOfInterestMarker
+							key={point.id}
+							coordinate={[point.longitude, point.latitude]}
+							icon={point.point_type?.icon ?? 'flag'}
+							colour={point.point_type?.colour}
+							onPress={() => {
+								setActivePOI(point);
+								flyTo([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
+								openMarkerSheet();
+							}}
 						/>
 					)
 				})}
+				{(activePOI && !activePOI.id) && (
+					<PointOfInterestMarker
+						coordinate={[activePOI.longitude, activePOI.latitude]}
+						type={'poi'}
+					/>
+				)}
 				{activePackGroup && (
 					<MapArea 
 						id='test'
@@ -128,16 +144,16 @@ export default function MapScreen({}) {
 				<View style={styles.controls}>
 					<MapStyleControls/>
 					<MapSearchControls />
-					<IconButton
-						icon={'target'}
-						onPress={() => reCenter()}
-						disabled={followUserLocation}
-						active={followUserLocation}
-						shadow={true}
-					/>
 				</View>
 			</View>
 			<View style={styles.bottomRightControls}>
+				<IconButton
+					icon={'navigate-outline'}
+					onPress={() => reCenter()}
+					disabled={followUserLocation}
+					active={followUserLocation}
+					shadow={true}
+				/>
 				<IconButton
 					icon={'compass'}
 					onPress={() => resetHeading()}
@@ -148,9 +164,39 @@ export default function MapScreen({}) {
 				id={SHEET.MAP_PACKS} 
 				packGroup={selectedPackGroup}
 			/>
-			<MapMarkerSheet 
+			<MapPointOfInterestSheet 
 				id={SHEET.MAP_MARKER} 
-				marker={activeMarker}
+				pointOfInterest={activePOI}
+				onSave={(point: PointOfInterest) => {
+					const newPoint = createPointOfInterest(point);
+
+					if (!newPoint) {
+						setActivePOI(undefined);
+						closeMarkerSheet();
+						return;
+					}
+
+					setActivePOI(newPoint);
+				}}
+				onUpdate={(point: PointOfInterest) => {
+					const updated = updatePointOfInterest(point);
+
+					if (!updated) {
+						setActivePOI(undefined);
+						closeMarkerSheet();
+						return;
+					}
+					
+					setActivePOI(updated);
+				}}
+				onDelete={(point: PointOfInterest) => {
+					if (!point.id) return;
+
+					deletePointOfInterest(point.id);
+					closeMarkerSheet();
+					setActivePOI(undefined);
+				}}
+				onClose={() => setActivePOI(undefined)}
 			/>
         </View>
     )
@@ -177,6 +223,7 @@ const styles = StyleSheet.create({
 	bottomRightControls: {
 		position: 'absolute',
 		bottom: normalise(10),
-		right: normalise(10)
+		right: normalise(10),
+		gap: normalise(8),
 	}
 });

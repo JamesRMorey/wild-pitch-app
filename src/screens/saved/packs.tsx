@@ -22,7 +22,6 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
     const updateOfflinePacks =  async() => {
         const offline = await Mapbox.offlineManager.getPacks();
         setOfflinePacks(offline);
-        console.log(offline);
     }
 
     const deletePack =  async( pack: OfflinePack ) => {

@@ -1,6 +1,7 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { SimpleLineIcons as Icon } from "@react-native-vector-icons/simple-line-icons";
-import { COLOUR } from '../../styles';
+import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { COLOUR, TEXT } from '../../styles';
+import { normalise } from '../../functions/helpers';
+import Icon from '../misc/icon';
 
 export default function CustomTabNavigator({ state, descriptors, navigation }) {
 
@@ -17,6 +18,7 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                                 : route.name;
 
                     const icon = options.tabBarIcon;
+                    const name = options.displayName;
 
                     const isFocused = state.index === index;
 
@@ -52,13 +54,13 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                             key={index}
                         >
                             <Icon 
-                                name={icon}
-                                color={isFocused ? COLOUR.black : COLOUR.gray[300]}
-                                style={[
-                                    styles.tabIcon,
-                                    isFocused && styles.focused
-                                ]} 
-                                size={25} />
+                                icon={icon}
+                                colour={isFocused ? COLOUR.green[500] : COLOUR.gray[300]}
+                                size={normalise(24)}
+                            />
+                            {name && (
+                                <Text style={styles.text}>{name}</Text>
+                            )}
                         </TouchableOpacity>
                     );
                 })}
@@ -71,8 +73,8 @@ const styles = StyleSheet.create({
     bottomNav: {
         flexDirection: 'row',
         backgroundColor: COLOUR.white,
-        paddingTop: 20,
-        paddingBottom: 25,
+        paddingTop: normalise(10),
+        paddingBottom: normalise(30),
         borderBottomRightRadius: 0,
         borderBottomLeftRadius: 0
     },
@@ -82,5 +84,10 @@ const styles = StyleSheet.create({
     tabIcon: {
     },
     focused: {
+    },
+    text: {
+        ...TEXT.xs,
+        fontWeight: 600,
+        color: COLOUR.gray[400]
     }
 })

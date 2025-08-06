@@ -20,7 +20,10 @@
     "react": "19.1.0",
     "react-native": "0.80.2",
     "react-native-actions-sheet": "^0.9.7",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.27.2",
+    "react-native-nitro-modules": "^0.27.2",
+    "react-native-nitro-sqlite": "^9.1.10",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.13.1"
   },

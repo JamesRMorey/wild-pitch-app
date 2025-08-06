@@ -1,14 +1,14 @@
 import { StyleSheet, View } from "react-native"
 import { normalise } from "../../functions/helpers"
-import { SimpleLineIcons as Icon } from "@react-native-vector-icons/simple-line-icons"
 import { COLOUR, OPACITY } from "../../styles"
+import Icon from "./icon"
 
 
 export default function IconBadge ({ icon, size='medium' } : { icon: string, size?: 'large'|'medium'|'small' }) {
     return (
         <View style={styles.container}>
             <Icon
-                name={icon}
+                icon={icon}
                 size={
                     size == 'large' ? normalise(20) :
                     size == 'small' ? normalise(14) :

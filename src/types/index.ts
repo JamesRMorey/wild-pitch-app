@@ -44,4 +44,23 @@ export type MapMarker = {
     type: MarkerType
 }
 
-export type MarkerType = 'route'|'area';
+export type MarkerType = 'route'|'area'|'poi'
+
+export type PointOfInterestSheetSection = 'details'|'edit'|'save'|undefined
+
+export type PointOfInterest = {
+    latitude: number,
+    longitude: number,
+    name: string,
+    notes?: string,
+    point_type_id?: number,
+    point_type?: PointType
+    id?: number
+}
+
+export type PointType = {
+    id: number,
+    name: string,
+    icon: string,
+    colour: string
+}

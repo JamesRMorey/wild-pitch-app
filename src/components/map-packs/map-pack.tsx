@@ -47,7 +47,7 @@ export default function MapPack({ pack, size } : { pack: MapPack, size: number }
     useEffect(() => {
         checkOfflinePacks();
     }, [])
-    console.log(pack)
+    
 
     return (
         <View style={styles.container}>

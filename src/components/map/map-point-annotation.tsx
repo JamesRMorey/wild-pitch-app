@@ -1,9 +1,8 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { MarkerType } from "../../types";
 import Mapbox from "@rnmapbox/maps";
-import { Ionicons as Icon } from "@react-native-vector-icons/ionicons";
 import { COLOUR } from "../../styles";
 import { normalise } from "../../functions/helpers";
+import Icon from "../misc/icon";
 
 
 export default function MapPointAnnotation ({ id, coordinate, draggable=false, onDrag=()=>{}, onDragStart=()=>{}, onDragEnd=()=>{} } : { id: string, coordinate: Position, draggable?: boolean, onDrag?: Function, onDragStart?: Function, onDragEnd?: Function }) {
@@ -20,9 +19,9 @@ export default function MapPointAnnotation ({ id, coordinate, draggable=false, o
             onDragStart={(e) => onDragStart(e)}
         >
             <Icon
-                name='move'
+                icon='move'
                 size={normalise(40)}
-                color={COLOUR.black}
+                colour={COLOUR.black}
             />
         </Mapbox.PointAnnotation>
     )
