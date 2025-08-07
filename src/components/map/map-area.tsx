@@ -1,5 +1,5 @@
 import Mapbox from "@rnmapbox/maps";
-import { Coordinate, PositionArray } from "../../types";
+import { PositionArray } from "../../types";
 import { MapService } from "../../services/map-service";
 import { useEffect, useState } from "react";
 

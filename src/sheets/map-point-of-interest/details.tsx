@@ -1,11 +1,40 @@
 import { StyleSheet, Text, View } from "react-native";
 import { PointOfInterest } from "../../types";
-import { normalise } from "../../functions/helpers";
+import { getDistanceBetweenPoints, normalise } from "../../functions/helpers";
 import { TEXT } from "../../styles";
 import Header from "../header";
+import { useEffect, useState } from "react";
+import { Format } from "../../services/formatter";
+import { MapService } from "../../services/map-service";
+import useUserPosition from "../../hooks/useUserPosition";
 
 
 export default function Details({ point, onBack } : { point: PointOfInterest, onBack: ()=>void }) {
+
+    const { userPosition } = useUserPosition();
+    const [distanceAway, setDistanceAway] = useState<number>();
+    const [relativeBearing, setRelativeBearing] = useState<number>();
+
+    const calculateDistanceAway = () => {
+        if (!userPosition) return;
+        const distance = getDistanceBetweenPoints(
+            { latitude: userPosition.latitude, longitude: userPosition.longitude },
+            { latitude: point.latitude, longitude: point.longitude },
+        );
+        setDistanceAway(distance)
+    }
+
+    const updateHeading = () => {
+        if (!userPosition) return;
+        const rel = MapService.relativeBearing(userPosition, point);
+        setRelativeBearing(rel);
+    }
+
+
+    useEffect(() => {
+        calculateDistanceAway();
+        updateHeading();
+    }, [userPosition]);
 
     return (
         <View style={styles.container}>
@@ -16,11 +45,11 @@ export default function Details({ point, onBack } : { point: PointOfInterest, on
             <View style={styles.statContainer}>
                 <View style={styles.stat}>
                     <Text style={styles.statLabel}>Distance away</Text>
-                    <Text style={styles.statText}>5.5<Text style={styles.statSubText}>km</Text></Text>
+                    <Text style={styles.statText}>{distanceAway ? Format.formatMetersToKM(distanceAway) : '...'}<Text style={styles.statSubText}>km</Text></Text>
                 </View>
                 <View style={styles.stat}>
                     <Text style={styles.statLabel}>Bearing</Text>
-                    <Text style={styles.statText}>160<Text style={styles.statSubText}>NW</Text></Text>
+                    <Text style={styles.statText}>{relativeBearing ? relativeBearing.toFixed(0) : '...' }<Text style={styles.statSubText}>{relativeBearing ? Format.compass(relativeBearing) : null}</Text></Text>
                 </View>
                 <View style={styles.stat}>
                     <Text style={styles.statLabel}>Point elevation</Text>

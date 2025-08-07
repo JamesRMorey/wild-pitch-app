@@ -4,6 +4,8 @@ import { normalise } from "../../functions/helpers";
 import { PointOfInterest } from "../../types";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
+import useModals from "../../hooks/useModals";
+import ConfirmModal from "../../modals/confirm";
 
 
 export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, onDelete=(point: PointOfInterest) => point, } : { point: PointOfInterest, onSeeDetails?:()=>void, onSave?: ()=>void, onEdit?: ()=>void, onDelete?: (point: PointOfInterest)=>PointOfInterest }) {
@@ -25,6 +27,8 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
             onPress: () => shareLocation()
         }
     ];
+    const { modals, close: closeModals, open: openModal } = useModals({ delete: false })
+
 
     const getDirections = async () => {
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`;
@@ -80,7 +84,7 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
                     <TouchableOpacity
                         style={styles.option} 
                         activeOpacity={0.5}
-                        onPress={() => onDelete(point)}
+                        onPress={() => openModal('delete')}
                     >
                         <View style={styles.optionNameContainer}>
                             <Icon
@@ -100,6 +104,17 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
                     />
                 </View>
             </View>
+            {modals.delete && (
+                <ConfirmModal
+                    onClose={closeModals}
+                    onConfirm={() => {
+                        onDelete(point);
+                        closeModals()
+                    }}
+                    text="Are you sure you want to delete this point permanently?"
+                    title="Delete Point"
+                />
+            )}
         </View>
     )
 }

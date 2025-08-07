@@ -30,4 +30,50 @@ export class Format {
 
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
+
+    static formatMetersToMiles ( meters: number ) {
+        const miles = meters / 1609.344;
+
+        const formatter = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+        return formatter.format(miles);
+    }
+
+    static formatMetersToKM ( meters: number ) {
+        const km = meters / 1000;
+
+        const formatter = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+
+        return formatter.format(km);
+    }
+
+    static compass ( degrees: number ) {
+        const directions = [
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+        ];
+
+        const index = Math.round(degrees / 22.5) % 16;
+        const compass = directions[index];
+
+        return compass;
+    }
+
+    static bearing ( degrees: number ) {
+        const directions = [
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+        ];
+
+        const index = Math.round(degrees / 22.5) % 16;
+        const compass = directions[index];
+
+        return `${degrees.toFixed(0)}° ${compass}`;
+    }
 }

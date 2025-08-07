@@ -23,10 +23,9 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdT
 export default function MapScreen({}) {
 
 	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest, showPointsOfInterest } = useMapState();
-	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest } = useMapActions();
+	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest, setUserPosition } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
-
 
 	const reCenter = async () => {
 		setFollowUserLocation(true);
@@ -36,6 +35,7 @@ export default function MapScreen({}) {
 
 	const addMarkerFromLongPress = ( e: any ) => {
 		const now = new Date();
+		console.log(e)
 		const poi: PointOfInterest = {
 			name: `New Location - ${Format.dateToDateTime(now)}`,
 			latitude: e.geometry.coordinates[1],
@@ -63,7 +63,7 @@ export default function MapScreen({}) {
 		flyTo(activePackGroup.center)
 		SheetManager.show(SHEET.MAP_PACKS);
 	}
-	
+
 
     return (
         <View style={styles.container}>

@@ -1,5 +1,5 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
-import { StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, View } from "react-native";
 import { PointOfInterest, PointOfInterestSheetSection } from "../../types";
 import { SHEET } from "../../consts";
 import { COLOUR, OPACITY } from "../../styles";
@@ -14,7 +14,6 @@ type PropsType = { id?: string, pointOfInterest: PointOfInterest|undefined, onSa
 export default function MapPointOfInterestSheet ({ id=SHEET.MAP_MARKER, pointOfInterest, onSave=(point: PointOfInterest)=>{}, onUpdate=(point: PointOfInterest)=>{}, onDelete=(point: PointOfInterest)=>{}, onClose=()=>{} } : PropsType ) {
 
     const [activeSection, setActiveSection] = useState<PointOfInterestSheetSection>()
-    
 
     const save = ( data: PointOfInterest ) => {
         if (data.id) {

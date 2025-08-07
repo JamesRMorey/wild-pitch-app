@@ -1,15 +1,17 @@
 import { StyleSheet, View } from "react-native";
-import { PointOfInterest } from "../../types";
+import { PointOfInterest, PointType } from "../../types";
 import { normalise } from "../../functions/helpers";
-import { COLOUR, TEXT } from "../../styles";
+import { TEXT } from "../../styles";
 import Header from "../header";
 import TextInput from "../../components/inputs/text-input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../../components/buttons/button";
 import TextArea from "../../components/inputs/text-area";
 import { usePointTypes } from "../../hooks/usePointType";
-import HorizontalSelect from "../../components/inputs/horizontal-select";
 import { FormErrors } from "../../types";
+import PressInput from "../../components/inputs/press-input";
+import useModals from "../../hooks/useModals";
+import PointTypeSelectorModal from "../../modals/point-type-selector";
 
 type PropsType = { point: PointOfInterest, onBack: ()=>void, onSave: (data: PointOfInterest)=>void };
 
@@ -18,6 +20,7 @@ export default function Edit({ point, onBack, onSave } : PropsType) {
     const [data, setData] = useState<PointOfInterest>(point);
     const [errors, setErrors] = useState<FormErrors>()
     const { pointTypes } = usePointTypes();
+    const { modals, open: openModal, close: closeModals } = useModals({ pointType: false });
 
     const validate = () => {
         const err = {};
@@ -53,11 +56,11 @@ export default function Edit({ point, onBack, onSave } : PropsType) {
                     onChangeText={(text: string) => setData({...data, name: text})}
                     error={errors?.name?.message ?? undefined}
                 />
-                <HorizontalSelect
+                <PressInput
+                    onPress={() => openModal('pointType')}
                     label="Category"
-                    options={pointTypes.map(p => { return {label: p.name, value: p.id, icon: p.icon} })}
-                    onSelect={(id: any) => setData({...data, point_type_id: id})}
-                    value={data.point_type_id}
+                    placeHolder="Category..."
+                    value={pointTypes.find(p => p.id == data.point_type_id)?.name}
                     error={errors?.point_type_id?.message ?? undefined}
                 />
                 <TextArea
@@ -74,6 +77,16 @@ export default function Edit({ point, onBack, onSave } : PropsType) {
                     title="Save"
                 />
             </View>
+            {modals.pointType && (
+                <PointTypeSelectorModal
+                    onClose={closeModals}
+                    value={data.point_type_id}
+                    onSelect={(pointType: PointType) => {
+                        setData({...data, point_type_id: pointType.id});
+                        closeModals();
+                    }}
+                />
+            )}
         </View>
     )
 }

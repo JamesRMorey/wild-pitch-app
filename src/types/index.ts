@@ -2,7 +2,10 @@ import Mapbox from "@rnmapbox/maps";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import type { ImageSourcePropType } from "react-native";
 
-export type Coordinate = [number, number];
+export type Coordinate = {
+  latitude: number;
+  longitude: number;
+};
 
 export type PositionArray = [Position, Position];
 
@@ -51,12 +54,20 @@ export type PointOfInterestSheetSection = 'details'|'edit'|'save'|undefined
 export type PointOfInterest = {
     latitude: number,
     longitude: number,
+    point_type_id?: number,
     name: string,
-    id?: number
+    id?: number,
 }
 
 export type FormErrors = {
     [key: string]: {
         message: string
     }
+}
+
+export type PointType = {
+    id: number,
+    name: string,
+    colour: string,
+    icon: string
 }

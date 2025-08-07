@@ -1,11 +1,12 @@
 import Mapbox from '@rnmapbox/maps';
-import { Coordinate, MapPackGroup } from '../types';
+import { MapPackGroup } from '../types';
 import { useState } from 'react';
+import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 
 export function useMapSettings() {
 
     const [styleURL, setStyleURL] = useState<Mapbox.StyleURL>(Mapbox.StyleURL.Outdoors);
-    const [center, setCenter] = useState<Coordinate>([-1.865014, 53.450585]);
+    const [center, setCenter] = useState<Position>([-1.865014, 53.450585]);
     const [activePackGroup, setActivePackGroup] = useState<MapPackGroup>();
     const [enable3DMode, setEnable3DMode] = useState<boolean>(false);
     const [followUserLocation, setFollowUserLocation] = useState<boolean>(false);

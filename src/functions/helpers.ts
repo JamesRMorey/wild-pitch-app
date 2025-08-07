@@ -153,3 +153,37 @@ export const formatTimeStampToDate = (timestamp) => {
 
     return `${hours}:${minutes} ${day}/${month}/${year}`;
 };
+
+export function getRelativeHeading(userLocation, targetLocation) {
+  const { latitude: lat1, longitude: lon1, heading } = userLocation.coords;
+  const { latitude: lat2, longitude: lon2 } = targetLocation;
+
+  // If heading is -1, device is likely not moving / unknown
+  if (heading === -1) return null;
+
+  // Calculate the bearing from user location to target
+  const bearingToTarget = getBearingBetweenPoints(lat1, lon1, lat2, lon2);
+
+  // Calculate relative angle (difference between your heading and the target's bearing)
+  let relativeHeading = bearingToTarget - heading;
+
+  // Normalize to 0–360
+  if (relativeHeading < 0) relativeHeading += 360;
+  if (relativeHeading >= 360) relativeHeading -= 360;
+
+  return relativeHeading;
+}
+
+// Compute bearing using basic formula (forward azimuth)
+export function getBearingBetweenPoints(lat1, lon1, lat2, lon2) {
+  const toRad = deg => deg * Math.PI / 180;
+  const toDeg = rad => rad * 180 / Math.PI;
+
+  const dLon = toRad(lon2 - lon1);
+  const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+  const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+            Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+
+  const bearing = toDeg(Math.atan2(y, x));
+  return (bearing + 360) % 360; // normalize
+}

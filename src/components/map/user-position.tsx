@@ -1,8 +1,9 @@
 import { UserLocation } from "@rnmapbox/maps";
 import { useEffect, useState } from "react";
 
+type PropsType = { onUpdate?: ()=>void }
 
-export default function UserPosition ({}) {
+export default function UserPosition ({ onUpdate=()=>{} } : PropsType) {
 
     const [render, setRender] = useState<boolean>(false);
 
@@ -12,6 +13,6 @@ export default function UserPosition ({}) {
 
     if (!render) return;
     return (
-        <UserLocation />
+        <UserLocation onUpdate={onUpdate}/>
     )
 }

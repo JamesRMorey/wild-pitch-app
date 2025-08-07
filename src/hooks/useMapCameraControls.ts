@@ -1,17 +1,17 @@
 import Mapbox from '@rnmapbox/maps';
-import { Coordinate } from '../types';
 import { SETTING } from '../consts';
 import { useRef } from 'react';
+import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 
 export function useMapCameraControls() {
 
     const cameraRef = useRef<Mapbox.Camera>(null);
 
-    const moveTo = (coordinate: Coordinate): void => {
+    const moveTo = (coordinate: Position): void => {
         cameraRef.current?.moveTo(coordinate);
     };
 
-    const flyTo = (coordinate: Coordinate, zoom: number=SETTING.MAP_CLOSE_ZOOM, duration: number = 1000): void => {
+    const flyTo = (coordinate: Position, zoom: number=SETTING.MAP_CLOSE_ZOOM, duration: number = 1000): void => {
         cameraRef.current?.setCamera({
             centerCoordinate: coordinate,
             zoomLevel: zoom,

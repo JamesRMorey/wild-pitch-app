@@ -56,4 +56,19 @@ export class MapService {
 
         return [centerLng, centerLat];
     }        
+
+    static relativeBearing( start: Coordinate, end: Coordinate ): number {
+        const toRad = (deg: number) => (deg * Math.PI) / 180;
+        const toDeg = (rad: number) => (rad * 180) / Math.PI;
+
+        const dLon = toRad(end.longitude - start.longitude);
+        const lat1 = toRad(start.latitude);
+        const lat2 = toRad(end.latitude);
+
+        const y = Math.sin(dLon) * Math.cos(lat2);
+        const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+        const bearing = toDeg(Math.atan2(y, x));
+        return (bearing + 360) % 360;
+    }
 }
