@@ -20,6 +20,10 @@ export function useMapCameraControls() {
         });
     };
 
+    const flyToLow = (coordinate: Position, zoom: number=SETTING.MAP_CLOSE_ZOOM, duration: number = 1000): void => {
+        flyTo([coordinate[0], coordinate[1]-0.00015*zoom], zoom, duration);
+    };
+
     const zoomTo = (zoom: number): void => {
         cameraRef.current?.zoomTo(zoom);
     };
@@ -31,5 +35,5 @@ export function useMapCameraControls() {
         });
     }
 
-    return { moveTo, flyTo, zoomTo, resetHeading, cameraRef };
+    return { moveTo, flyTo, flyToLow, zoomTo, resetHeading, cameraRef };
 }

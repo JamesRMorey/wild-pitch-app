@@ -55,7 +55,7 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                         >
                             <Icon 
                                 icon={icon}
-                                colour={isFocused ? COLOUR.green[500] : COLOUR.gray[300]}
+                                colour={isFocused ? COLOUR.black : COLOUR.gray[300]}
                                 size={normalise(24)}
                             />
                             {name && (

@@ -75,6 +75,7 @@ export default function Edit({ point, onBack, onSave } : PropsType) {
                 <Button
                     onPress={() => validate()}
                     title="Save"
+                    style="large"
                 />
             </View>
             {modals.pointType && (

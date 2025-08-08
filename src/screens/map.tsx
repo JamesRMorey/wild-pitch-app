@@ -23,7 +23,7 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdT
 export default function MapScreen({}) {
 
 	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest, showPointsOfInterest } = useMapState();
-	const { clearActivePackGroup, flyTo, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest, setUserPosition } = useMapActions();
+	const { clearActivePackGroup, flyTo, flyToLow, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest, setUserPosition } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 
@@ -35,7 +35,6 @@ export default function MapScreen({}) {
 
 	const addMarkerFromLongPress = ( e: any ) => {
 		const now = new Date();
-		console.log(e)
 		const poi: PointOfInterest = {
 			name: `New Location - ${Format.dateToDateTime(now)}`,
 			latitude: e.geometry.coordinates[1],
@@ -43,8 +42,7 @@ export default function MapScreen({}) {
 		};
 
 		if (!poi) return;
-
-		flyTo([poi.longitude, poi.latitude], SETTING.MAP_MARKER_ZOOM);
+		flyToLow([poi.longitude, poi.latitude], SETTING.MAP_MARKER_ZOOM);
 
 		setActivePOI(poi);
 		openMarkerSheet();
@@ -105,7 +103,7 @@ export default function MapScreen({}) {
 							colour={point.point_type?.colour}
 							onPress={() => {
 								setActivePOI(point);
-								flyTo([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
+								flyToLow([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
 								openMarkerSheet();
 							}}
 						/>
@@ -204,7 +202,7 @@ const styles = StyleSheet.create({
 	controlsContainer: {
 		position: 'absolute',
 		right: normalise(10),
-		top: normalise(50),
+		top: SETTING.TOP_PADDING,
 		gap: normalise(8),
 		flexDirection: 'row',
 		alignItems: 'flex-start'

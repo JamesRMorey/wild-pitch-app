@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     overlay: {
         flex: 1, 
         backgroundColor: "rgba(0,0,0,0.5)",
-        padding: normalise(30),
+        padding: normalise(20),
         paddingTop: SETTING.TOP_PADDING + normalise(30)
     }
 })

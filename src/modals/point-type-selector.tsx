@@ -16,6 +16,7 @@ export default function PointTypeSelectorModal ({ onClose, onSelect, value }: Pr
         <Modal
             onClose={onClose}
         >
+            <Text style={styles.title}>Select a category</Text>
             <View style={styles.optionContainer}>
                 {pointTypes.map((pointType, i) => {
                     return (
@@ -59,7 +60,8 @@ const styles = StyleSheet.create({
     },
     title: {
         ...TEXT.h2,
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: normalise(15)
     },
     text: {
         ...TEXT.sm,

@@ -25,6 +25,7 @@ type MapContextActions = {
     moveTo: (coord: Position) => void;
     zoomTo: (zoom: number) => void;
     flyTo: (coord: Position, zoom?: number, duration?: number,) => void;
+    flyToLow: (coord: Position, zoom?: number, duration?: number,) => void;
     reCenter: () => void;
     setEnable3DMode: (enabled: boolean) => void;
     setShowPointsOfInterest: (enabled: boolean) => void;
@@ -41,7 +42,7 @@ const ActionsContext = createContext<MapContextActions | undefined>(undefined);
 export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
     const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
-    const { flyTo, zoomTo, moveTo, resetHeading, cameraRef } = useMapCameraControls();
+    const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, cameraRef } = useMapCameraControls();
     const { pointsOfInterest, create: createPointOfInterest, update: updatePointOfInterest, remove: deletePointOfInterest } = usePointsOfInterest();
 
     const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
@@ -85,6 +86,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     updatePointOfInterest,
                     deletePointOfInterest,
                     setShowPointsOfInterest,
+                    flyToLow
                 }}
             >
                 {children}
