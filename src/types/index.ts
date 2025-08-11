@@ -52,9 +52,11 @@ export type MarkerType = 'route'|'area'|'poi'
 export type PointOfInterestSheetSection = 'details'|'edit'|'save'|undefined
 
 export type PointOfInterest = {
+    created_at: string,
     latitude: number,
     longitude: number,
     point_type_id?: number,
+    point_type?: PointType,
     name: string,
     id?: number,
 }

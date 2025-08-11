@@ -5,5 +5,6 @@ export const sheets = {
     MAP_PACKS_SEARCH: 'map-packs-search-sheet',
     MAP_MARKER: 'map-marker-sheet',
     BUILDER_AREA_CREATE_EDIT: 'builder-area-create-edit-sheet',
-    BUILDER_MAP_PACKS: 'builder-map-packs-sheet'
+    BUILDER_MAP_PACKS: 'builder-map-packs-sheet',
+    PINS_EDIT_OPTIONS: 'pins-edit-options'
 }

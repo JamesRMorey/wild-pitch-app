@@ -17,7 +17,7 @@ export class PointOfInterestRepository {
     }
 
     createTable (): void {
-        const pointTypeRepo = new PointTypeRepository();
+        new PointTypeRepository();
         this.db.execute(`
             CREATE TABLE IF NOT EXISTS ${this.tableName} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,6 +26,7 @@ export class PointOfInterestRepository {
                 point_type_id INTEGER NOT NULL DEFAULT 1,
                 latitude DECIMAL(8,6) NOT NULL,
                 longitude DECIMAL(8,6) NOT NULL,
+                created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
                 FOREIGN KEY (point_type_id) REFERENCES point_types(id)
             )
@@ -34,7 +35,7 @@ export class PointOfInterestRepository {
 
     get ( limit: number=100 ): Array<PointOfInterest>  {
         const data = this.db.execute(`
-            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
+            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
             LIMIT ${limit}
@@ -52,14 +53,15 @@ export class PointOfInterestRepository {
                     name: row.pt_name
                 },
                 latitude: row.latitude,
-                longitude: row.longitude
+                longitude: row.longitude,
+                created_at: row.created_at
             })) as PointOfInterest[]
             : [];
     }
 
     find ( id: number ): PointOfInterest|void  {
         const record = this.db.execute(`
-            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
+            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
             WHERE t.id = ${id}
@@ -80,7 +82,8 @@ export class PointOfInterestRepository {
                 name: row.pt_name
             },
             latitude: row.latitude,
-            longitude: row.longitude
+            longitude: row.longitude,
+            created_at: row.created_at
         }
     }
 
@@ -108,7 +111,8 @@ export class PointOfInterestRepository {
                 name: row.pt_name
             },
             latitude: row.latitude,
-            longitude: row.longitude
+            longitude: row.longitude,
+            created_at: row.created_at
         }
     }
 
@@ -142,7 +146,8 @@ export class PointOfInterestRepository {
                 name: row.pt_name
             },
             latitude: row.latitude,
-            longitude: row.longitude
+            longitude: row.longitude,
+            created_at: row.created_at
         }
     }
 

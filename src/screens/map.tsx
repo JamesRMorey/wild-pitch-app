@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { DeviceEventEmitter, StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useState } from "react";
 import MapStyleControls from "../components/map/map-style-controls";
@@ -11,19 +11,20 @@ import ActiveItemControls from "../components/map/active-item-controls";
 import MapSearchControls from "../components/map/map-search-controls";
 import { useMapPackContext } from "../contexts/map-pack-context";
 import MapPackSheet from "../sheets/map-pack-sheet";
-import { SETTING, SHEET } from "../consts";
+import { EVENT, SETTING, SHEET } from "../consts";
 import PointOfInterestMarker from "../components/map/map-marker";
 import { PointOfInterest } from "../types";
 import MapPointOfInterestSheet from "../sheets/map-point-of-interest/map-point-of-interest-sheet";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../services/formatter";
+import { EventBus } from "../services/event-bus";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
 export default function MapScreen({}) {
 
 	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest, showPointsOfInterest } = useMapState();
-	const { clearActivePackGroup, flyTo, flyToLow, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest, setUserPosition } = useMapActions();
+	const { clearActivePackGroup, flyTo, flyToLow, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest } = useMapActions();
 	const { selectedPackGroup } = useMapPackContext();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 
@@ -42,6 +43,10 @@ export default function MapScreen({}) {
 		};
 
 		if (!poi) return;
+		inspectPoi(poi)
+	}
+
+	const inspectPoi = ( poi: PointOfInterest ) => {
 		flyToLow([poi.longitude, poi.latitude], SETTING.MAP_MARKER_ZOOM);
 
 		setActivePOI(poi);
@@ -61,6 +66,15 @@ export default function MapScreen({}) {
 		flyTo(activePackGroup.center)
 		SheetManager.show(SHEET.MAP_PACKS);
 	}
+
+
+	useEffect(() => {
+		const flyToMarkerListener = EventBus.listen.mapInspectPOI((poi: PointOfInterest) => inspectPoi(poi));
+
+		return () => {
+			flyToMarkerListener.remove();
+		}
+	}, [])
 
 
     return (
@@ -137,16 +151,16 @@ export default function MapScreen({}) {
 				</View>
 			</View>
 			<View style={styles.bottomRightControls}>
+				{/* <IconButton
+					icon={'compass-outline'}
+					onPress={() => resetHeading()}
+					shadow={true}
+				/> */}
 				<IconButton
 					icon={'navigate-outline'}
 					onPress={() => reCenter()}
 					disabled={followUserLocation}
 					active={followUserLocation}
-					shadow={true}
-				/>
-				<IconButton
-					icon={'compass'}
-					onPress={() => resetHeading()}
 					shadow={true}
 				/>
 			</View>

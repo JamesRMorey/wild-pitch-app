@@ -12,7 +12,7 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
 
     const OPTIONS = [
         {
-            icon: 'location',
+            icon: 'location-outline',
             title: 'See pin details',
             onPress: () => onSeeDetails()
         },
@@ -22,7 +22,7 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
             onPress: () => getDirections()
         },
         {
-            icon: 'share',
+            icon: 'share-outline',
             title: 'Share location',
             onPress: () => shareLocation()
         }
@@ -88,7 +88,7 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
                     >
                         <View style={styles.optionNameContainer}>
                             <Icon
-                                icon={'trash'}
+                                icon={'trash-outline'}
                                 colour={COLOUR.red[500]}
                                 size="small"
                             />
@@ -124,19 +124,16 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.white,
     },
     container: {
-        
+        padding: normalise(20),
+        paddingBottom: normalise(35),
     },
     topContainer: {
-        padding: normalise(20)
     },
     titleContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
     bottomContainer: {
-        padding: normalise(20),
-        backgroundColor: COLOUR.gray[100],
-        paddingBottom: normalise(35),
         paddingTop: normalise(5)
     },
     option: {

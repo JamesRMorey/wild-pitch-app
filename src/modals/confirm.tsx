@@ -19,11 +19,20 @@ export default function ConfirmModal ({ onClose, onConfirm, text, title }: Props
                 <Text style={styles.text}>{text}</Text>
             )}
             <View style={styles.buttons}>
-                <Button
-                    title="confirm"
-                    onPress={onConfirm}
-                    style='large'
-                />
+                <View style={{ flex: 1 }}>
+                     <Button
+                        title="Cancel"
+                        onPress={onClose}
+                        style='large'
+                    />
+                </View>
+                <View style={{ flex: 1 }}>
+                     <Button
+                        title="Confirm"
+                        onPress={onConfirm}
+                        style='large'
+                    />
+                </View>
             </View>
         </Modal>
     )
@@ -31,7 +40,9 @@ export default function ConfirmModal ({ onClose, onConfirm, text, title }: Props
 
 const styles = StyleSheet.create({
     buttons: {
-       marginTop: normalise(15)
+       marginTop: normalise(15),
+       flexDirection: 'row',
+       gap: normalise(10),
     },
     title: {
         ...TEXT.h2,

@@ -54,12 +54,12 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                             key={index}
                         >
                             <Icon 
-                                icon={icon}
-                                colour={isFocused ? COLOUR.black : COLOUR.gray[300]}
-                                size={normalise(24)}
+                                icon={isFocused ? icon : `${icon}`}
+                                colour={isFocused ? COLOUR.wp_orange[500] : COLOUR.wp_brown[500]}
+                                size={normalise(22)}
                             />
                             {name && (
-                                <Text style={styles.text}>{name}</Text>
+                                <Text style={[styles.text, isFocused && { color: COLOUR.wp_orange[500] }]}>{name}</Text>
                             )}
                         </TouchableOpacity>
                     );
@@ -76,7 +76,9 @@ const styles = StyleSheet.create({
         paddingTop: normalise(10),
         paddingBottom: normalise(30),
         borderBottomRightRadius: 0,
-        borderBottomLeftRadius: 0
+        borderBottomLeftRadius: 0,
+        borderTopWidth: normalise(1),
+        borderTopColor: COLOUR.gray[200]
     },
     bottomNavContainer: {
         backgroundColor: 'white',
@@ -88,6 +90,6 @@ const styles = StyleSheet.create({
     text: {
         ...TEXT.xs,
         fontWeight: 600,
-        color: COLOUR.gray[400]
+        color: COLOUR.wp_brown[400]
     }
 })

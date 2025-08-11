@@ -14,7 +14,7 @@ export default function MapSearchControls() {
     return (
         <View style={styles.container}>
             <IconButton
-                icon={'search'}
+                icon={'search-outline'}
                 onPress={() => openSearchSheet()}
                 shadow={true}
             />

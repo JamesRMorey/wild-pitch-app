@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
         opacity: 0.6
     },
     shadow: {
-        ...SHADOW.lg
+        ...SHADOW.md
     }
 })

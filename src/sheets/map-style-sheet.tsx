@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Image, StyleSheet, Text } from "react-native";
 import { MapSetting, MapStyle } from "../types";
 import { ASSET, SHEET } from "../consts";
 import Mapbox from "@rnmapbox/maps";
-import { COLOUR, TEXT } from "../styles";
+import { COLOUR, OPACITY, TEXT } from "../styles";
 import { useMapActions, useMapState } from "../contexts/map-context";
 import { normalise } from "../functions/helpers";
 import Switch from "../components/buttons/switch";
@@ -138,13 +138,17 @@ const styles = StyleSheet.create({
     },
     settingsContainer: {
         backgroundColor: COLOUR.gray[100],
-        padding: normalise(20),
+        paddingHorizontal: normalise(20),
+        paddingTop: normalise(5),
+        paddingBottom: normalise(35)
     },
     settingContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: normalise(20),
         alignItems: 'center',
-        paddingBottom: normalise(10)
+        paddingVertical: normalise(15),
+        borderBottomWidth: normalise(1),
+        borderBottomColor: COLOUR.black + OPACITY[20]
     }
 });

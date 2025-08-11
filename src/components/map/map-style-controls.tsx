@@ -14,7 +14,7 @@ export default function MapStyleControls() {
     return (
         <View style={styles.container}>
             <IconButton
-                icon={'layers'}
+                icon={'layers-outline'}
                 onPress={() => openStyleSheet()}
                 shadow={true}
             />

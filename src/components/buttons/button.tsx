@@ -21,7 +21,7 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: COLOUR.black,
+        backgroundColor: COLOUR.wp_orange[500],
         paddingHorizontal: normalise(20),
         paddingVertical: normalise(10),
         borderRadius: normalise(50)

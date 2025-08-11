@@ -29,12 +29,12 @@ export class PointTypeRepository {
     seed (): void {
         this.db.execute(`
             INSERT INTO point_types (name, icon, colour) VALUES
-            ('Point of Interest', 'location', '#FFD700'),
-            ('Meeting Point', 'people', '#1E90FF'),
-            ('Camp Spot', 'bonfire-outline', '#228B22'),
-            ('Parking', 'car', '#808080'),
-            ('Food & Drink', 'restaurant', '#FF4500'),
-            ('Other', 'heart', '#A9A9A9')
+            ('Point of Interest', 'location-outline', '#eab308'),
+            ('Meeting Point', 'people-outline', '#eab308'),
+            ('Camp Spot', 'bonfire-outline', '#eab308'),
+            ('Parking', 'car-outline', '#eab308'),
+            ('Food & Drink', 'restaurant-outline', '#eab308'),
+            ('Other', 'heart-outline', '#eab308')
 
             ON CONFLICT(name) DO UPDATE SET
                 icon = excluded.icon,

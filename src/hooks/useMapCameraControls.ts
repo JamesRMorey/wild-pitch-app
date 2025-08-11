@@ -21,7 +21,7 @@ export function useMapCameraControls() {
     };
 
     const flyToLow = (coordinate: Position, zoom: number=SETTING.MAP_CLOSE_ZOOM, duration: number = 1000): void => {
-        flyTo([coordinate[0], coordinate[1]-0.00015*zoom], zoom, duration);
+        flyTo([coordinate[0], coordinate[1]-0.00022*zoom], zoom, duration);
     };
 
     const zoomTo = (zoom: number): void => {

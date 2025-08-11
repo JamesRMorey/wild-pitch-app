@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import Alert from "../../components/misc/alert"
-import { TEXT } from "../../styles"
+import { COLOUR, TEXT } from "../../styles"
 import { normalise } from "../../functions/helpers"
 import Button from "../../components/buttons/button"
 import { NavigationProp, useFocusEffect } from "@react-navigation/native"
@@ -76,6 +76,7 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: COLOUR.white
     },
     scrollContainer: {
         paddingTop: 50,
