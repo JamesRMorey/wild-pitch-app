@@ -1,6 +1,6 @@
 import Mapbox from "@rnmapbox/maps";
-import type { MapPack } from "../../types";
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import type { MapPack, MapPackGroup } from "../../types";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
 import { ASSET } from "../../consts";
 import { normalise } from "../../functions/helpers";
@@ -9,8 +9,9 @@ import { COLOUR, OPACITY } from "../../styles";
 import { Format } from "../../services/formatter";
 import { EventBus } from "../../services/event-bus";
 import { MapPackService } from "../../services/map-pack-service";
+import Icon from "../misc/icon";
 
-export default function MapPack({ pack, size } : { pack: MapPack, size: number }) {
+export default function MapPack({ pack, group, size } : { pack: MapPack, group: MapPackGroup, size: number }) {
 
     const [progress, setProgress] = useState<number>(0);
     const [downloaded, setDownloaded] = useState<boolean>(false);
@@ -29,18 +30,24 @@ export default function MapPack({ pack, size } : { pack: MapPack, size: number }
     const onDownloadError = (offlineRegion: any, err: any) => {
         setErrored(true);
         setDownloading(false);
+        setProgress(0)
     }
 
     const downloadPack = () => {
         setErrored(false);
         setDownloading(true);
         setProgress(0);
-        MapPackService.download(pack, onDownloadProgress, onDownloadError);
+        MapPackService.download(pack, group, onDownloadProgress, onDownloadError);
     }
 
     const checkOfflinePacks = async () => {
         const offlinePacks = await Mapbox.offlineManager.getPacks();
         setDownloaded(offlinePacks.some((p) => p?.name == pack.name));
+    }
+
+    const deletePack =  async() => {
+        await Mapbox.offlineManager.deletePack(pack.name);
+        checkOfflinePacks();
     }
 
 
@@ -50,50 +57,63 @@ export default function MapPack({ pack, size } : { pack: MapPack, size: number }
     
 
     return (
-        <View style={styles.container}>
-            <ImageBackground
-                style={{ flex: 1 }}
-                source={
-                    pack.styleURL == Mapbox.StyleURL.Outdoors ? ASSET.ICON_OUTDOORS_MAP :
-                    pack.styleURL == Mapbox.StyleURL.SatelliteStreet ? ASSET.ICON_SATELLITE_MAP :
-                    pack.styleURL == Mapbox.StyleURL.Street ? ASSET.ICON_STREET_MAP : 
-                    null
-                }
-            >
-                <View style={[
-                    styles.box,
-                    downloaded && styles.boxDownloaded,
-                    errored && styles.boxErrored
-                ]}>
-                    {downloaded ?
-                    <IconButton
-                        icon={'check'}
-                        onPress={() => {}}
-                        active={downloaded}
-                        disabled={true}
+        <View style={{ flex: 1, aspectRatio: 1.5 }}>
+            {downloaded && (
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={deletePack}
+                >
+                    <Icon
+                        icon="close-outline"
+                        colour={COLOUR.white}
+                        size={normalise(18)}
                     />
-                    :(progress > 0 || downloading) && progress < 100 ?
-                    <View style={styles.progress}>
-                        <Text style={styles.progressText}>{ Format.percent(progress) }</Text>
-                    </View>
-                    :
-                    <IconButton
-                        icon={errored ? 'exclamation' : 'cloud-download'}
-                        onPress={() => downloadPack()}
-                    />
+                </TouchableOpacity>
+            )}
+            <View style={styles.container}>
+                <ImageBackground
+                    style={{ flex: 1 }}
+                    source={
+                        pack.styleURL == Mapbox.StyleURL.Outdoors ? ASSET.ICON_OUTDOORS_MAP :
+                        pack.styleURL == Mapbox.StyleURL.SatelliteStreet ? ASSET.ICON_SATELLITE_MAP :
+                        null
                     }
-                </View>
-            </ImageBackground>
+                >
+                    <View style={[
+                        styles.box,
+                        downloaded && styles.boxDownloaded,
+                        errored && styles.boxErrored
+                    ]}>
+                        {downloaded ?
+                        <IconButton
+                            icon={'checkmark-outline'}
+                            onPress={() => {}}
+                            active={downloaded}
+                            disabled={true}
+                        />
+                        :(progress > 0 || downloading) && progress < 100 && !errored ?
+                        <View style={styles.progress}>
+                            <Text style={styles.progressText}>{ Format.percent(progress) }</Text>
+                        </View>
+                        :
+                        <IconButton
+                            icon={errored ? 'alert-outline' : 'cloud-download-outline'}
+                            onPress={() => downloadPack()}
+                        />
+                        }
+                    </View>
+                </ImageBackground>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        aspectRatio: 1,
+        aspectRatio: 1.5,
         flex: 1,
-        overflow: 'hidden',
-        borderRadius: normalise(10)
+        borderRadius: normalise(10),
+        overflow: 'hidden'
     },
     box: {
         flex: 1,
@@ -107,8 +127,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.red[500] + OPACITY[60]
     },
     progress: {
-        height: 50,
-        width: 50,
+        height: normalise(50),
+        width: normalise(50),
         backgroundColor: COLOUR.white,
         borderRadius: normalise(50),
         justifyContent: 'center',
@@ -116,5 +136,14 @@ const styles = StyleSheet.create({
     },
     progressText: {
         textAlign: 'center'
+    },
+    deleteButton: {
+        backgroundColor: COLOUR.red[500],
+        position: 'absolute',
+        right: normalise(-5),
+        top: normalise(-5),
+        borderRadius: normalise(30),
+        zIndex: 1,
+        padding: normalise(3)
     }
 })

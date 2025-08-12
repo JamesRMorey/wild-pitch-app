@@ -1,22 +1,29 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Alert from "../../components/misc/alert"
 import { COLOUR, TEXT } from "../../styles"
 import { normalise } from "../../functions/helpers"
 import Button from "../../components/buttons/button"
 import { NavigationProp, useFocusEffect } from "@react-navigation/native"
-import { PACK_GROUPS } from "../../consts"
+import { PACK_GROUPS, SHEET } from "../../consts"
 import { useCallback, useState } from "react"
-import { MapPack } from "../../types"
+import { MapPack, MapPackGroup } from "../../types"
 import Mapbox from "@rnmapbox/maps"
 import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack"
 import IconButton from "../../components/buttons/icon-button"
+import { useMapPackGroups } from "../../hooks/useMapPackGroups"
+import MapPackSheet from "../../sheets/map-pack-sheet"
+import { SheetManager } from "react-native-actions-sheet"
+import MapPackGroupCard from "../../components/cards/map-pack-group-card"
 
 export default function PacksScreen({ navigation } : { navigation: any }) {
 
     const [offlinePacks, setOfflinePacks] = useState<Array<OfflinePack>>([]);
+    const { mapPackGroups, get: getPackGroups } = useMapPackGroups();
+    const [activeMapPackGroup, setActiveMapPackGroup] = useState<MapPackGroup>();
     
     const navigateToBuilder = () => {
-        navigation.navigate('area-builder')
+        getPackGroups();
+        // navigation.navigate('area-builder')
     }
 
     const updateOfflinePacks =  async() => {
@@ -27,6 +34,11 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
     const deletePack =  async( pack: OfflinePack ) => {
         await Mapbox.offlineManager.deletePack(pack.name);
         updateOfflinePacks();
+    }
+
+    const onPackGroupPress = (packGroup: MapPackGroup) => {
+        setActiveMapPackGroup(packGroup);
+        SheetManager.show(SHEET.MAP_PACKS_SAVED_PACKS)
     }
 
 
@@ -42,33 +54,35 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
             >
-                <View style={styles.alertContainer}>
-                    <Text style={TEXT.h2}>No custom areas yet?</Text>
-                    <Text style={TEXT.p}>Press the button below to create your own area</Text>
-                    <View style={styles.buttons}>
-                        <Button
-                            title="Create new area"
-                            onPress={navigateToBuilder}
-                        />
+                {mapPackGroups.length == 0 && (
+                    <View style={styles.alertContainer}>
+                        <Text style={TEXT.h2}>No areas yet?</Text>
+                        <Text style={TEXT.p}>Press the button below to create your own area</Text>
+                        <View style={styles.buttons}>
+                            <Button
+                                title="Create new area"
+                                onPress={navigateToBuilder}
+                            />
+                        </View>
                     </View>
-                </View>
+                )}
+                <Text style={TEXT.h4}>{mapPackGroups.length} Areas Downloaded</Text>
                 <View style={styles.packsContainer}>
-                    {offlinePacks.map((offlinePack, i) => {
+                    {mapPackGroups.map((packGroup, i) => {
                         return (
-                            <View 
-                                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
+                            <MapPackGroupCard
                                 key={i}
-                            >
-                                <Text>{offlinePack.name}</Text>
-                                <IconButton
-                                    icon={'trash'}
-                                    onPress={() => deletePack(offlinePack)}
-                                />
-                            </View>
+                                mapPackGroup={packGroup}
+                                onPress={() => onPackGroupPress(packGroup)}
+                            />
                         )
                     })}
                 </View>
             </ScrollView>
+            <MapPackSheet
+                id={SHEET.MAP_PACKS_SAVED_PACKS}
+                packGroup={activeMapPackGroup}
+            />
         </View>
     )
 }
@@ -79,9 +93,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.white
     },
     scrollContainer: {
-        paddingTop: 50,
         padding: normalise(20),
-        gap: normalise(30)
     },
     alertContainer: {
         justifyContent: 'center',
@@ -92,6 +104,5 @@ const styles = StyleSheet.create({
         marginTop: normalise(15)
     },
     packsContainer: {
-        gap: normalise(20),
     }
 })

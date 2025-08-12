@@ -15,8 +15,6 @@ import { SETTING, SHEET } from "../../consts";
 import { MapMarker as MapMarkerType, MapPack, MapPackGroup, PositionArray } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import MapPointAnnotation from "../../components/map/map-point-annotation";
-import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { MapService } from "../../services/map-service";
 import BuilderAreaCreateEditSheet from "../../sheets/builder/builder-area-create-edit-sheet";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
@@ -29,7 +27,6 @@ const MARKER: MapMarkerType = {
 export default function AreaBuilderScreen({ navigation }) {
 
 	const { styleURL, center, cameraRef, enable3DMode, followUserLocation } = useMapState();
-	const { clearActivePackGroup, flyTo, setFollowUserLocation } = useMapActions();
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([]);
 	const [activeMarker, setActiveMarker] = useState<MapMarkerType>();
 	const [areaBounds, setAreaBounds] = useState<PositionArray>();

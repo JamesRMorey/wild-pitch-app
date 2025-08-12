@@ -29,6 +29,8 @@ const PEAK_DISTRICT_WINNATS_PASS_BOUNDS: [Position, Position] = [
 
 export const PACK_GROUPS : Array<MapPackGroup> = [
     {
+        id: 1,
+        key: 'PEAK_DISTRICT_BLEAKLOW',
         name: 'Bleaklow Peak District',
         description: 'Explore the rugged moorland and dramatic landscapes of Bleaklow in the Peak District. This remote plateau offers challenging terrain and stunning views across the Dark Peak.',
         bounds: PEAK_DISTRICT_BLEAKLOW_BOUNDS,
@@ -45,15 +47,12 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
                 name: 'PEAK_DISTRICT_BLEAKLOW_SATELLITE',
                 styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 320,
-            },
-            {
-                name: 'PEAK_DISTRICT_BLEAKLOW_STREET',
-                styleURL: Mapbox.StyleURL.Street,
-                size: 320,
             }
         ]
     },
     {
+        id: 2,
+        key: 'PEAK_DISTRICT_KINDER_SCOUT',
         name: 'Kinder Scout Peak District',
         description: 'Discover the highest peak in the Peak District at Kinder Scout. Famous for the Mass Trespass of 1932, this plateau offers dramatic gritstone edges and sweeping moorland views.',
         bounds: PEAK_DISTRICT_KINDER_SCOUT_BOUNDS,
@@ -70,87 +69,7 @@ export const PACK_GROUPS : Array<MapPackGroup> = [
                 name: 'PEAK_DISTRICT_KINDER_SCOUT_SATELLITE',
                 styleURL: Mapbox.StyleURL.SatelliteStreet,
                 size: 340,
-            },
-            {
-                name: 'PEAK_DISTRICT_KINDER_SCOUT_STREET',
-                styleURL: Mapbox.StyleURL.Street,
-                size: 280,
             }
         ]
-    },
-    {
-        name: 'Derwent Valley Peak District',
-        description: 'Explore the stunning Derwent Valley with its historic reservoirs and surrounding moorland. Home to the famous Derwent Dam, used for Dambusters training during WWII.',
-        bounds: PEAK_DISTRICT_DERWENT_VALLEY_BOUNDS,
-        minZoom: 9,
-        maxZoom: 18,
-        center: [-1.663312, 53.435520],
-        packs: [
-            {
-                name: 'PEAK_DISTRICT_DERWENT_VALLEY_OUTDOORS',
-                styleURL: Mapbox.StyleURL.Outdoors,
-                size: 150,
-            },
-            {
-                name: 'PEAK_DISTRICT_DERWENT_VALLEY_SATELLITE',
-                styleURL: Mapbox.StyleURL.SatelliteStreet,
-                size: 390,
-            },
-            {
-                name: 'PEAK_DISTRICT_DERWENT_VALLEY_STREET',
-                styleURL: Mapbox.StyleURL.Street,
-                size: 200,
-            }
-        ]
-    },
-    {
-        name: 'Edale Valley Peak District',
-        description: 'Experience the beauty of Edale Valley, the southern gateway to the Dark Peak and starting point of the Pennine Way. Rolling hills and traditional Peak District villages await.',
-        bounds: PEAK_DISTRICT_EDALE_BOUNDS,
-        minZoom: 9,
-        maxZoom: 18,
-        center: [-1.762777, 53.388910],
-        packs: [
-            {
-                name: 'PEAK_DISTRICT_EDALE_OUTDOORS',
-                styleURL: Mapbox.StyleURL.Outdoors,
-                size: 110,
-            },
-            {
-                name: 'PEAK_DISTRICT_EDALE_SATELLITE',
-                styleURL: Mapbox.StyleURL.SatelliteStreet,
-                size: 300,
-            },
-            {
-                name: 'PEAK_DISTRICT_EDALE_STREET',
-                styleURL: Mapbox.StyleURL.Street,
-                size: 250,
-            }
-        ]
-    },
-    {
-        name: 'Winnats Pass Peak District',
-        description: 'Navigate the dramatic limestone gorge of Winnats Pass near Castleton. This spectacular valley features towering limestone cliffs and leads to the famous Blue John Cavern.',
-        bounds: PEAK_DISTRICT_WINNATS_PASS_BOUNDS,
-        minZoom: 9,
-        maxZoom: 18,
-        center: [-1.772128, 53.350520],
-        packs: [
-            {
-                name: 'PEAK_DISTRICT_WINNATS_PASS_OUTDOORS',
-                styleURL: Mapbox.StyleURL.Outdoors,
-                size: 90,
-            },
-            {
-                name: 'PEAK_DISTRICT_WINNATS_PASS_SATELLITE',
-                styleURL: Mapbox.StyleURL.SatelliteStreet,
-                size: 280,
-            },
-            {
-                name: 'PEAK_DISTRICT_WINNATS_PASS_STREET',
-                styleURL: Mapbox.StyleURL.Street,
-                size: 180,
-            }
-        ]
-    },
+    }
 ]

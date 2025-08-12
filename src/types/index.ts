@@ -24,7 +24,9 @@ export type MapStyle = {
 }
 
 export type MapPackGroup = {
+    id: number,
     name: string,
+    key: string,
     description: string,
     bounds: PositionArray,
     minZoom: number,

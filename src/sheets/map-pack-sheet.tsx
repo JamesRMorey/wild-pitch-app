@@ -12,8 +12,6 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?: string, packGroup: MapPackGroup }) {
 
-    if (!packGroup) return;
-
     const { flyTo, setActivePackGroup } = useMapActions();
     const navigation = useNavigation();
 
@@ -35,34 +33,37 @@ export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?:
             id={id}
             containerStyle={styles.sheet}
         >
-            <View style={styles.container}>
-                <View style={styles.titleContainer}>
-                    <Text style={TEXT.h2}>{ packGroup.name }</Text>
-                    <IconButton
-                        icon='map'
-                        iconOnly={true}
-                        onPress={() => showRegion()}
-                    />
+            {packGroup && (
+                <View style={styles.container}>
+                    <View style={styles.titleContainer}>
+                        <Text style={TEXT.h2}>{ packGroup.name }</Text>
+                        <IconButton
+                            icon='map'
+                            iconOnly={true}
+                            onPress={() => showRegion()}
+                        />
+                    </View>
+                    <Text style={TEXT.p}>{ packGroup.description }</Text>
+                    <View style={styles.packContainer}>
+                        {packGroup.packs.map((pack, i) => {
+                            return (
+                                <MapPack
+                                    key={i}
+                                    pack={{
+                                        bounds: packGroup.bounds,
+                                        minZoom: packGroup.minZoom,
+                                        maxZoom: packGroup.maxZoom,
+                                        name: pack.name,
+                                        styleURL: pack.styleURL
+                                    }}
+                                    group={packGroup}
+                                    size={pack.size}
+                                />
+                            )
+                        })}
+                    </View>
                 </View>
-                <Text style={TEXT.p}>{ packGroup.description }</Text>
-                <View style={styles.packContainer}>
-                    {packGroup.packs.map((pack, i) => {
-                        return (
-                            <MapPack
-                                key={i}
-                                pack={{
-                                    bounds: packGroup.bounds,
-                                    minZoom: packGroup.minZoom,
-                                    maxZoom: packGroup.maxZoom,
-                                    name: pack.name,
-                                    styleURL: pack.styleURL
-                                }}
-                                size={pack.size}
-                            />
-                        )
-                    })}
-                </View>
-            </View>
+            )}
         </ActionSheet>
     )
 }
