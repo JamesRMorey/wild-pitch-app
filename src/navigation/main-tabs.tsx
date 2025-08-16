@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MapScreen from '../screens/map/map';
 import CustomTabNavigator from '../components/navigation/custom-tab-navigator';
 import SavedStack from './saved-stack';
 import ProfileScreen from '../screens/profile/profile';

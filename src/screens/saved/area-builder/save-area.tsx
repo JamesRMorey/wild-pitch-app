@@ -1,14 +1,14 @@
 import { View, StyleSheet, Text, TextInput } from "react-native";
-import { SETTING } from "../../consts";
-import { COLOUR, TEXT } from "../../styles";
-import { normalise } from "../../functions/helpers";
-import { MapPackGroup } from "../../types";
+import { SETTING } from "../../../consts";
+import { COLOUR, TEXT } from "../../../styles";
+import { normalise } from "../../../functions/helpers";
+import { MapPackGroup } from "../../../types";
 import { useState } from "react";
-import { MapPackService } from "../../services/map-pack-service";
-import { MapService } from "../../services/map-service";
+import { MapPackService } from "../../../services/map-pack-service";
+import { MapService } from "../../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
-import Button from "../../components/buttons/button";
-import { useMapPackGroups } from "../../hooks/useMapPackGroups";
+import Button from "../../../components/buttons/button";
+import { useMapPackGroups } from "../../../hooks/useMapPackGroups";
 
 type PropsType = { navigation: any, route: any }
 export default function AreaBuilderSaveAreaScreen ({ navigation, route } : PropsType) {

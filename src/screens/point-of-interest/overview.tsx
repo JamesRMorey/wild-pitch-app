@@ -9,7 +9,7 @@ import ConfirmModal from "../../modals/confirm";
 import { useState } from "react";
 
 type PropsType = { navigation: any, route: any }
-export default function MapPointOfInterestOverviewScreen({ navigation, route } : PropsType) {
+export default function PointOfInterestOverviewScreen({ navigation, route } : PropsType) {
 
     const { point: paramsPoint } = route.params;
     const [point, setPoint] = useState<PointOfInterest>(paramsPoint)

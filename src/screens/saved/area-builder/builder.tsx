@@ -1,34 +1,22 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useState } from "react";
-import MapStyleControls from "../../components/map/map-style-controls";
-import UserPosition from "../../components/map/user-position";
-import IconButton from "../../components/buttons/icon-button";
-import { delay, normalise } from "../../functions/helpers";
-import { useMapActions, useMapState } from "../../contexts/map-context";
-import MapArea from "../../components/map/map-area";
-import ActiveItemControls from "../../components/map/active-item-controls";
-import MapSearchControls from "../../components/map/map-search-controls";
-import { useMapPackContext } from "../../contexts/map-pack-context";
-import MapPackSheet from "../../sheets/map-pack-sheet";
-import { SETTING, SHEET } from "../../consts";
-import { MapMarker as MapMarkerType, MapPack, MapPackGroup, PositionArray } from "../../types";
-import { SheetManager } from "react-native-actions-sheet";
-import MapPointAnnotation from "../../components/map/map-point-annotation";
+import UserPosition from "../../../components/map/user-position";
+import IconButton from "../../../components/buttons/icon-button";
+import { normalise } from "../../../functions/helpers";
+import { useMapState } from "../../../contexts/map-context";
+import MapArea from "../../../components/map/map-area";
+import { SETTING } from "../../../consts";
+import { MapMarker as MapMarkerType, PositionArray } from "../../../types";
+import MapPointAnnotation from "../../../components/map/map-point-annotation";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
-
-const MARKER: MapMarkerType = {
-	coordinate: [-1.865014, 53.450585],
-	type: 'area'
-}
 
 type PropsType = { navigation: any }
 export default function AreaBuilderScreen({ navigation } : PropsType) {
 
 	const { center, cameraRef, followUserLocation } = useMapState();
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([]);
-	const [activeMarker, setActiveMarker] = useState<MapMarkerType>();
 	const [areaBounds, setAreaBounds] = useState<PositionArray>();
 
 	const back = () => {
@@ -42,7 +30,6 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 			type: 'area'
 		}
 		setMarkers([...markers, marker]);
-		setActiveMarker(marker);
 	}
 
 	const updateAreaBounds = ( bounds: PositionArray ) => {
@@ -75,6 +62,9 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 	useEffect(() => {
 		if (markers.length == 2) {
 			updateAreaBounds([markers[0].coordinate, markers[1].coordinate])
+		}
+		else {
+			updateAreaBounds(undefined);
 		}
 	}, [markers]);
 
