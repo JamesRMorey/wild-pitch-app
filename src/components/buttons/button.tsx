@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: COLOUR.wp_orange[500],
         paddingHorizontal: normalise(20),
-        paddingVertical: normalise(10),
+        paddingVertical: normalise(15),
         borderRadius: normalise(50)
     },
     text: {

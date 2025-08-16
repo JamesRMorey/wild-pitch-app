@@ -1,7 +1,7 @@
 import AreaBuilderScreen from '../screens/area-builder/builder';
-import PacksScreen from '../screens/saved/packs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SavedTabsView from '../screens/saved/tab-view';
+import AreaBuilderSaveAreaScreen from '../screens/area-builder/save-area';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +13,7 @@ export default function SavedStack({}) {
         <Stack.Navigator>
             <Stack.Screen name="saved" component={SavedTabsView} options={{...SCREEN_OPTIONS }}/>
             <Stack.Screen name="area-builder" component={AreaBuilderScreen} options={{...SCREEN_OPTIONS }}/>
+            <Stack.Screen name="area-builder-save-area" component={AreaBuilderSaveAreaScreen} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
         </Stack.Navigator>
     )
 }

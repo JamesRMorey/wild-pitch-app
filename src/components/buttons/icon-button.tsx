@@ -2,8 +2,8 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { COLOUR, OPACITY, SHADOW } from "../../styles";
 import Icon from "../misc/icon";
 
-
-export default function IconButton({ icon, onPress, disabled=false, active=false, iconOnly=false, small=false, shadow=false } : { icon: any, onPress: Function, disabled?: boolean, active?: boolean, iconOnly?: boolean, small?: boolean, shadow?: boolean }) {
+type PropsType = { icon: any, onPress: Function, disabled?: boolean, active?: boolean, iconOnly?: boolean, small?: boolean, shadow?: boolean, blocked?: boolean }
+export default function IconButton({ icon, onPress, disabled=false, active=false, iconOnly=false, small=false, shadow=false, blocked=false } : PropsType) {
 
     return (
         <TouchableOpacity
@@ -17,7 +17,7 @@ export default function IconButton({ icon, onPress, disabled=false, active=false
                 iconOnly ? { borderColor: COLOUR.transparent } : { borderColor : COLOUR.black + OPACITY[50] }
             ]}
             activeOpacity={0.7}
-            disabled={disabled}
+            disabled={disabled || blocked}
         >
             <Icon
                 icon={icon}

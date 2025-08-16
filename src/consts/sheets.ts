@@ -7,5 +7,8 @@ export const sheets = {
     BUILDER_AREA_CREATE_EDIT: 'builder-area-create-edit-sheet',
     BUILDER_MAP_PACKS: 'builder-map-packs-sheet',
     PINS_EDIT_OPTIONS: 'pins-edit-options',
-    MAP_PACKS_SAVED_PACKS: 'map-pack-saved-packs'
+    MAP_PACKS_SAVED_PACKS: 'map-pack-saved-packs',
+    SAVED_OPTIONS: 'saved-options',
+    MAP_PACK_GROUP_OPTIONS: 'map-pack-group-options',
+    MAP_POI_SHEET: 'map-point-of-interest'
 }

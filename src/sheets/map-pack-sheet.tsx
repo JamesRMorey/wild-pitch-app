@@ -14,6 +14,7 @@ export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?:
 
     const { flyTo, setActivePackGroup } = useMapActions();
     const navigation = useNavigation();
+    
 
     const close = () => {
         SheetManager.hide(id);
@@ -58,6 +59,7 @@ export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?:
                                     }}
                                     group={packGroup}
                                     size={pack.size}
+                                    onDelete={() => openModal('delete')}
                                 />
                             )
                         })}

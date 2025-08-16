@@ -2,6 +2,7 @@ import Mapbox from '@rnmapbox/maps';
 import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
 import { useEffect, useState } from 'react';
 import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
+import { EventBus } from '../services/event-bus';
 
 export function usePointsOfInterest() {
 
@@ -17,8 +18,8 @@ export function usePointsOfInterest() {
         const newPoint = repo.create(data);
 
         if (!newPoint) return;
+        EventBus.emit.poiRefresh();
 
-        get();
         return newPoint;
     }
 
@@ -27,8 +28,8 @@ export function usePointsOfInterest() {
         const newPoint = repo.update(data.id, data);
 
         if (!newPoint) return;
+        EventBus.emit.poiRefresh();
 
-        get();
         return newPoint;
     }
 
@@ -36,12 +37,17 @@ export function usePointsOfInterest() {
         if (!id) return;
         
         repo.delete(id);
-        get();
+        EventBus.emit.poiRefresh();
     }
 
 
     useEffect(() => {
+        const getListener = EventBus.listen.poiRefresh(() => get());
         get();
+
+        return () => {
+            getListener.remove();
+        }
     }, [])
 
     return { 

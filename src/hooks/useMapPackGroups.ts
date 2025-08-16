@@ -1,6 +1,8 @@
 import { MapPackGroup } from '../types';
 import { useEffect, useState } from 'react';
 import { MapPackGroupRepository } from '../database/repositories/map-pack-group-repository';
+import { MapPackService } from '../services/map-pack-service';
+import Mapbox from '@rnmapbox/maps';
 
 export function useMapPackGroups() {
 
@@ -22,6 +24,12 @@ export function useMapPackGroups() {
         return newGroup;
     }
 
+    const find = ( id: number ): MapPackGroup|void => {
+        const mapPackGroup = repo.find(id);
+
+        return mapPackGroup;
+    }
+
     // const update = ( data: PointOfInterest ): PointOfInterest|void => {
     //     if (!data.id) return;
     //     const newPoint = repo.update(data.id, data);
@@ -32,12 +40,17 @@ export function useMapPackGroups() {
     //     return newPoint;
     // }
 
-    // const remove = ( id: number ) => {
-    //     if (!id) return;
+    const remove = async ( id: number ) => {
+        if (!id) return;
         
-    //     repo.delete(id);
-    //     get();
-    // }
+        const packGroup = find(id);
+        if (!packGroup) return;
+
+        await Promise.all(packGroup.packs.map(p => Mapbox.offlineManager.deletePack(p.name)));
+
+        repo.delete(id);
+        get();
+    }
 
 
     useEffect(() => {
@@ -47,5 +60,8 @@ export function useMapPackGroups() {
     return { 
         mapPackGroups,
         get,
+        find,
+        create,
+        remove
     };
 }

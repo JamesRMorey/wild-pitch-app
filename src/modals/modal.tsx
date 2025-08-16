@@ -17,12 +17,12 @@ export default function Modal({ children, onClose=()=>{}, dismiss=true } : Props
             <TouchableOpacity 
                 style={{ height: '100%' }} 
                 onPress={onClose} 
-                activeOpacity={dismiss ? 0.5 : 1}
+                activeOpacity={dismiss ? 0.8 : 1}
             >
                 <TouchableOpacity 
                     style={{ flex: 1, justifyContent: 'center', paddingBottom: SETTING.TOP_PADDING }} 
                     onPress={onClose} 
-                    activeOpacity={dismiss ? 0.5 : 1}
+                    activeOpacity={dismiss ? 0.8 : 1}
                 >
                     <View style={styles.modal}>
                         {children}
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         borderColor: COLOUR.white,
         backgroundColor: COLOUR.white,
         maxHeight: '100%',
-        borderRadius: normalise(15),
+        borderRadius: normalise(10),
         zIndex: 100,
         gap: normalise(15),
         ...SHADOW.lg

@@ -54,8 +54,8 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                             key={index}
                         >
                             <Icon 
-                                icon={isFocused ? icon : `${icon}-outline`}
-                                colour={isFocused ? COLOUR.wp_orange[500] : COLOUR.wp_brown[500]}
+                                icon={isFocused ? icon : `${icon}`}
+                                colour={isFocused ? COLOUR.wp_orange[500] : COLOUR.wp_brown[700]}
                                 size={normalise(22)}
                             />
                             {name && (
@@ -90,6 +90,6 @@ const styles = StyleSheet.create({
     text: {
         ...TEXT.xs,
         fontWeight: 600,
-        color: COLOUR.wp_brown[400]
+        color: COLOUR.wp_brown[700]
     }
 })

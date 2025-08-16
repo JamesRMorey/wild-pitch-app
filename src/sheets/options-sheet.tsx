@@ -1,12 +1,10 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { MapPackGroup } from "../types";
-import { SHEET } from "../consts";
 import { COLOUR, OPACITY, TEXT } from "../styles";
 import { normalise } from "../functions/helpers";
 import Icon from "../components/misc/icon";
 
-type PropsType = { id: string, options: Array<{ label: string, icon: string, onPress: ()=>void }> }
+type PropsType = { id: string, options: Array<{ label: string, icon: string, colour?: string, onPress: ()=>void }> }
 export default function OptionsSheet ({ id, options } : PropsType ) {
 
     
@@ -21,13 +19,15 @@ export default function OptionsSheet ({ id, options } : PropsType ) {
                         style={styles.option} 
                         activeOpacity={0.5}
                         onPress={option.onPress}
+                        key={i}
                     >
                         <View style={styles.optionNameContainer}>
                             <Icon
                                 icon={option.icon}
-                                colour={COLOUR.black}
+                                colour={option.colour ?? COLOUR.black}
+                                size={normalise(20)}
                             />
-                            <Text style={TEXT.md}>{option.label}</Text>
+                            <Text style={[TEXT.md, { color: option.colour ?? COLOUR.black }]}>{option.label}</Text>
                         </View>
                         <View>
                             <Icon
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     sheet: {
         backgroundColor: COLOUR.white,
         padding: normalise(20),
+        paddingTop: normalise(10),
         paddingBottom: normalise(35)
     },
     container: {

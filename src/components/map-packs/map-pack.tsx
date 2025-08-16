@@ -10,13 +10,18 @@ import { Format } from "../../services/formatter";
 import { EventBus } from "../../services/event-bus";
 import { MapPackService } from "../../services/map-pack-service";
 import Icon from "../misc/icon";
+import useModals from "../../hooks/useModals";
+import ConfirmModal from "../../modals/confirm";
 
-export default function MapPack({ pack, group, size } : { pack: MapPack, group: MapPackGroup, size: number }) {
+
+type PropsType = { pack: MapPack, group: MapPackGroup, size: number, onDelete?: Function }
+export default function MapPack({ pack, group, size, onDelete } : PropsType) {
 
     const [progress, setProgress] = useState<number>(0);
     const [downloaded, setDownloaded] = useState<boolean>(false);
     const [errored, setErrored] = useState<boolean>(false);
     const [downloading, setDownloading] = useState<boolean>(false);
+    const { modals, close: closeModals, open: openModal } = useModals({ delete: false })
 
     const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
         setProgress(status.percentage);
@@ -25,6 +30,13 @@ export default function MapPack({ pack, group, size } : { pack: MapPack, group: 
             EventBus.emit.mapPackDownload(pack.name);
             setDownloading(true)
         }
+    }
+
+
+    const deletePack = async () => {
+        await Mapbox.offlineManager.deletePack(pack.name);
+        closeModals();
+        checkOfflinePacks();
     }
 
     const onDownloadError = (offlineRegion: any, err: any) => {
@@ -45,11 +57,6 @@ export default function MapPack({ pack, group, size } : { pack: MapPack, group: 
         setDownloaded(offlinePacks.some((p) => p?.name == pack.name));
     }
 
-    const deletePack =  async() => {
-        await Mapbox.offlineManager.deletePack(pack.name);
-        checkOfflinePacks();
-    }
-
 
     useEffect(() => {
         checkOfflinePacks();
@@ -58,10 +65,10 @@ export default function MapPack({ pack, group, size } : { pack: MapPack, group: 
 
     return (
         <View style={{ flex: 1, aspectRatio: 1.5 }}>
-            {downloaded && (
+            {downloaded && onDelete && (
                 <TouchableOpacity
                     style={styles.deleteButton}
-                    onPress={deletePack}
+                    onPress={() => openModal('delete')}
                 >
                     <Icon
                         icon="close-outline"
@@ -88,8 +95,8 @@ export default function MapPack({ pack, group, size } : { pack: MapPack, group: 
                         <IconButton
                             icon={'checkmark-outline'}
                             onPress={() => {}}
-                            active={downloaded}
-                            disabled={true}
+                            active={true}
+                            blocked={true}
                         />
                         :(progress > 0 || downloading) && progress < 100 && !errored ?
                         <View style={styles.progress}>
@@ -104,6 +111,14 @@ export default function MapPack({ pack, group, size } : { pack: MapPack, group: 
                     </View>
                 </ImageBackground>
             </View>
+            {modals.delete && (
+                <ConfirmModal
+                    onClose={closeModals}
+                    onConfirm={deletePack}
+                    text="Are you sure you want to delete this map permanently?"
+                    title="Delete Map?"
+                />
+            )}
         </View>
     )
 }

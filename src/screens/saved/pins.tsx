@@ -8,20 +8,19 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import OptionsSheet from "../../sheets/options-sheet";
 import { SHEET } from "../../consts";
 import { SheetManager } from "react-native-actions-sheet";
-import { EventBus } from "../../services/event-bus";
 import { useCallback } from "react";
 
+type PropsType = { navigation: any }
+export default function PinsScreen({  } : PropsType) {
 
-export default function PinsScreen() {
-
-    const navigation = useNavigation();
+    const navigation: any = useNavigation();
     const { pointsOfInterest, get: getPoints } = usePointsOfInterest();
 
 
     const onPoiPress = async ( poi: PointOfInterest ) => {
         navigation.navigate('map');
         await delay(100);
-        EventBus.emit.mapInspectPOI(poi);
+        navigation.navigate('map', { screen: 'map-point-of-interest-overview', params: { point: poi }})
     }
 
     const openEditSheet = ( poi: PointOfInterest ) => {

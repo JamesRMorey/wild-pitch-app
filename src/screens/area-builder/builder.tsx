@@ -15,7 +15,6 @@ import { SETTING, SHEET } from "../../consts";
 import { MapMarker as MapMarkerType, MapPack, MapPackGroup, PositionArray } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import MapPointAnnotation from "../../components/map/map-point-annotation";
-import BuilderAreaCreateEditSheet from "../../sheets/builder/builder-area-create-edit-sheet";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -24,13 +23,13 @@ const MARKER: MapMarkerType = {
 	type: 'area'
 }
 
-export default function AreaBuilderScreen({ navigation }) {
+type PropsType = { navigation: any }
+export default function AreaBuilderScreen({ navigation } : PropsType) {
 
-	const { styleURL, center, cameraRef, enable3DMode, followUserLocation } = useMapState();
+	const { center, cameraRef, followUserLocation } = useMapState();
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([]);
 	const [activeMarker, setActiveMarker] = useState<MapMarkerType>();
 	const [areaBounds, setAreaBounds] = useState<PositionArray>();
-	const [activePackGroup, setActivePackGroup] = useState<MapPackGroup>();
 
 	const back = () => {
 		navigation.goBack();
@@ -54,14 +53,8 @@ export default function AreaBuilderScreen({ navigation }) {
 		// console.log(e, point)
 	}
 
-	const createPackGroup = async( packGroup: MapPackGroup ) => {
-		setActivePackGroup(packGroup);
-		await delay(500);
-		SheetManager.show(SHEET.BUILDER_MAP_PACKS)
-	}
-
-	const openCreateEditSheet = () => {
-		SheetManager.show(SHEET.BUILDER_AREA_CREATE_EDIT);
+	const saveArea = () => {
+		navigation.navigate('area-builder-save-area', { bounds: areaBounds })
 	}
 
 	const onPointDragEnd = (e: any, point: MapMarkerType) => {
@@ -93,12 +86,15 @@ export default function AreaBuilderScreen({ navigation }) {
                 style={styles.map}
                 styleURL={Mapbox.StyleURL.Outdoors}
 				onLongPress={addMarkerFromLongPress}
+				attributionEnabled={false}
             >
                 <Mapbox.Camera
 					ref={cameraRef}
                     centerCoordinate={center}
                     zoomLevel={SETTING.MAP_DEFAULT_ZOOM}
 					followUserLocation={followUserLocation}
+					animationDuration={0}
+					animationMode="none"
                 />
                 {markers.map((marker, i) => {
 					return (
@@ -108,7 +104,6 @@ export default function AreaBuilderScreen({ navigation }) {
 							coordinate={marker.coordinate}
 							draggable={true}
 							onDrag={(e) => onPointDrag(e, marker)}
-							// onDragStart={(e) => onPointDrag(e, marker)}
 							onDragEnd={(e) => onPointDragEnd(e, marker)}
 						/>
 					)
@@ -121,32 +116,16 @@ export default function AreaBuilderScreen({ navigation }) {
 					/>
 				)}
             </Mapbox.MapView>
-			<View style={styles.back}>
-				<IconButton
-					icon={'close'}
-					small={true}
-					onPress={() => back()}
-					active={true}
-				/>
-			</View>
 			<View style={styles.controlsContainer}>
 				<View style={styles.controls}>
 					<IconButton
-						icon={'plus'}
-						onPress={() => {}}
-					/>
-					<IconButton
-						icon={'cloud-download'}
-						onPress={() => openCreateEditSheet()}
+						icon={'cloud-download-outline'}
+						onPress={() => saveArea()}
 						disabled={!areaBounds || areaBounds.length != 2}
+						shadow={true}
 					/>
 				</View>
 			</View>
-			<BuilderAreaCreateEditSheet 
-				bounds={areaBounds} 
-				onSave={(group: MapPackGroup) => createPackGroup(group)}
-			/>
-			<MapPackSheet id={SHEET.BUILDER_MAP_PACKS} packGroup={activePackGroup} />
         </View>
     )
 }

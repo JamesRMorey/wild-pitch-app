@@ -25,7 +25,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{mapPackGroup.name}</Text>
                     <Text style={TEXT.sm}>{mapPackGroup.description.slice(0,80)}...</Text>
-                    <Text style={TEXT.sm}>{mapPackGroup.packs.length}/2 Downloaded</Text>
+                    {/* <Text style={TEXT.sm}>{mapPackGroup.packs.length}/2 Downloaded</Text> */}
                 </View>
             </TouchableOpacity>
             {onOtherPress && (

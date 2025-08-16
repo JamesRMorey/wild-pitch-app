@@ -19,6 +19,15 @@ export class MapPackService {
         Mapbox.offlineManager.createPack(pack, (pack, status) => this.downloadProgress(pack, group, status, onProgress), onError);
     }
 
+    static getKey ( input: string ): string {
+        const name = input
+            .trim()
+            .toUpperCase()
+            .replace(/\s+/g, '_');
+
+        return name;
+    }
+
     static getPackName ( input: string, styleURL: Mapbox.StyleURL ): string|null {
         const name = input
             .trim()

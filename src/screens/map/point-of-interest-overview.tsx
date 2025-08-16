@@ -6,15 +6,18 @@ import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
 import useModals from "../../hooks/useModals";
 import ConfirmModal from "../../modals/confirm";
+import { useState } from "react";
 
+type PropsType = { navigation: any, route: any }
+export default function MapPointOfInterestOverviewScreen({ navigation, route } : PropsType) {
 
-export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, onDelete=(point: PointOfInterest) => point, } : { point: PointOfInterest, onSeeDetails?:()=>void, onSave?: ()=>void, onEdit?: ()=>void, onDelete?: (point: PointOfInterest)=>PointOfInterest }) {
-
+    const { point: paramsPoint } = route.params;
+    const [point, setPoint] = useState<PointOfInterest>(paramsPoint)
     const OPTIONS = [
         {
             icon: 'location-outline',
             title: 'See pin details',
-            onPress: () => onSeeDetails()
+            onPress: () => {}
         },
         {
             icon: 'navigate-outline',
@@ -44,6 +47,16 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
         } 
         catch (error: any) {
         }
+    }
+
+    const editPoint = () => {
+        navigation.navigate('map-point-of-interest', { 
+            screen: 'point-of-interest-edit', 
+            params: {
+                point: point, 
+                onGoBack: (params: { point: PointOfInterest}) => setPoint(params.point)
+            }
+        });
     }
 
     return (
@@ -99,7 +112,7 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
                 <View style={styles.buttons}>
                     <Button
                         title={point.id ? 'Edit pin' : 'Save pin'}
-                        onPress={() => onEdit()}
+                        onPress={editPoint}
                         style='large'
                     />
                 </View>
@@ -108,7 +121,7 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
                 <ConfirmModal
                     onClose={closeModals}
                     onConfirm={() => {
-                        onDelete(point);
+                        
                         closeModals()
                     }}
                     text="Are you sure you want to delete this point permanently?"
@@ -120,12 +133,9 @@ export default function OverView({ point, onSeeDetails=()=>{}, onEdit=()=>{}, on
 }
 
 const styles = StyleSheet.create({
-    sheet: {
-        backgroundColor: COLOUR.white,
-    },
     container: {
         padding: normalise(20),
-        paddingBottom: normalise(35),
+        paddingBottom: 0
     },
     topContainer: {
     },

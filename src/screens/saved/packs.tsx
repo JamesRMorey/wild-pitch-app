@@ -1,29 +1,28 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import Alert from "../../components/misc/alert"
+import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { COLOUR, TEXT } from "../../styles"
 import { normalise } from "../../functions/helpers"
 import Button from "../../components/buttons/button"
-import { NavigationProp, useFocusEffect } from "@react-navigation/native"
-import { PACK_GROUPS, SHEET } from "../../consts"
+import { useFocusEffect } from "@react-navigation/native"
+import { SHEET } from "../../consts"
 import { useCallback, useState } from "react"
-import { MapPack, MapPackGroup } from "../../types"
+import { MapPackGroup } from "../../types"
 import Mapbox from "@rnmapbox/maps"
 import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack"
-import IconButton from "../../components/buttons/icon-button"
 import { useMapPackGroups } from "../../hooks/useMapPackGroups"
 import MapPackSheet from "../../sheets/map-pack-sheet"
 import { SheetManager } from "react-native-actions-sheet"
 import MapPackGroupCard from "../../components/cards/map-pack-group-card"
+import OptionsSheet from "../../sheets/options-sheet"
+
 
 export default function PacksScreen({ navigation } : { navigation: any }) {
 
     const [offlinePacks, setOfflinePacks] = useState<Array<OfflinePack>>([]);
-    const { mapPackGroups, get: getPackGroups } = useMapPackGroups();
+    const { mapPackGroups, get: getPackGroups, remove: removePackGroup } = useMapPackGroups();
     const [activeMapPackGroup, setActiveMapPackGroup] = useState<MapPackGroup>();
     
     const navigateToBuilder = () => {
-        getPackGroups();
-        // navigation.navigate('area-builder')
+        navigation.navigate('area-builder')
     }
 
     const updateOfflinePacks =  async() => {
@@ -40,6 +39,20 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
         setActiveMapPackGroup(packGroup);
         SheetManager.show(SHEET.MAP_PACKS_SAVED_PACKS)
     }
+
+    const openPackGroupOptionsSheet = (packGroup: MapPackGroup) => {
+        setActiveMapPackGroup(packGroup);
+        SheetManager.show(SHEET.MAP_PACK_GROUP_OPTIONS)
+    }
+
+    const deletePackGroup = (packGroup: MapPackGroup) => {
+        removePackGroup(packGroup.id);
+        SheetManager.hide(SHEET.MAP_PACK_GROUP_OPTIONS);
+    }
+
+    const OPTIONS = [
+        { label: 'Delete area', icon: 'trash-outline', colour: COLOUR.red[500], onPress: () => deletePackGroup(activeMapPackGroup) }
+    ];
 
 
     useFocusEffect(
@@ -66,7 +79,7 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
                         </View>
                     </View>
                 )}
-                <Text style={TEXT.h4}>{mapPackGroups.length} Areas Downloaded</Text>
+                <Text style={TEXT.h4}>{mapPackGroups.length} Areas created</Text>
                 <View style={styles.packsContainer}>
                     {mapPackGroups.map((packGroup, i) => {
                         return (
@@ -74,6 +87,7 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
                                 key={i}
                                 mapPackGroup={packGroup}
                                 onPress={() => onPackGroupPress(packGroup)}
+                                onOtherPress={() => openPackGroupOptionsSheet(packGroup)}
                             />
                         )
                     })}
@@ -82,6 +96,10 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
             <MapPackSheet
                 id={SHEET.MAP_PACKS_SAVED_PACKS}
                 packGroup={activeMapPackGroup}
+            />
+            <OptionsSheet
+                id={SHEET.MAP_PACK_GROUP_OPTIONS}
+                options={OPTIONS}
             />
         </View>
     )

@@ -66,12 +66,11 @@ export class MapPackGroupRepository {
             : [];
     }
 
-    find ( id: number ): PointOfInterest|void  {
+    find ( id: number ): MapPackGroup|void  {
         const record = this.db.execute(`
-            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
-            FROM ${this.tableName} t
-            JOIN point_types pt ON pt.id = t.point_type_id
-            WHERE t.id = ${id}
+            SELECT *
+            FROM ${this.tableName}
+            WHERE id = ${id}
         `);
         
         const row = record.rows?._array[0] ?? null
@@ -80,17 +79,23 @@ export class MapPackGroupRepository {
 
         return {
             id: row.id,
+            key: row.key,
             name: row.name,
-            notes: row.notes,
-            point_type_id: row.point_type_id,
-            point_type: {
-                icon: row.pt_icon,
-                colour: row.pt_colour,
-                name: row.pt_name
-            },
-            latitude: row.latitude,
-            longitude: row.longitude,
-            created_at: row.created_at
+            description: row.description,
+            minZoom: row.min_zoom,
+            maxZoom: row.max_zoom,
+            center: [row.longitude, row.latitude],
+            bounds: JSON.parse(row.bounds),
+            packs: [
+                {
+                    name: `${row.key}_OUTDOORS`,
+                    styleURL: Mapbox.StyleURL.Outdoors
+                },
+                {
+                    name: `${row.key}_SATELLITE`,
+                    styleURL: Mapbox.StyleURL.SatelliteStreet
+                }
+            ]
         }
     }
 
