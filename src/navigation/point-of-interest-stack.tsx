@@ -10,7 +10,7 @@ export default function PointOfInterestStack({}) {
 
     return (
         <Stack.Navigator>
-            <Stack.Screen name="point-of-interest-edit" component={PointOfInterestEditScreen} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
+            <Stack.Screen name="point-of-interest-edit" component={PointOfInterestEditScreen} options={{...SCREEN_OPTIONS, presentation: 'card' }}/>
             <Stack.Screen name="point-of-interest-point-type-selector" component={PointOfInterestPointTypeScreen} options={{...SCREEN_OPTIONS, presentation: 'card'}}/>
         </Stack.Navigator>
     )

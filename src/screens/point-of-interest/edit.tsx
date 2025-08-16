@@ -3,13 +3,14 @@ import { PointOfInterest, PointType } from "../../types";
 import { normalise } from "../../functions/helpers";
 import { TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Button from "../../components/buttons/button";
 import TextArea from "../../components/inputs/text-area";
 import { usePointTypes } from "../../hooks/usePointType";
 import { FormErrors } from "../../types";
 import PressInput from "../../components/inputs/press-input";
 import { usePointsOfInterest } from "../../hooks/usePointsOfInterest";
+import { useFocusEffect } from "@react-navigation/native";
 
 type PropsType = { navigation: any, route: any };
 
@@ -38,6 +39,14 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
             }
         });
     }
+
+    useFocusEffect(
+        useCallback(() => {
+        return () => {
+            if (onGoBack) onGoBack();
+        };
+        }, [])
+    );
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

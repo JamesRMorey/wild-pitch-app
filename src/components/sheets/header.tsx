@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { TEXT } from '../styles';
-import IconButton from '../components/buttons/icon-button';
-import { normalise } from '../functions/helpers';
+import { TEXT } from '../../styles';
+import IconButton from '../../components/buttons/icon-button';
+import { normalise } from '../../functions/helpers';
 
 
 export default function Header({ title, onBack } : { title: string, onBack?: ()=>void }) {

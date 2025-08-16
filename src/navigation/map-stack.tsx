@@ -14,8 +14,7 @@ export default function MapStack({}) {
         <Stack.Navigator>
             <Stack.Screen name="map" component={MapScreen} options={{...SCREEN_OPTIONS }}/>
             <Stack.Screen name="map-search" component={MapSearchScreen} options={{...SCREEN_OPTIONS, presentation: 'fullScreenModal' }}/>
-            <Stack.Screen name="map-point-of-interest-overview" component={PointOfInterestOverviewScreen} options={{...SCREEN_OPTIONS, presentation: 'formSheet', sheetAllowedDetents: 'fitToContents' }}/>
-            <Stack.Screen name="map-point-of-interest" component={PointOfInterestStack} options={{...SCREEN_OPTIONS, presentation: 'modal' }}/>
+            <Stack.Screen name="map-point-of-interest" component={PointOfInterestStack} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
         </Stack.Navigator>
     )
 }

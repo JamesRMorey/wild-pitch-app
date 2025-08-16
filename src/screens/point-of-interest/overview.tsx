@@ -2,132 +2,30 @@ import { StyleSheet, Text, View, TouchableOpacity, Linking, Share } from "react-
 import { COLOUR, OPACITY, TEXT } from "../../styles"
 import { normalise } from "../../functions/helpers";
 import { PointOfInterest } from "../../types";
-import Icon from "../../components/misc/icon";
-import Button from "../../components/buttons/button";
-import useModals from "../../hooks/useModals";
-import ConfirmModal from "../../modals/confirm";
 import { useState } from "react";
+import PointOfInterestNavigation from "./navigation";
+import PointOfInterestDetails from "./details";
 
 type PropsType = { navigation: any, route: any }
 export default function PointOfInterestOverviewScreen({ navigation, route } : PropsType) {
 
     const { point: paramsPoint } = route.params;
     const [point, setPoint] = useState<PointOfInterest>(paramsPoint)
-    const OPTIONS = [
-        {
-            icon: 'location-outline',
-            title: 'See pin details',
-            onPress: () => {}
-        },
-        {
-            icon: 'navigate-outline',
-            title: 'Get directions',
-            onPress: () => getDirections()
-        },
-        {
-            icon: 'share-outline',
-            title: 'Share location',
-            onPress: () => shareLocation()
-        }
-    ];
-    const { modals, close: closeModals, open: openModal } = useModals({ delete: false })
-
-
-    const getDirections = async () => {
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`;
-
-        Linking.openURL(mapsUrl);
-    }
-
-    const shareLocation = async () => {
-        try {
-            await Share.share({
-                message: `Here\'s a location i've plotted on Wild Pitch Maps (${point.latitude, point.longitude}) - https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`,
-            });
-        } 
-        catch (error: any) {
-        }
-    }
-
-    const editPoint = () => {
-        navigation.navigate('map-point-of-interest', { 
-            screen: 'point-of-interest-edit', 
-            params: {
-                point: point, 
-                onGoBack: (params: { point: PointOfInterest}) => setPoint(params.point)
-            }
-        });
-    }
+    const [activeSection, setActiveSection] = useState<string>('details')
+    
 
     return (
         <View style={styles.container}>
-            <View style={styles.topContainer}>
-                <View style={styles.titleContainer}>
-                    <Text style={TEXT.h3}>{point.name ?? 'Dropped Pin'}</Text>
-                </View>
-                {point.notes && (
-                    <Text style={styles.notes}>{point.notes}</Text>
-                )}
-                <Text style={styles.latlng}>{point.latitude.toString().slice(0,10)}, {point.longitude.toString().slice(0,10)}</Text>
-            </View>
-            <View style={styles.bottomContainer}>
-                {OPTIONS.map((option, i) => {
-                    return (
-                        <TouchableOpacity
-                            key={i} 
-                            style={styles.option} 
-                            activeOpacity={0.5}
-                            onPress={() => option.onPress()}
-                        >
-                            <View style={styles.optionNameContainer}>
-                                <Icon
-                                    icon={option.icon}
-                                    size={normalise(18)}
-                                />
-                                <Text style={TEXT.md}>{option.title}</Text>
-                            </View>
-                            <Icon
-                                icon={'chevron-forward-outline'}
-                                size={normalise(18)}
-                            />
-                        </TouchableOpacity>
-                    )
-                })}
-                {point.id && (
-                    <TouchableOpacity
-                        style={styles.option} 
-                        activeOpacity={0.5}
-                        onPress={() => openModal('delete')}
-                    >
-                        <View style={styles.optionNameContainer}>
-                            <Icon
-                                icon={'trash-outline'}
-                                colour={COLOUR.red[500]}
-                                size="small"
-                            />
-                            <Text style={[TEXT.md, { color: COLOUR.red[500] }]}>Delete pin</Text>
-                        </View>
-                    </TouchableOpacity>
-                )}
-                <View style={styles.buttons}>
-                    <Button
-                        title={point.id ? 'Edit pin' : 'Save pin'}
-                        onPress={editPoint}
-                        style='large'
-                    />
-                </View>
-            </View>
-            {modals.delete && (
-                <ConfirmModal
-                    onClose={closeModals}
-                    onConfirm={() => {
-                        
-                        closeModals()
-                    }}
-                    text="Are you sure you want to delete this point permanently?"
-                    title="Delete Point"
-                />
-            )}
+            {activeSection == 'navigation' ?
+            <PointOfInterestNavigation
+                point={point}
+            />
+            :
+            <PointOfInterestDetails
+                point={point}
+                onChangeSection={(section: string) => setActiveSection(section)}
+            />
+            }
         </View>
     )
 }

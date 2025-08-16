@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useState } from "react";
+import { act, useState } from "react";
 import MapStyleControls from "../../components/map/map-style-controls";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
@@ -14,6 +14,7 @@ import { PointOfInterest } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../../services/formatter";
 import ThreeDMode from "../../components/map/three-d-mode";
+import PointOfInterestSheet from "../../sheets/point-of-interest-sheet";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -54,7 +55,8 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const navigateToPOI = ( point: PointOfInterest ) => {
-		navigation.navigate({ name: 'map-point-of-interest-overview', params: { point: point }})
+		SheetManager.show(SHEET.MAP_POI_SHEET)
+		// navigation.navigate({ name: 'map-point-of-interest-overview', params: { point: point }})
 	}
 
 
@@ -125,6 +127,10 @@ export default function MapScreen({ navigation } : PropsType) {
 					/>
 				</View>
 			</View>
+			<PointOfInterestSheet
+				id={SHEET.MAP_POI_SHEET}
+				point={activePOI}
+			/>
         </View>
     )
 }
