@@ -1,12 +1,12 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { View, StyleSheet, Text } from "react-native";
-import { PointOfInterest } from "../types";
-import { SHEET } from "../consts";
-import { COLOUR } from "../styles";
-import { normalise } from "../functions/helpers";
+import { PointOfInterest } from "../../types";
+import { SHEET } from "../../consts";
+import { COLOUR } from "../../styles";
+import { normalise } from "../../functions/helpers";
 import { useEffect, useState } from "react";
-import PointOfInterestNavigation from "../screens/point-of-interest/navigation";
-import PointOfInterestDetails from "../screens/point-of-interest/details";
+import PointOfInterestNavigation from "./navigation";
+import PointOfInterestDetails from "./details";
 
 type PropsType = { id?: string, point: PointOfInterest }
 export default function PointOfInterestSheet({ id=SHEET.MAP_POI_SHEET, point: poi } : PropsType) {

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { View, StyleSheet, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { SETTING } from "../../../consts";
 import { COLOUR, TEXT } from "../../../styles";
 import { normalise } from "../../../functions/helpers";
@@ -9,6 +9,8 @@ import { MapService } from "../../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
 import Button from "../../../components/buttons/button";
 import { useMapPackGroups } from "../../../hooks/useMapPackGroups";
+import TextArea from "../../../components/inputs/text-area";
+import TextInput from "../../../components/inputs/text-input";
 
 type PropsType = { navigation: any, route: any }
 export default function AreaBuilderSaveAreaScreen ({ navigation, route } : PropsType) {
@@ -51,38 +53,32 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
 
 
     return (
-        <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                
-            </View>   
-            <View style={styles.inputGroup}>
-                <Text style={TEXT.label}>Name</Text>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Name your area..."
-                    placeholderTextColor={COLOUR.gray[600]}
-                    onChangeText={(text: string) => setData({...data, name: text})}
-                    value={data.name}
-                />
-            </View>
-            <View style={styles.inputGroup}>
-                <Text style={TEXT.label}>Description</Text>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="A description of the area..."
-                    placeholderTextColor={COLOUR.gray[600]}
-                    onChangeText={(text: string) => setData({...data, description: text})}
-                    value={data.description}
-                />
-            </View>
-            
-            <View style={styles.buttons}>
-                <Button
-                    title="Save"
-                    onPress={save}
-                />    
-            </View>        
-        </View>
+        <KeyboardAvoidingView>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
+                    <View style={styles.form}>
+                        <TextInput
+                            label="Name"
+                            placeHolder="Name your area..."
+                            onChangeText={(text: string) => setData({...data, name: text})}
+                            value={data.name}
+                        />
+                        <TextArea
+                            label="Description"
+                            placeHolder="A description of the area..."
+                            onChangeText={(text: string) => setData({...data, description: text})}
+                            value={data.description}
+                        />
+                    </View>
+                    <View style={styles.buttons}>
+                        <Button
+                            title="Save"
+                            onPress={save}
+                        />    
+                    </View>        
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -99,27 +95,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: normalise(15)
     },
-    searchInput: {
-        padding: normalise(15),
-        backgroundColor: COLOUR.gray[200],
-        borderRadius: normalise(15),
-        ...TEXT.md
-    },
-    searchBar: {
-        borderRadius: normalise(50),
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    heading: {
-        ...TEXT.h4,
-        paddingVertical: normalise(10),
-        borderBottomWidth: normalise(1),
-        borderColor: COLOUR.gray[300]
-    },
-    inputGroup: {
-        marginBottom: normalise(15)
+    form: {
+        gap: normalise(15)
     },
     buttons: {
-        marginTop: normalise(15)
+        marginTop: normalise(30)
     }
 });

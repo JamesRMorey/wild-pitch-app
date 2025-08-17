@@ -1,11 +1,26 @@
 import { normalise } from "../../functions/helpers";
 import { COLOUR, OPACITY, TEXT } from "../../styles";
-import { MapPackGroup, PointOfInterest } from "../../types"
+import { MapPackGroup } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
+import { useEffect, useState } from "react";
+import { MapPackService } from "../../services/map-pack-service";
 
 type PropsType = { mapPackGroup: MapPackGroup, onPress?: ()=>void, onOtherPress?: ()=>void }
 export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOtherPress } : PropsType ) {
+
+    const [numDownloaded, setNumDownloaded] = useState<number>();
+
+    const checkDownloaded = async () => {
+        const offlinePacks = await MapPackService.getOfflinePacks();
+        const downloaded = offlinePacks.filter((op) => mapPackGroup.packs.find(p => p.name == op.name));
+        setNumDownloaded(downloaded.length);
+    }
+
+
+    useEffect(() => {
+        checkDownloaded();
+    }, [])
 
     return (
         <View
@@ -19,13 +34,16 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                 <View style={styles.iconContainer}>
                     <Icon
                         icon={'map-outline'}
-                        colour={COLOUR.white}
+                        colour={COLOUR.wp_orange[500]}
+                        size={normalise(20)}
                     />
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{mapPackGroup.name}</Text>
                     <Text style={TEXT.sm}>{mapPackGroup.description.slice(0,80)}...</Text>
-                    {/* <Text style={TEXT.sm}>{mapPackGroup.packs.length}/2 Downloaded</Text> */}
+                    {numDownloaded != undefined && numDownloaded >= 0 && (
+                        <Text style={styles.downloadedText}>{numDownloaded}/2 Downloaded</Text>
+                    )}
                 </View>
             </TouchableOpacity>
             {onOtherPress && (
@@ -55,19 +73,19 @@ const styles = StyleSheet.create({
         borderBottomWidth: normalise(1)
     },
     iconContainer: {
-        padding: normalise(15),
-        aspectRatio: 1,
-        borderRadius: normalise(12),
-        backgroundColor: COLOUR.wp_orange[500]
+        paddingTop: normalise(2),
     },
     leftContainer: {
         flexDirection: 'row',
         gap: normalise(15),
-        alignItems: 'center',
         flex: 1
     },
     textContainer: {
         gap: normalise(3),
         flex: 1
+    },
+    downloadedText: {
+        ...TEXT.xs,
+        marginTop: normalise(5)
     }
 })

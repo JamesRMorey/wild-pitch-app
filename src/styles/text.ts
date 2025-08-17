@@ -8,19 +8,19 @@ export const text = StyleSheet.create({
     },
     h1: {
         fontSize: normalise(24),
-        fontWeight: 500
+        fontWeight: 600
     },
     h2: {
         fontSize: normalise(21),
-        fontWeight: 500
+        fontWeight: 600
     },
     h3: {
         fontSize: normalise(18),
-        fontWeight: 500
+        fontWeight: 600
     },
     h4: {
         fontSize: normalise(15),
-        fontWeight: 500
+        fontWeight: 600
     },
     label: {
         fontSize: normalise(15),

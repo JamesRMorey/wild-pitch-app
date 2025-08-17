@@ -14,7 +14,7 @@ import { PointOfInterest } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../../services/formatter";
 import ThreeDMode from "../../components/map/three-d-mode";
-import PointOfInterestSheet from "../../sheets/point-of-interest-sheet";
+import PointOfInterestSheet from "../../sheets/point-of-interest/point-of-interest-sheet";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 

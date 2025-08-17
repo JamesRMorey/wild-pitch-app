@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         overflow: 'hidden',
         borderWidth: 2,
-        borderColor: COLOUR.gray[100]
+        borderColor: COLOUR.wp_brown[100]
     },
     mapStyleImage: {
         aspectRatio: 1,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         borderColor: COLOUR.green[500]
     },
     settingsContainer: {
-        backgroundColor: COLOUR.gray[100],
+        backgroundColor: COLOUR.wp_brown[100],
         paddingHorizontal: normalise(20),
         paddingTop: normalise(5),
         paddingBottom: normalise(35)
