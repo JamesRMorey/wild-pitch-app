@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         padding: normalise(15),
     },
     active: {
-        borderBottomColor: COLOUR.wp_orange[500],
+        borderBottomColor: COLOUR.wp_green[500],
         borderBottomWidth: normalise(3)
     },
     activeText: {

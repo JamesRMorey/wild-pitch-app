@@ -2311,6 +2311,35 @@ PODS:
     - React-perflogger (= 0.80.2)
     - React-utils (= 0.80.2)
     - SocketRocket
+  - RNBootSplash (6.3.10):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNDeviceInfo (14.0.4):
     - React-Core
   - RNFS (2.20.0):
@@ -2408,6 +2437,35 @@ PODS:
     - SocketRocket
     - Yoga
   - RNPermissions (5.4.2):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - RNReactNativeHapticFeedback (2.3.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2580,12 +2638,14 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "rnmapbox-maps (from `../node_modules/@rnmapbox/maps`)"
   - RNNitroSQLite (from `../node_modules/react-native-nitro-sqlite`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2755,6 +2815,8 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFS:
@@ -2767,6 +2829,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-nitro-sqlite"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNReactNativeHapticFeedback:
+    :path: "../node_modules/react-native-haptic-feedback"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   Yoga:
@@ -2854,17 +2918,19 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 6c9197c1f6643633012ab646d2bfedd1b0d25989
   ReactCodegen: 9ea66ee246511816b72e9d6e380f884b7b3b99d7
   ReactCommon: 7aca047f2f453a7d7f0adeccb63810d61829235a
+  RNBootSplash: 07805bcd3aaecb26115e56fa39237fbb88a442a8
   RNDeviceInfo: feea80a690d2bde1fe51461cf548039258bd03f2
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 502fd35c8e1d326562536ff256e61e38d703eafb
   rnmapbox-maps: 95ffd3606906a812a5eae198d58377e08d2082de
   RNNitroSQLite: 6804cbdd8363d24b5bb576c9e1088bb976aa7f12
-  RNPermissions: d139a73fb2755b57a34678df07c33e6d7b5e9969
+  RNPermissions: 95c9378d2de4d18f8540a979dbe4895f31101a24
+  RNReactNativeHapticFeedback: 7ab0232cc103ac7d928635410fa0df7b11c53ada
   RNScreens: 75074e642b69b086813a943bdf63da7085fb2166
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
   Yoga: 1c52fbd270869e556504def7e94fffbf67f53f7b
 
-PODFILE CHECKSUM: 7279caec89cdecd6b862426528808936fd34ed4c
+PODFILE CHECKSUM: 8cf44df9bf2d9bd05d20be19563532bcc136ec9b
 
 COCOAPODS: 1.15.2

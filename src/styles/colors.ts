@@ -14,7 +14,7 @@ export const colors = {
         800: '#854d0e',
         900: '#713f12',
     },
-    "wp_orange": {
+    "wp_green": {
         50:  '#fdf4f0', // very light warm peach
         100: '#fbe3d6',
         200: '#f6bfa9',
@@ -27,16 +27,16 @@ export const colors = {
         900: '#371304',
     },
     "wp_green": {
-        50:  "#bcce9e",
-        100: "#cddab5",
-        200: "#dde6cd",
-        300: "#edf2e5",
-        400: "#fdfefd",
-        500: "#acc286", // base
-        600: "#9cb66e",
-        700: "#8baa57",
-        800: "#78934a",
-        900: "#657b3e",
+        50:  '#f6f9f2',
+        100: '#e9f0dd',
+        200: '#d2e1bb',
+        300: '#b5cc93',
+        400: '#98b36c',
+        500: '#78934a', // base
+        600: '#5f763b',
+        700: '#495b2e',
+        800: '#344122',
+        900: '#212a16',
     },
     "wp_earthy_green": {
         50:  '#f4f6e7', // very pale olive

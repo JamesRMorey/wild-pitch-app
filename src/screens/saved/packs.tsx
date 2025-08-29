@@ -1,8 +1,7 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native"
 import { COLOUR, TEXT } from "../../styles"
 import { normalise } from "../../functions/helpers"
-import Button from "../../components/buttons/button"
-import { useFocusEffect } from "@react-navigation/native"
+import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import { SHEET } from "../../consts"
 import { useCallback, useState } from "react"
 import { MapPackGroup } from "../../types"
@@ -13,10 +12,12 @@ import MapPackSheet from "../../sheets/map-pack-sheet"
 import { SheetManager } from "react-native-actions-sheet"
 import MapPackGroupCard from "../../components/cards/map-pack-group-card"
 import OptionsSheet from "../../sheets/options-sheet"
+import NothingHere from "../../components/misc/nothing-here"
 
 
-export default function PacksScreen({ navigation } : { navigation: any }) {
+export default function PacksScreen({}) {
 
+    const navigation = useNavigation();
     const [offlinePacks, setOfflinePacks] = useState<Array<OfflinePack>>([]);
     const { mapPackGroups, get: getPackGroups, remove: removePackGroup } = useMapPackGroups();
     const [activeMapPackGroup, setActiveMapPackGroup] = useState<MapPackGroup>();
@@ -28,11 +29,6 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
     const updateOfflinePacks =  async() => {
         const offline = await Mapbox.offlineManager.getPacks();
         setOfflinePacks(offline);
-    }
-
-    const deletePack =  async( pack: OfflinePack ) => {
-        await Mapbox.offlineManager.deletePack(pack.name);
-        updateOfflinePacks();
     }
 
     const onPackGroupPress = (packGroup: MapPackGroup) => {
@@ -67,20 +63,9 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
             >
-                {mapPackGroups.length == 0 && (
-                    <View style={styles.alertContainer}>
-                        <Text style={TEXT.h2}>No areas yet?</Text>
-                        <Text style={TEXT.p}>Press the button below to create your own area</Text>
-                        <View style={styles.buttons}>
-                            <Button
-                                title="Create new area"
-                                onPress={navigateToBuilder}
-                            />
-                        </View>
-                    </View>
-                )}
-                <Text style={TEXT.h4}>{mapPackGroups.length} Areas created</Text>
-                <View style={styles.packsContainer}>
+                {mapPackGroups.length > 0 ? 
+                <>
+                    <Text style={styles.title}>{mapPackGroups.length} Areas created</Text>
                     {mapPackGroups.map((packGroup, i) => {
                         return (
                             <MapPackGroupCard
@@ -91,7 +76,16 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
                             />
                         )
                     })}
-                </View>
+                </>
+                :
+                <NothingHere
+                    title="No areas yet?"
+                    text="Press the button below to create your own area"
+                    onPress={navigateToBuilder}
+                    buttonText="Create new area"
+                />
+                }
+                
             </ScrollView>
             <MapPackSheet
                 id={SHEET.MAP_PACKS_SAVED_PACKS}
@@ -108,19 +102,17 @@ export default function PacksScreen({ navigation } : { navigation: any }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOUR.white
+        backgroundColor: COLOUR.wp_brown[100],
+        borderWidth: normalise(1),
+        borderColor: COLOUR.wp_brown[200]
     },
     scrollContainer: {
-        padding: normalise(20),
+        paddingVertical: normalise(20),
+        gap: normalise(5),
     },
-    alertContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: normalise(15)
-    },
-    buttons: {
-        marginTop: normalise(15)
-    },
-    packsContainer: {
+    title: {
+        ...TEXT.h4,
+        paddingHorizontal: normalise(20),
+        marginBottom: normalise(5)
     }
 })

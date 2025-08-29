@@ -55,11 +55,11 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                         >
                             <Icon 
                                 icon={isFocused ? icon : `${icon}`}
-                                colour={isFocused ? COLOUR.wp_orange[500] : COLOUR.wp_brown[700]}
+                                colour={isFocused ? COLOUR.wp_green[500] : COLOUR.wp_brown[700]}
                                 size={normalise(22)}
                             />
                             {name && (
-                                <Text style={[styles.text, isFocused && { color: COLOUR.wp_orange[500] }]}>{name}</Text>
+                                <Text style={[styles.text, isFocused && { color: COLOUR.wp_green[500] }]}>{name}</Text>
                             )}
                         </TouchableOpacity>
                     );

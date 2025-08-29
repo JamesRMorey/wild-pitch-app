@@ -48,6 +48,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
         { label: 'Create Area', icon: 'map-outline', onPress: navigateToBuilder },
         { label: 'Create Pin', icon: 'location-outline', onPress: createPin },
     ];
+    
 
     return (
         <View style={styles.container}>
@@ -59,7 +60,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
                     iconOnly={true}
                 />
             </View>
-            <TabView    
+            <TabView
                 renderTabBar={props => <CustomTabView {...props} />}
                 navigationState={{ index: index, routes: ROUTES }}
                 renderScene={renderScene}

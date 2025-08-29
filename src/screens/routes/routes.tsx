@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, View, Text } from "react-native"
 import { normalise } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
+import NothingHere from "../../components/misc/nothing-here";
 
 
 export default function RoutesScreen() {
@@ -16,7 +17,10 @@ export default function RoutesScreen() {
                 style={styles.scrollContainer}
             >
                 <View style={styles.section}>
-                    <Text style={TEXT.h2}>Coming Soon</Text>
+                    <NothingHere
+                        title="Coming Soon"
+                        text="We're hard at work building a route mapping tool for you so you don't get lost out there."
+                    />
                 </View>
             </ScrollView>
         </View>

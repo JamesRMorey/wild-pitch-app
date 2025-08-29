@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { act, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MapStyleControls from "../../components/map/map-style-controls";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
@@ -10,28 +10,40 @@ import MapArea from "../../components/map/map-area";
 import ActiveItemControls from "../../components/map/active-item-controls";
 import { SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
-import { PointOfInterest } from "../../types";
+import { Coordinate, PointOfInterest } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../../services/formatter";
 import ThreeDMode from "../../components/map/three-d-mode";
 import PointOfInterestSheet from "../../sheets/point-of-interest/point-of-interest-sheet";
+import { EventBus } from "../../services/event-bus";
+import { COLOUR } from "../../styles";
+import useHaptic from "../../hooks/useHaptic";
+import { MapService } from "../../services/map-service";
+import CompassButton from "../../components/buttons/compass-button";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
 type PropsType = { navigation: any }
 export default function MapScreen({ navigation } : PropsType) {
 
-	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, followUserLocation, pointsOfInterest, showPointsOfInterest } = useMapState();
-	const { clearActivePackGroup, flyTo, flyToLow, setFollowUserLocation, resetHeading, createPointOfInterest, updatePointOfInterest, deletePointOfInterest } = useMapActions();
+	const { styleURL, center, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest } = useMapState();
+	const { clearActivePackGroup, flyTo, flyToLow, setCenter, resetHeading } = useMapActions();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
+	const [userPosition, setUserPosition] = useState<Coordinate>();
+	const [loaded, setLoaded] = useState<boolean>(false);
+	const { tick } = useHaptic();
+	const mapRef = useRef<Mapbox.MapView>(null);
+	const [mapHeading, setMapHeading] = useState<number>(0);
 
 	const reCenter = async () => {
-		setFollowUserLocation(true);
-		await delay(4000);
-		setFollowUserLocation(false)
+		if (!userPosition) return;
+
+		setCenter([userPosition?.longitude + 0.0001, userPosition?.latitude + 0.0001]);
+		await delay(100);
+		flyTo([userPosition?.longitude + 0.0001, userPosition?.latitude + 0.0001], SETTING.MAP_CLOSEST_ZOOM);
 	}
 
-	const addMarkerFromLongPress = ( e: any ) => {
+	const addMarkerFromLongPress = async ( e: any ) => {
 		const now = new Date();
 		const poi: PointOfInterest = {
 			name: `New Location - ${Format.dateToDateTime(now)}`,
@@ -49,6 +61,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const pointOfInterestPress = ( point: PointOfInterest ) => {
+		tick();
 		setActivePOI(point);
 		flyToLow([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
 		navigateToPOI(point);
@@ -56,8 +69,22 @@ export default function MapScreen({ navigation } : PropsType) {
 
 	const navigateToPOI = ( point: PointOfInterest ) => {
 		SheetManager.show(SHEET.MAP_POI_SHEET)
-		// navigation.navigate({ name: 'map-point-of-interest-overview', params: { point: point }})
 	}
+
+	const resetMapHeading = () => {
+		setMapHeading(0)
+		resetHeading();
+	}
+
+
+	useEffect(() => {
+		const flyToMarkerListener = EventBus.listen.mapInspectPOI((poi: PointOfInterest) => pointOfInterestPress(poi));
+		setTimeout(() => setLoaded(true), 500);
+
+		return () => {
+			flyToMarkerListener.remove();
+		}
+	}, [])
 
 
     return (
@@ -68,6 +95,11 @@ export default function MapScreen({ navigation } : PropsType) {
 				onLongPress={(e) => addMarkerFromLongPress(e)}
 				pitchEnabled={enable3DMode}
 				attributionEnabled={false}
+				ref={mapRef}
+				onMapIdle={(event) => {
+					const heading = event.properties?.heading;
+					setMapHeading(heading);
+				}}
             >
 				{enable3DMode && (
 					<ThreeDMode />
@@ -78,9 +110,7 @@ export default function MapScreen({ navigation } : PropsType) {
 					}}
                     centerCoordinate={center}
                     zoomLevel={SETTING.MAP_DEFAULT_ZOOM}
-					followUserLocation={followUserLocation}
-					animationDuration={0}
-					animationMode="none"
+					animationDuration={loaded ? 500 : 0}
                 />
                 {pointsOfInterest.map((point, i) => {
 					if (!showPointsOfInterest) return;
@@ -98,6 +128,7 @@ export default function MapScreen({ navigation } : PropsType) {
 					<PointOfInterestMarker
 						coordinate={[activePOI.longitude, activePOI.latitude]}
 						type={'poi'}
+						onPress={() => pointOfInterestPress(activePOI)}
 					/>
 				)}
 				{activePackGroup && (
@@ -107,25 +138,49 @@ export default function MapScreen({ navigation } : PropsType) {
 						onPress={() => openActivePackGroupSheet()}
 					/>
 				)}
-				<UserPosition />
+				<UserPosition
+					onUpdate={(e) => setUserPosition({ latitude: e.coords.latitude, longitude: e.coords.longitude })}
+				/>
             </Mapbox.MapView>
-			<View style={styles.controlsContainer}>
+			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
+				<View style={styles.controls}>
+					<MapStyleControls/>
+					<IconButton
+						icon={'navigate-outline'}
+						onPress={reCenter}
+						disabled={!userPosition}
+						shadow={true}
+						style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
+					/>
+				</View>
+			</View>
+			<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
+				{mapHeading > 0 && (
+					<CompassButton
+						onPress={resetMapHeading}
+						disabled={!userPosition}
+						shadow={true}
+						heading={mapHeading}
+					/>
+				)}
+			</View>
+			<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
+				{mapHeading > 0 && (
+					<CompassButton
+						onPress={resetMapHeading}
+						disabled={!userPosition}
+						shadow={true}
+						heading={mapHeading}
+					/>
+				)}
+			</View>
+			<View style={[styles.controlsContainer, { bottom: normalise(20), width: '100%', justifyContent: 'center' }]}>
 				{activePackGroup && (
 					<ActiveItemControls
 						name={activePackGroup.name}
 						onPress={() => clearActivePackGroup()}
 					/>
 				)}
-				<View style={styles.controls}>
-					<MapStyleControls/>
-					<IconButton
-						icon={'navigate-outline'}
-						onPress={() => reCenter()}
-						disabled={followUserLocation}
-						active={followUserLocation}
-						shadow={true}
-					/>
-				</View>
 			</View>
 			<PointOfInterestSheet
 				id={SHEET.MAP_POI_SHEET}
@@ -138,14 +193,13 @@ export default function MapScreen({ navigation } : PropsType) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: COLOUR.wp_brown[100]
 	},
 	map: {
 		flex: 1
 	},
 	controlsContainer: {
 		position: 'absolute',
-		right: normalise(10),
-		top: SETTING.TOP_PADDING,
 		gap: normalise(8),
 		flexDirection: 'row',
 		alignItems: 'flex-start'

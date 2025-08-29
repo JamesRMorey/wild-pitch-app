@@ -43,7 +43,7 @@ export default function ProfileScreen() {
                     />
                 </View>
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Help us improve</Text>
+                    <Text style={styles.sectionTitle}>Support us</Text>
                     <SectionItemCard
                         title="Provide feedback on the app"
                         icon="chatbox-ellipses-outline"
@@ -51,6 +51,10 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Buy me a coffee?"
                         icon="cafe-outline"
+                    />
+                    <SectionItemCard
+                        title="Shop Wild Pitch"
+                        icon="storefront-outline"
                     />
                 </View>
             </ScrollView>

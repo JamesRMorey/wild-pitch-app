@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { normalise } from "../../functions/helpers";
-import { COLOUR, OPACITY, TEXT } from "../../styles";
+import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
 import Icon from "../misc/icon";
 
 
@@ -12,13 +12,12 @@ export default function ActiveItemControls({ name, onPress } : { name: string, o
             onPress={() => onPress()}
             activeOpacity={0.8}
         >
-            <Text style={styles.text}>{name.slice(0,20)}...</Text>
+            <Text style={styles.text}>{name.slice(0,40)}{name.length > 40 && '...'}</Text>
             <Icon
                 icon="close"
                 size={normalise(22)}
-                colour={COLOUR.white}
+                colour={COLOUR.black}
             />
-
         </TouchableOpacity>
     )
 }
@@ -29,14 +28,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center', 
         gap: normalise(5),
-        backgroundColor: COLOUR.black + OPACITY[80],
+        backgroundColor: COLOUR.white + OPACITY[80],
         paddingRight: normalise(10),
         paddingLeft: normalise(15),
         paddingVertical: normalise(8),
         borderRadius: normalise(20),
+        ...SHADOW.md
     },
     text: {
         ...TEXT.sm,
-        color: COLOUR.white
+        ...TEXT.semiBold,
+        color: COLOUR.black
     }
 })

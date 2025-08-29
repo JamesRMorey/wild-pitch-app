@@ -18,16 +18,19 @@ export default function PointOfInterestSheet({ id=SHEET.MAP_POI_SHEET, point: po
         setActiveSection('details')
     }
     
+
     useEffect(() => {
         if (!poi) return;
         setPoint(poi)
     }, [poi])
+
 
     return (
         <ActionSheet
             id={id}
             containerStyle={styles.sheet}
             onClose={() => reset()}
+            defaultOverlayOpacity={0.1}
         >
             {point && (
                 <View style={styles.container}>

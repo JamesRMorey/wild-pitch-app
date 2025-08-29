@@ -55,6 +55,7 @@ export type PointOfInterestSheetSection = 'details'|'edit'|'save'|undefined
 
 export type PointOfInterest = {
     created_at?: string,
+    elevation?: number,
     latitude: number,
     longitude: number,
     point_type_id?: number,

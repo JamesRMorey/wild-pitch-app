@@ -34,6 +34,12 @@ export class PointTypeRepository {
             ('Camp Spot', 'bonfire-outline', '#3b7a57'),
             ('Parking', 'car-outline', '#0264A0'),
             ('Food & Drink', 'restaurant-outline', '#7b687d'),
+            ('Mountain', 'triangle-outline', '#7B3F00'),
+            ('Lake', 'water-outline', '#1E90FF'),
+            ('River', 'water-outline', '#00BFFF'),
+            ('Forest', 'leaf-outline', '#228B22'),
+            ('Waterfall', 'rainy-outline', '#00CED1'),
+            ('Viewpoint', 'eye-outline', '#FFD700'),
             ('Other', 'heart-outline', '#acc286')
 
             ON CONFLICT(name) DO UPDATE SET

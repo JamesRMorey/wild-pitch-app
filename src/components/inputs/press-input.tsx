@@ -1,6 +1,7 @@
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native'
 import { COLOUR, TEXT } from '../../styles';
 import { normalise } from '../../functions/helpers';
+import Icon from '../misc/icon';
 
 
 type PropsType = { placeHolder?: string, label?: string, value?: string, onPress: ()=>void, error?: string };
@@ -26,6 +27,7 @@ export default function PressInput ({ placeHolder, value, label, onPress, error 
                 :placeHolder ?
                     <Text style={styles.placeHolder}>{placeHolder}</Text>
                 :null}
+                <Icon icon="chevron-forward-outline" size={normalise(20)} colour={COLOUR.black} />
             </TouchableOpacity>
             {error && (
                 <Text style={styles.errorText}>{error}</Text>
@@ -40,7 +42,10 @@ const styles = StyleSheet.create({
         borderRadius: normalise(10),
         padding: normalise(15),
         borderWidth: normalise(1),
-        borderColor: COLOUR.gray[200]
+        borderColor: COLOUR.gray[200],
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     errorText: {
         ...TEXT.xs,

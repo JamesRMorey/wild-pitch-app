@@ -71,4 +71,11 @@ export class MapService {
         const bearing = toDeg(Math.atan2(y, x));
         return (bearing + 360) % 360;
     }
+
+    static async getPointElevation ( point: Coordinate ): Promise<number|null> {
+        const response = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${point.latitude},${point.longitude}`);
+        const data = await response.json();
+
+        return data.results[0]?.elevation ?? null;
+    }
 }

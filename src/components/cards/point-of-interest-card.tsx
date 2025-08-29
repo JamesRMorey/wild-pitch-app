@@ -1,12 +1,11 @@
 import { normalise } from "../../functions/helpers";
 import { COLOUR, OPACITY, TEXT } from "../../styles";
 import { PointOfInterest } from "../../types"
-import { StyleSheet, Text, Touchable, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
-import { Format } from "../../services/formatter";
 
 type PropsType = { point: PointOfInterest, onPress?: ()=>void, onOtherPress?: ()=>void }
-export default function PointOfInterestCard ({ point, onPress=()=>{}, onOtherPress } : PropsType ) {
+export default function PointOfInterestCard ({ point, onPress, onOtherPress } : PropsType ) {
 
     return (
         <View
@@ -15,6 +14,7 @@ export default function PointOfInterestCard ({ point, onPress=()=>{}, onOtherPre
             <TouchableOpacity 
                 style={styles.leftContainer}
                 onPress={onPress}
+                disabled={!onPress}
                 activeOpacity={0.8}
             >
                 <View 
@@ -34,6 +34,7 @@ export default function PointOfInterestCard ({ point, onPress=()=>{}, onOtherPre
                 <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={onOtherPress}
+                    style={{ height: '100%', flexDirection: 'row', alignItems: 'center', paddingLeft: normalise(10) }}
                 >
                     <Icon
                         icon='ellipsis-horizontal-outline'
@@ -48,13 +49,13 @@ export default function PointOfInterestCard ({ point, onPress=()=>{}, onOtherPre
 const styles = StyleSheet.create({
     container: {
         backgroundColor: COLOUR.white,
-        paddingVertical: normalise(15),
         flexDirection: 'row',
         gap: normalise(20),
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottomColor: COLOUR.gray[500] + OPACITY[20],
-        borderBottomWidth: normalise(1)
+        paddingHorizontal: normalise(20),
+        paddingVertical: normalise(15)
     },
     iconContainer: {
         padding: normalise(15),

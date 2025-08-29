@@ -8,27 +8,49 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import OptionsSheet from "../../sheets/options-sheet";
 import { SHEET } from "../../consts";
 import { SheetManager } from "react-native-actions-sheet";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { EventBus } from "../../services/event-bus";
+import NothingHere from "../../components/misc/nothing-here";
 
 type PropsType = { navigation: any }
 export default function PinsScreen({  } : PropsType) {
 
     const navigation: any = useNavigation();
     const { pointsOfInterest, get: getPoints } = usePointsOfInterest();
+    const [selectedPOI, setSelectedPOI] = useState<PointOfInterest>();
 
 
-    const onPoiPress = async ( poi: PointOfInterest ) => {
+    const onPoiPress = async ( poi?: PointOfInterest ) => {
         navigation.navigate('map');
-        await delay(100);
-        navigation.navigate('map', { screen: 'map-point-of-interest-overview', params: { point: poi }})
+        await delay(500);
+        
+        if (poi) {
+            EventBus.emit.mapInspectPOI(poi);
+        }
     }
 
-    const openEditSheet = ( poi: PointOfInterest ) => {
-        SheetManager.show(SHEET.PINS_EDIT_OPTIONS)
+    const openOptionsSheet = ( poi: PointOfInterest ) => {
+        setSelectedPOI(poi);
+        SheetManager.show(SHEET.PINS_EDIT_OPTIONS);
+    }
+
+    const viewSelectedPOI = async () => {
+        await SheetManager.hide(SHEET.PINS_EDIT_OPTIONS);
+        if (selectedPOI) {
+            onPoiPress(selectedPOI);
+        }
+    }
+
+    const editSelectedPOI = async () => {
+        await SheetManager.hide(SHEET.PINS_EDIT_OPTIONS);
+        if (selectedPOI) {
+            onPoiPress(selectedPOI);
+        }
     }
 
     const SHEET_OPTIONS = [
-        { label: 'Edit', icon: 'pencil', onPress: ()=>{} }
+        { label: 'View', icon: 'eye', onPress: ()=>viewSelectedPOI() },
+        { label: 'Edit', icon: 'pencil', onPress: ()=>editSelectedPOI() },
     ];
 
 
@@ -44,17 +66,27 @@ export default function PinsScreen({  } : PropsType) {
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
             >
-                <Text style={TEXT.h4}>{pointsOfInterest.length} Pins</Text>
-                {pointsOfInterest?.map((poi, i) => {
-                    return (
-                        <PointOfInterestCard
-                            key={i}
-                            point={poi}
-                            onOtherPress={() => openEditSheet(poi)}
-                            onPress={() => onPoiPress(poi)}
-                        />
-                    )
-                })}
+                {pointsOfInterest.length > 0 ?
+                <>
+                    <Text style={styles.title}>{pointsOfInterest.length} Pins</Text>
+                    {pointsOfInterest?.map((poi, i) => {
+                        return (
+                            <PointOfInterestCard
+                                key={i}
+                                point={poi}
+                                onOtherPress={() => openOptionsSheet(poi)}
+                            />
+                        )
+                    })}
+                </>
+                :
+                <NothingHere
+                    title="No POI's yet?"
+                    text="Press the button below to add some pins to your map."
+                    onPress={() => onPoiPress()}
+                    buttonText="Add a POI pin"
+                />
+                }
             </ScrollView>
             <OptionsSheet
                 id={SHEET.PINS_EDIT_OPTIONS}
@@ -67,9 +99,17 @@ export default function PinsScreen({  } : PropsType) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOUR.white
+        backgroundColor: COLOUR.wp_brown[100],
+        borderWidth: normalise(1),
+        borderColor: COLOUR.wp_brown[200]
     },
     scrollContainer: {
-        padding: normalise(20)
+        paddingVertical: normalise(20),
+        gap: normalise(5)
     },
-})
+    title: {
+        ...TEXT.h4,
+        paddingHorizontal: normalise(20),
+        marginBottom: normalise(5)
+    }
+});

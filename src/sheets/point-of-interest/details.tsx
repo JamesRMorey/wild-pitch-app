@@ -7,14 +7,12 @@ import Button from "../../components/buttons/button";
 import useModals from "../../hooks/useModals";
 import ConfirmModal from "../../modals/confirm";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 import { SheetManager } from "react-native-actions-sheet";
 import { SHEET } from "../../consts";
 
 type PropsType = { point: PointOfInterest, onChangeSection: (section: string)=>void, onUpdatePoint: (poi: PointOfInterest)=>void };
-export default function PointOfInterestDetails({ point: poi, onChangeSection, onUpdatePoint } : PropsType) {
+export default function PointOfInterestDetails({ point, onChangeSection, onUpdatePoint } : PropsType) {
 
-    const [point, setPoint] = useState(poi)
     const OPTIONS = [
         {
             icon: 'location-outline',
@@ -54,19 +52,12 @@ export default function PointOfInterestDetails({ point: poi, onChangeSection, on
 
     const editPoint = async () => {
         await SheetManager.hide(SHEET.MAP_POI_SHEET);
+        await delay(100);
         // @ts-ignore
         navigation.navigate('map-point-of-interest', { 
             screen: 'point-of-interest-edit', 
             params: {
-                point: point, 
-                onGoBack: (params?: { point: PointOfInterest}) => {
-                    if (params?.point) {
-                        setPoint(params.point);
-                        onUpdatePoint(params.point)
-                    }
-
-                    setTimeout(() => SheetManager.show(SHEET.MAP_POI_SHEET), 500)
-                }
+                point: point
             }
         });
     }
@@ -86,8 +77,8 @@ export default function PointOfInterestDetails({ point: poi, onChangeSection, on
                 {OPTIONS.map((option, i) => {
                     return (
                         <TouchableOpacity
-                            key={i} 
-                            style={styles.option} 
+                            key={i}
+                            style={styles.option}
                             activeOpacity={0.5}
                             onPress={() => option.onPress()}
                         >

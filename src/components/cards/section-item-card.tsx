@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         padding: normalise(15),
         aspectRatio: 1,
         borderRadius: normalise(12),
-        backgroundColor: COLOUR.wp_orange[500]
+        backgroundColor: COLOUR.wp_green[500]
     },
     leftContainer: {
         flexDirection: 'row',

@@ -9,6 +9,7 @@ const unknownDevice = (deviceHasNotch !== true || deviceHasNotch !== false) || (
 export const settings = {
     MAP_DEFAULT_ZOOM: 6,
     MAP_CLOSE_ZOOM: 9,
+    MAP_CLOSEST_ZOOM: 12,
     MAP_MARKER_ZOOM: 14,
     MAP_PACK_MIN_ZOOM: 9,
     MAP_PACK_MAX_ZOOM: 18,

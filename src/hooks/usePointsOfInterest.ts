@@ -26,7 +26,7 @@ export function usePointsOfInterest() {
     const update = ( data: PointOfInterest ): PointOfInterest|void => {
         if (!data.id) return;
         const newPoint = repo.update(data.id, data);
-
+        
         if (!newPoint) return;
         EventBus.emit.poiRefresh();
 

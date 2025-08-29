@@ -24,7 +24,7 @@ export default function PointOfInterestMarker ({ coordinate, icon='flag', colour
                 ]}
             >
                 <Icon
-                    icon={icon}
+                    icon={icon.replace('-outline', '')}
                     size={18}
                     colour={COLOUR.white}
                 />

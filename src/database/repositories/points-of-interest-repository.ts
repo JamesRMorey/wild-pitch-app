@@ -30,12 +30,19 @@ export class PointOfInterestRepository {
 
                 FOREIGN KEY (point_type_id) REFERENCES point_types(id)
             )
-        `);        
+        `);
+
+        // Check if 'elevation' column exists
+        const columns = this.db.execute(`PRAGMA table_info(${this.tableName})`);
+        const hasElevation = columns.rows?._array?.some((col: any) => col.name === 'elevation');
+        if (!hasElevation) {
+            this.db.execute(`ALTER TABLE ${this.tableName} ADD COLUMN elevation REAL DEFAULT NULL`);
+        }
     }
 
     get ( limit: number=100 ): Array<PointOfInterest>  {
         const data = this.db.execute(`
-            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
+            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.elevation, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
             LIMIT ${limit}
@@ -54,6 +61,7 @@ export class PointOfInterestRepository {
                 },
                 latitude: row.latitude,
                 longitude: row.longitude,
+                elevation: row.elevation,
                 created_at: row.created_at
             })) as PointOfInterest[]
             : [];
@@ -61,7 +69,7 @@ export class PointOfInterestRepository {
 
     find ( id: number ): PointOfInterest|void  {
         const record = this.db.execute(`
-            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
+            SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.elevation, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
             WHERE t.id = ${id}
@@ -83,15 +91,16 @@ export class PointOfInterestRepository {
             },
             latitude: row.latitude,
             longitude: row.longitude,
+            elevation: row.elevation,
             created_at: row.created_at
         }
     }
 
     create ( data: PointOfInterest ): PointOfInterest|void {
         const record = this.db.execute(`
-            INSERT INTO "point_of_interests" (name, notes, point_type_id, latitude, longitude) VALUES (?, ?, ?, ?, ?)
+            INSERT INTO "point_of_interests" (name, notes, point_type_id, latitude, longitude, elevation) VALUES (?, ?, ?, ?, ?, ?)
             RETURNING *
-        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude]);
+        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation ?? NITRO_SQLITE_NULL]);
 
         const newPoint = record.rows?._array[0] ?? null
 
@@ -123,10 +132,11 @@ export class PointOfInterestRepository {
                 notes = ?,
                 point_type_id = ?, 
                 latitude = ?, 
-                longitude = ?
+                longitude = ?,
+                elevation = ?
             WHERE id = ?
             RETURNING *
-        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, id]);
+        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation ?? null, id]);
 
         const updatedPoint = record.rows?._array[0] ?? null
 

@@ -34,7 +34,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                 <View style={styles.iconContainer}>
                     <Icon
                         icon={'map-outline'}
-                        colour={COLOUR.wp_orange[500]}
+                        colour={COLOUR.wp_green[500]}
                         size={normalise(20)}
                     />
                 </View>
@@ -64,13 +64,13 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
 const styles = StyleSheet.create({
     container: {
         backgroundColor: COLOUR.white,
-        paddingVertical: normalise(15),
         flexDirection: 'row',
         gap: normalise(20),
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottomColor: COLOUR.gray[500] + OPACITY[20],
-        borderBottomWidth: normalise(1)
+        paddingHorizontal: normalise(20),
+        paddingVertical: normalise(15)
     },
     iconContainer: {
         paddingTop: normalise(2),

@@ -12,9 +12,9 @@ const SCREEN_OPTIONS = { headerShown: false }
 export default function MainTabs({}) {
 
     return (
-        <Tab.Navigator tabBar={props => <CustomTabNavigator {...props} />} >
-            <Tab.Screen name="home" component={ProfileScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'search', displayName: 'Ecplore'}}/>
-            <Tab.Screen name="madp" component={RoutesScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'walk', displayName: 'Track'}}/>
+        <Tab.Navigator tabBar={props => <CustomTabNavigator {...props} />} initialRouteName='map' >
+            <Tab.Screen name="home" component={ProfileScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'search', displayName: 'Explore'}}/>
+            <Tab.Screen name="routes" component={RoutesScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'walk', displayName: 'Routes'}}/>
             <Tab.Screen name="map" component={MapStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'map', displayName: 'Map'}}/>
             <Tab.Screen name="saved" component={SavedStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder', displayName: 'Saved'}}/>
             <Tab.Screen name="account" component={ProfileScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'person', displayName: 'Profile'}}/>
