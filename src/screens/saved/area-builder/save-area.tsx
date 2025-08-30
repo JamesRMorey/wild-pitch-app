@@ -1,8 +1,8 @@
 import { View, StyleSheet, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { SETTING } from "../../../consts";
 import { COLOUR, TEXT } from "../../../styles";
-import { normalise } from "../../../functions/helpers";
-import { MapPackGroup } from "../../../types";
+import { normalise, parseValidationErrors } from "../../../functions/helpers";
+import { FormErrors, MapPackGroup } from "../../../types";
 import { useState } from "react";
 import { MapPackService } from "../../../services/map-pack-service";
 import { MapService } from "../../../services/map-service";
@@ -11,6 +11,12 @@ import Button from "../../../components/buttons/button";
 import { useMapPackGroups } from "../../../hooks/useMapPackGroups";
 import TextArea from "../../../components/inputs/text-area";
 import TextInput from "../../../components/inputs/text-input";
+import { object, string } from "yup";
+
+const schema = object({
+    name: string().required("Name is required"),
+    description: string().required("Description is required"),
+});
 
 type PropsType = { navigation: any, route: any }
 export default function AreaBuilderSaveAreaScreen ({ navigation, route } : PropsType) {
@@ -21,34 +27,38 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
         name: null,
         description: null
     });
+    const [errors, setErrors] = useState<FormErrors>();
 
-    const save = () => {
-        if (!data.name || !data.description) return;
-        const group: MapPackGroup = {
-            name: data.name,
-            key: MapPackService.getKey(data.name),
-            description: data.description,
-            minZoom: SETTING.MAP_PACK_MIN_ZOOM,
-            maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-            center: MapService.boundsCenter(bounds),
-            bounds: bounds,
-            packs: [
-                {
-                    name: MapPackService.getPackName(data.name, Mapbox.StyleURL.Outdoors),
-                    styleURL: Mapbox.StyleURL.Outdoors
-                },
-                {
-                    name: MapPackService.getPackName(data.name, Mapbox.StyleURL.SatelliteStreet),
-                    styleURL: Mapbox.StyleURL.SatelliteStreet
-                }
-            ]
-        }
+    const save = async () => {
+        try {
+            await schema.validate(data, { abortEarly: false });
 
-        create(group);
-        if (onBack) {
-            onBack()
+            const group: MapPackGroup = {
+                name: data.name,
+                key: MapPackService.getKey(data.name),
+                description: data.description,
+                minZoom: SETTING.MAP_PACK_MIN_ZOOM,
+                maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
+                center: MapService.boundsCenter(bounds),
+                bounds: bounds,
+                packs: [
+                    {
+                        name: MapPackService.getPackName(data.name, Mapbox.StyleURL.Outdoors),
+                        styleURL: Mapbox.StyleURL.Outdoors
+                    }
+                ]
+            }
+
+            create(group);
+            if (onBack) {
+                onBack()
+            }
+            navigation.replace('saved');
         }
-        navigation.replace('saved');
+        catch (err: any) {
+            const errs = parseValidationErrors(err);
+            setErrors(errs);
+        }
     }
 
 
@@ -62,12 +72,16 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
                             placeHolder="Name your area..."
                             onChangeText={(text: string) => setData({...data, name: text})}
                             value={data.name}
+                            error={errors?.name?.[0] ?? undefined}
+                            onFocus={() => setErrors(({ ...errors, name: [] }))}
                         />
                         <TextArea
                             label="Description"
                             placeHolder="A description of the area..."
                             onChangeText={(text: string) => setData({...data, description: text})}
                             value={data.description}
+                            error={errors?.description?.[0] ?? undefined}
+                            onFocus={() => setErrors(({ ...errors, description: [] }))}
                         />
                     </View>
                     <View style={styles.buttons}>

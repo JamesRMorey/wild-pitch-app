@@ -66,9 +66,7 @@ export type PointOfInterest = {
 }
 
 export type FormErrors = {
-    [key: string]: {
-        message: string
-    }
+    [key: string]: Array<string>
 }
 
 export type PointType = {

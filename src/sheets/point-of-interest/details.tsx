@@ -43,7 +43,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
     const shareLocation = async () => {
         try {
             await Share.share({
-                message: `Here\'s a location i've plotted on Wild Pitch Maps (${point.latitude, point.longitude}) - https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`,
+                message: `Here\'s a location i've plotted on Wild Pitch Maps (${point.name}) - https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`,
             });
         } 
         catch (error: any) {
@@ -61,7 +61,6 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
             }
         });
     }
-
     return (
         <View>
             <View style={styles.topContainer}>

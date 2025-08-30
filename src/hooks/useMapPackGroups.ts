@@ -1,8 +1,15 @@
 import { MapPackGroup } from '../types';
 import { useEffect, useState } from 'react';
 import { MapPackGroupRepository } from '../database/repositories/map-pack-group-repository';
-import { MapPackService } from '../services/map-pack-service';
 import Mapbox from '@rnmapbox/maps';
+import { object, string } from "yup";
+import { EventBus } from '../services/event-bus';
+
+const schema = object({
+    name: string().required("Name is required"),
+    key: string().required("Key is required"),
+    description: string().required("Description is required"),
+});
 
 export function useMapPackGroups() {
 
@@ -11,17 +18,26 @@ export function useMapPackGroups() {
 
     const get = async (): Promise<void> => {
         const groups = await repo.get();
-        console.log(groups);
         setMapPackGroups(groups);
     }
 
-    const create = ( data: MapPackGroup ): MapPackGroup|void => {
-        const newGroup = repo.create(data);
+    const create = ( data: MapPackGroup ): Promise<MapPackGroup|void> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await schema.validate(data, { abortEarly: false });
+                const newGroup = repo.create(data);
+                console.log(newGroup);
+                if (!newGroup) return;
 
-        if (!newGroup) return;
+                get();
+                EventBus.emit.poiRefresh();
 
-        get();
-        return newGroup;
+                return resolve(newGroup);
+            }
+            catch(err) {
+                return reject(err);
+            }
+        })
     }
 
     const find = ( id: number ): MapPackGroup|void => {
@@ -54,8 +70,14 @@ export function useMapPackGroups() {
 
 
     useEffect(() => {
+        const getListener = EventBus.listen.packsRefresh(() => get());
         get();
+
+        return () => {
+            getListener.remove();
+        }
     }, [])
+
 
     return { 
         mapPackGroups,

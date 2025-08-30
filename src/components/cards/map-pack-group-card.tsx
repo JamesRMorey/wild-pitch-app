@@ -1,20 +1,75 @@
 import { normalise } from "../../functions/helpers";
-import { COLOUR, OPACITY, TEXT } from "../../styles";
+import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
 import { MapPackGroup } from "../../types"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 import { useEffect, useState } from "react";
 import { MapPackService } from "../../services/map-pack-service";
+import ProgressBar from "../misc/progress-bar";
+import { EventBus } from "../../services/event-bus";
+import Mapbox from "@rnmapbox/maps";
+import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack";
+import { Format } from "../../services/formatter";
+import { ASSET } from "../../consts";
 
 type PropsType = { mapPackGroup: MapPackGroup, onPress?: ()=>void, onOtherPress?: ()=>void }
 export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOtherPress } : PropsType ) {
 
-    const [numDownloaded, setNumDownloaded] = useState<number>();
+    const [progress, setProgress] = useState<number>(0);
+    const [downloaded, setDownloaded] = useState<boolean>(false);
+    const [errored, setErrored] = useState<boolean>(false);
+    const [downloading, setDownloading] = useState<boolean>(false);
+    const pack = mapPackGroup.packs[0];
+    const [offlinePack, setOfflinePack] = useState<OfflinePack>();
 
     const checkDownloaded = async () => {
-        const offlinePacks = await MapPackService.getOfflinePacks();
-        const downloaded = offlinePacks.filter((op) => mapPackGroup.packs.find(p => p.name == op.name));
-        setNumDownloaded(downloaded.length);
+        fetchPack();
+    }
+
+    const fetchPack = async () => {
+        const p = await MapPackService.getPack(pack.name);
+
+        if (!p) {
+            setProgress(0);
+            setDownloaded(false);
+            setOfflinePack(undefined);
+            return;
+        }
+
+        setOfflinePack(p);
+        setDownloaded(p.pack.state == "complete");
+        setProgress(p.pack.percentage);
+    }
+
+    const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
+        setProgress(status.percentage);
+        setDownloaded(status.percentage == 100 ? true : false);
+        if (status.percentage == 100) {
+            EventBus.emit.mapPackDownload(pack.name);
+            setDownloading(false);
+            setDownloaded(true);
+            checkDownloaded();
+        }
+    }
+
+    const onDownloadError = (offlineRegion: any, err: any) => {
+        setErrored(true);
+        setDownloading(false);
+        setProgress(0);
+    }
+
+    const download = () => {
+        setErrored(false);
+        setDownloading(true);
+        setProgress(0);
+
+        MapPackService.download({ 
+            name: pack.name, 
+            styleURL: pack.styleURL, 
+            minZoom: mapPackGroup.minZoom, 
+            maxZoom: mapPackGroup.maxZoom, 
+            bounds: mapPackGroup.bounds 
+        }, mapPackGroup, onDownloadProgress, onDownloadError);
     }
 
 
@@ -29,27 +84,71 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
             <TouchableOpacity 
                 style={styles.leftContainer}
                 onPress={onPress}
+                disabled={true}
                 activeOpacity={0.8}
             >
                 <View style={styles.iconContainer}>
-                    <Icon
-                        icon={'map-outline'}
-                        colour={COLOUR.wp_green[500]}
-                        size={normalise(20)}
+                    <Image
+                        source={ASSET.ICON_OUTDOORS_MAP}
+                        style={styles.image}
                     />
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{mapPackGroup.name}</Text>
-                    <Text style={TEXT.sm}>{mapPackGroup.description.slice(0,80)}...</Text>
-                    {numDownloaded != undefined && numDownloaded >= 0 && (
-                        <Text style={styles.downloadedText}>{numDownloaded}/2 Downloaded</Text>
-                    )}
+                    <Text style={TEXT.xs}>{mapPackGroup.description.slice(0,80)}{mapPackGroup.description.length > 80 ? '...' : ''}</Text>
+                    <Text style={[TEXT.sm, TEXT.medium]}>Outdoor Terrain  
+                        {downloading ? 
+                        <Text> • {Math.ceil(progress)}%</Text>
+                        :downloaded && offlinePack?.pack?.completedResourceSize ?
+                        <Text> • {Format.byteToMegaByte(offlinePack?.pack?.completedResourceSize)} MB</Text>
+                        :
+                        null}
+                    </Text>
+                    <View style={styles.downloadContainer}>
+                        
+                        {errored ?
+                        <TouchableOpacity style={styles.downloadButton} onPress={download}>
+                            <Icon
+                                icon='cloud-download-outline'
+                                size={normalise(12)}
+                                colour={COLOUR.red[500]}
+                            />
+                            <Text style={styles.errorText}>Error</Text>
+                        </TouchableOpacity>
+                        :downloading ?
+                        <ProgressBar
+                            step={Math.ceil(progress)}
+                            steps={100}
+                            height={normalise(5)}
+                            colour={COLOUR.wp_green[500]}
+                        />
+                        :downloaded ?
+                        <View style={styles.downloadedContainer}>
+                            <Icon
+                                icon='checkmark-circle-outline'
+                                size={normalise(12)}
+                                colour={COLOUR.green[500]}
+                            />
+                            <Text style={styles.downloadedText}>Downloaded</Text>
+                        </View>
+                        :
+                        <TouchableOpacity style={styles.downloadButton} onPress={download}>
+                            <Icon
+                                icon='cloud-download-outline'
+                                size={normalise(12)}
+                                colour={COLOUR.wp_orange[500]}
+                            />
+                            <Text style={styles.downloadButtonText}>Download</Text>
+                        </TouchableOpacity>
+                        }
+                    </View>
                 </View>
             </TouchableOpacity>
             {onOtherPress && (
                 <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={onOtherPress}
+                    style={styles.ellipseButton}
                 >
                     <Icon
                         icon='ellipsis-horizontal-outline'
@@ -69,8 +168,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottomColor: COLOUR.gray[500] + OPACITY[20],
-        paddingHorizontal: normalise(20),
-        paddingVertical: normalise(15)
+        paddingLeft: normalise(20),
+        paddingVertical: normalise(15),
+        borderRadius: normalise(15),
+        ...SHADOW.sm
     },
     iconContainer: {
         paddingTop: normalise(2),
@@ -84,8 +185,45 @@ const styles = StyleSheet.create({
         gap: normalise(3),
         flex: 1
     },
+    downloadedContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: normalise(5)
+    },
     downloadedText: {
         ...TEXT.xs,
+        color: COLOUR.green[500],
+        ...TEXT.medium
+    },
+    downloadContainer: {
         marginTop: normalise(5)
+    },
+    downloadButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: normalise(5),
+    },
+    downloadButtonText: {
+        ...TEXT.xs,
+        ...TEXT.medium,
+        color: COLOUR.wp_orange[500],
+    },
+    image: {
+        aspectRatio: 1,
+        width: normalise(70),
+        height: 'auto',
+        borderRadius: normalise(15),
+    },
+    ellipseButton: { 
+        height: '100%', 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        paddingLeft: normalise(10),
+        paddingRight: normalise(20)
+    },
+    errorText: {
+        ...TEXT.xs,
+        color: COLOUR.red[500],
+        ...TEXT.medium
     }
 })

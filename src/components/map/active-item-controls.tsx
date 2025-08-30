@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center', 
         gap: normalise(5),
-        backgroundColor: COLOUR.white + OPACITY[80],
+        backgroundColor: COLOUR.white,
         paddingRight: normalise(10),
         paddingLeft: normalise(15),
         paddingVertical: normalise(8),

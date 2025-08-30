@@ -1,6 +1,6 @@
 import { StyleSheet, TouchableWithoutFeedback, View, KeyboardAvoidingView, Keyboard } from "react-native";
 import { PointOfInterest, PointType } from "../../types";
-import { normalise } from "../../functions/helpers";
+import { normalise, parseValidationErrors } from "../../functions/helpers";
 import { TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
 import { useCallback, useState } from "react";
@@ -13,7 +13,6 @@ import { usePointsOfInterest } from "../../hooks/usePointsOfInterest";
 import { useFocusEffect } from "@react-navigation/native";
 
 type PropsType = { navigation: any, route: any };
-
 export default function PointOfInterestEditScreen({ navigation, route } : PropsType) {
 
     const { point, onGoBack } = route.params;
@@ -21,13 +20,20 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
     const [errors, setErrors] = useState<FormErrors>()
     const { pointTypes } = usePointTypes();
     const { create, update } = usePointsOfInterest();
+    
+    const validate = async () => {
+        try {
+            const updated = data.id ? await update(data) : await create(data);
 
-    const validate = () => {
-        const updated = data.id ? update(data) : create(data);
-        if (onGoBack) {
-            onGoBack({ point: updated });
+            if (onGoBack) {
+                onGoBack({ point: updated });
+            }
+            navigation.goBack();
         }
-        navigation.goBack();
+        catch (err: any) {
+            const errs = parseValidationErrors(err);
+            setErrors(errs);
+        }
     }
 
     const selectPointType = () => {
@@ -58,21 +64,29 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
                             placeHolder="Name your point..."
                             value={data.name}
                             onChangeText={(text: string) => setData({...data, name: text})}
-                            error={errors?.name?.message ?? undefined}
+                            error={errors?.name?.[0] ?? undefined}
+                            onFocus={() => {
+                                setErrors(({ ...errors, name: [] }));
+                                if (data.name.startsWith('New Location')) {
+                                    setData({...data, name: ''});
+                                }
+                            }}
                         />
                         <PressInput
                             onPress={selectPointType}
                             label="Category"
                             placeHolder="Category..."
                             value={pointTypes.find(p => p.id == data.point_type_id)?.name}
-                            error={errors?.point_type_id?.message ?? undefined}
+                            error={errors?.point_type_id?.[0] ?? undefined}
+                            onFocus={() => setErrors(({ ...errors, point_type_id: [] }))}
                         />
                         <TextArea
                             label="Notes"
                             placeHolder="Notes about your point..."
                             value={data.notes}
                             onChangeText={(text: string) => setData({...data, notes: text})}
-                            error={errors?.notes?.message ?? undefined}
+                            error={errors?.notes?.[0] ?? undefined}
+                            onFocus={() => setErrors(({ ...errors, notes: [] }))}
                         />
                     </View>
                     <View style={styles.buttons}>

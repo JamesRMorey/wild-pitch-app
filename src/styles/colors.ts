@@ -14,7 +14,7 @@ export const colors = {
         800: '#854d0e',
         900: '#713f12',
     },
-    "wp_green": {
+    "wp_orange": {
         50:  '#fdf4f0', // very light warm peach
         100: '#fbe3d6',
         200: '#f6bfa9',

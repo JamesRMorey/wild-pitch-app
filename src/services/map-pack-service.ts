@@ -1,3 +1,4 @@
+import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack";
 import { MapPackGroupRepository } from "../database/repositories/map-pack-group-repository";
 import { MapPack, MapPackGroup } from "../types";
 import Mapbox from "@rnmapbox/maps";
@@ -17,6 +18,17 @@ export class MapPackService {
     static async download ( pack: MapPack, group: MapPackGroup, onProgress: (pack: any, status: any) => void, onError: (offlineRegion: any, err: any) => void) 
     {
         Mapbox.offlineManager.createPack(pack, (pack, status) => this.downloadProgress(pack, group, status, onProgress), onError);
+    }
+
+    static async removeDownload ( pack: MapPack ) 
+    {
+        Mapbox.offlineManager.deletePack(pack.name);
+    }
+
+    static async removeDownloads ( packGroup: MapPackGroup ) 
+    {
+        const packName = `${packGroup.key}_OUTDOORS`;
+        Mapbox.offlineManager.deletePack(packName);
     }
 
     static getKey ( input: string ): string {
@@ -44,6 +56,11 @@ export class MapPackService {
         }
 
         return null;
+    }
+
+    static async getPack ( name: string ): Promise<OfflinePack|undefined> {
+        const p = await Mapbox.offlineManager.getPack(name);
+        return p;
     }
 
     static async getOfflinePacks (): Promise<Array<MapPack>> {

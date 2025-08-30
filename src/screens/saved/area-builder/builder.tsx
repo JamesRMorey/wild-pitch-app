@@ -9,6 +9,7 @@ import MapArea from "../../../components/map/map-area";
 import { SETTING } from "../../../consts";
 import { MapMarker as MapMarkerType, PositionArray } from "../../../types";
 import MapPointAnnotation from "../../../components/map/map-point-annotation";
+import useHaptic from "../../../hooks/useHaptic";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -18,6 +19,7 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 	const { center, cameraRef, followUserLocation } = useMapState();
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([]);
 	const [areaBounds, setAreaBounds] = useState<PositionArray>();
+	const { tick } = useHaptic();
 
 	const back = () => {
 		navigation.goBack();
@@ -29,6 +31,8 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 			coordinate: e.geometry.coordinates,
 			type: 'area'
 		}
+		
+		tick();
 		setMarkers([...markers, marker]);
 	}
 

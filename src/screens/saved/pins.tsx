@@ -67,9 +67,10 @@ export default function PinsScreen({  } : PropsType) {
                 contentContainerStyle={styles.scrollContainer}
             >
                 {pointsOfInterest.length > 0 ?
-                <>
+                <View>
                     <Text style={styles.title}>{pointsOfInterest.length} Pins</Text>
-                    {pointsOfInterest?.map((poi, i) => {
+                    <View style={styles.cardContainer}>
+                        {pointsOfInterest?.map((poi, i) => {
                         return (
                             <PointOfInterestCard
                                 key={i}
@@ -78,7 +79,8 @@ export default function PinsScreen({  } : PropsType) {
                             />
                         )
                     })}
-                </>
+                    </View>
+                </View>
                 :
                 <NothingHere
                     title="No POI's yet?"
@@ -100,16 +102,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLOUR.wp_brown[100],
-        borderWidth: normalise(1),
-        borderColor: COLOUR.wp_brown[200]
     },
     scrollContainer: {
         paddingVertical: normalise(20),
-        gap: normalise(5)
+        paddingHorizontal: normalise(20)
     },
     title: {
         ...TEXT.h4,
-        paddingHorizontal: normalise(20),
         marginBottom: normalise(5)
+    },
+    cardContainer: {
+        gap: normalise(10),
+        marginTop: normalise(5)
     }
 });

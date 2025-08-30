@@ -4,12 +4,13 @@ export class Format {
 
     static byteToMegaByte( bytes: number ) {
         const mb = bytes / (1024 * 1024);
-        return Intl.NumberFormat('en', {
-            style: 'unit',
-            unit: 'mb',
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-        }).format(mb);
+        return parseFloat(mb.toFixed(2));
+        // return Intl.NumberFormat('en', {
+        //     style: 'unit',
+        //     unit: 'megabyte',
+        //     maximumFractionDigits: 2,
+        //     minimumFractionDigits: 0,
+        // }).format(mb);
     }
 
     static percent ( percentage: number ) {

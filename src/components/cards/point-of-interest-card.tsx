@@ -1,5 +1,5 @@
 import { normalise } from "../../functions/helpers";
-import { COLOUR, OPACITY, TEXT } from "../../styles";
+import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
 import { PointOfInterest } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
@@ -34,7 +34,7 @@ export default function PointOfInterestCard ({ point, onPress, onOtherPress } : 
                 <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={onOtherPress}
-                    style={{ height: '100%', flexDirection: 'row', alignItems: 'center', paddingLeft: normalise(10) }}
+                    style={styles.ellipseButton}
                 >
                     <Icon
                         icon='ellipsis-horizontal-outline'
@@ -53,9 +53,10 @@ const styles = StyleSheet.create({
         gap: normalise(20),
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottomColor: COLOUR.gray[500] + OPACITY[20],
-        paddingHorizontal: normalise(20),
-        paddingVertical: normalise(15)
+        paddingLeft: normalise(20),
+        paddingVertical: normalise(15),
+        borderRadius: normalise(15),
+        ...SHADOW.sm
     },
     iconContainer: {
         padding: normalise(15),
@@ -63,11 +64,19 @@ const styles = StyleSheet.create({
         borderRadius: normalise(12)
     },
     leftContainer: {
+        flex: 1,
         flexDirection: 'row',
         gap: normalise(15),
         alignItems: 'center'
     },
     textContainer: {
         gap: normalise(3)
+    },
+    ellipseButton: { 
+        height: '100%', 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        paddingLeft: normalise(10),
+        paddingRight: normalise(20)
     }
 })

@@ -1,8 +1,6 @@
-import { open } from 'react-native-nitro-sqlite'
+import { open, NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { PointOfInterest } from '../../types';
-import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { PointTypeRepository } from './point-type-repository';
-
 
 export class PointOfInterestRepository {
 
@@ -21,11 +19,12 @@ export class PointOfInterestRepository {
         this.db.execute(`
             CREATE TABLE IF NOT EXISTS ${this.tableName} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                notes LONGTEXT,
+                name TEXT NOT NULL,
+                notes LONGTEXT DEFAULT NULL,
                 point_type_id INTEGER NOT NULL DEFAULT 1,
                 latitude DECIMAL(8,6) NOT NULL,
                 longitude DECIMAL(8,6) NOT NULL,
+                elevation DECIMAL(8,2) DEFAULT NULL,
                 created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
                 FOREIGN KEY (point_type_id) REFERENCES point_types(id)
@@ -33,11 +32,11 @@ export class PointOfInterestRepository {
         `);
 
         // Check if 'elevation' column exists
-        const columns = this.db.execute(`PRAGMA table_info(${this.tableName})`);
-        const hasElevation = columns.rows?._array?.some((col: any) => col.name === 'elevation');
-        if (!hasElevation) {
-            this.db.execute(`ALTER TABLE ${this.tableName} ADD COLUMN elevation REAL DEFAULT NULL`);
-        }
+        // const columns = this.db.execute(`PRAGMA table_info(${this.tableName})`);
+        // const hasElevation = columns.rows?._array?.some((col: any) => col.name === 'elevation');
+        // if (!hasElevation) {
+        //     this.db.execute(`ALTER TABLE ${this.tableName} ADD COLUMN elevation REAL DEFAULT NULL`);
+        // }
     }
 
     get ( limit: number=100 ): Array<PointOfInterest>  {
@@ -52,7 +51,7 @@ export class PointOfInterestRepository {
             data.rows._array.map(row => ({
                 id: row.id,
                 name: row.name,
-                notes: row.notes,
+                notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
                 point_type_id: row.point_type_id,
                 point_type: {
                     icon: row.pt_icon,
@@ -61,7 +60,7 @@ export class PointOfInterestRepository {
                 },
                 latitude: row.latitude,
                 longitude: row.longitude,
-                elevation: row.elevation,
+                elevation: row.elevation && row.elevation.isNitroSQLiteNull ? undefined : row.elevation,
                 created_at: row.created_at
             })) as PointOfInterest[]
             : [];
@@ -100,7 +99,7 @@ export class PointOfInterestRepository {
         const record = this.db.execute(`
             INSERT INTO "point_of_interests" (name, notes, point_type_id, latitude, longitude, elevation) VALUES (?, ?, ?, ?, ?, ?)
             RETURNING *
-        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation ?? NITRO_SQLITE_NULL]);
+        `, [data.name, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL]);
 
         const newPoint = record.rows?._array[0] ?? null
 
@@ -136,7 +135,7 @@ export class PointOfInterestRepository {
                 elevation = ?
             WHERE id = ?
             RETURNING *
-        `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation ?? null, id]);
+        `, [data.name, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL, id]);
 
         const updatedPoint = record.rows?._array[0] ?? null
 

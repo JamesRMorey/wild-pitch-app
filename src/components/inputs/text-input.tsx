@@ -3,9 +3,9 @@ import { COLOUR, TEXT } from '../../styles';
 import { normalise } from '../../functions/helpers';
 
 
-type PropsType = { placeHolder?: string, label?: string, value?: string, onChangeText: (text: string)=>void, error?: string };
+type PropsType = { placeHolder?: string, label?: string, value?: string, onChangeText: (text: string)=>void, onFocus?: ()=>void, error?: string };
 
-export default function TextInput ({ placeHolder, value, label, onChangeText, error } : PropsType) {
+export default function TextInput ({ placeHolder, value, label, onChangeText, onFocus=()=>{}, error } : PropsType) {
 
     return (
         <View>
@@ -21,6 +21,7 @@ export default function TextInput ({ placeHolder, value, label, onChangeText, er
                 value={value}
                 placeholderTextColor={COLOUR.gray[500]}
                 onChangeText={onChangeText}
+                onFocus={onFocus}
             />
             {error && (
                 <Text style={styles.errorText}>{error}</Text>

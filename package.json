@@ -35,7 +35,8 @@
     "react-native-permissions": "^5.4.2",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.13.1",
-    "react-native-tab-view": "^4.1.2"
+    "react-native-tab-view": "^4.1.2",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -45,10 +45,11 @@ export default function PointOfInterestNavigation({ point, onBack } : { point: P
             if (!elevation) {
                 setLoading(prev => ({ ...prev, elevation: true }));
             }
-            // if (point.elevation) {
-            //     setElevation(point.elevation);
-            //     return;
-            // }
+            
+            if (point.elevation) {
+                setElevation(point.elevation);
+                return;
+            }
 
             const elev = await MapService.getPointElevation({ latitude: point.latitude, longitude: point.longitude });
             if (!elev) return;

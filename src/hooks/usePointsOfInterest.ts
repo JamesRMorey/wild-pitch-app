@@ -1,8 +1,16 @@
-import Mapbox from '@rnmapbox/maps';
-import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
+import { PointOfInterest } from '../types';
 import { useEffect, useState } from 'react';
 import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
 import { EventBus } from '../services/event-bus';
+import { number, object, string } from "yup";
+
+const schema = object({
+    name: string().required("Name is required"),
+    point_type_id: string().required("Category is required"),
+    notes: string().optional(),
+    latitude: number().required("Latitude is required"),
+    longitude: number().required("Longitude is required"),
+});
 
 export function usePointsOfInterest() {
 
@@ -14,23 +22,40 @@ export function usePointsOfInterest() {
         setPointsOfInterest(points);
     }
 
-    const create = ( data: PointOfInterest ): PointOfInterest|void => {
-        const newPoint = repo.create(data);
+    const create = async ( data: PointOfInterest ): Promise<PointOfInterest|void> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await schema.validate(data, { abortEarly: false });
+                const newPoint = repo.create(data,);
 
-        if (!newPoint) return;
-        EventBus.emit.poiRefresh();
+                if (!newPoint) return resolve();
+                EventBus.emit.poiRefresh();
 
-        return newPoint;
+                return resolve(newPoint);
+            }
+            catch (error) {
+                return reject(error);
+            }
+        });
     }
 
-    const update = ( data: PointOfInterest ): PointOfInterest|void => {
-        if (!data.id) return;
-        const newPoint = repo.update(data.id, data);
-        
-        if (!newPoint) return;
-        EventBus.emit.poiRefresh();
+    const update = async ( data: PointOfInterest ): Promise<PointOfInterest|void> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (!data.id) return reject();
 
-        return newPoint;
+                await schema.validate(data, { abortEarly: false });
+                const newPoint = repo.update(data.id, data);
+
+                if (!newPoint) return resolve();
+                EventBus.emit.poiRefresh();
+
+                return resolve(newPoint);
+            }
+            catch (error) {
+                return reject(error);
+            }
+        });
     }
 
     const remove = ( id: number ) => {

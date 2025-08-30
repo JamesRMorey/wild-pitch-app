@@ -57,10 +57,10 @@ export class MapPackGroupRepository {
                         name: `${row.key}_OUTDOORS`,
                         styleURL: Mapbox.StyleURL.Outdoors
                     },
-                    {
-                        name: `${row.key}_SATELLITE`,
-                        styleURL: Mapbox.StyleURL.SatelliteStreet
-                    }
+                    // {
+                    //     name: `${row.key}_SATELLITE`,
+                    //     styleURL: Mapbox.StyleURL.SatelliteStreet
+                    // }
                 ]
             })) as any[]
             : [];
@@ -91,10 +91,10 @@ export class MapPackGroupRepository {
                     name: `${row.key}_OUTDOORS`,
                     styleURL: Mapbox.StyleURL.Outdoors
                 },
-                {
-                    name: `${row.key}_SATELLITE`,
-                    styleURL: Mapbox.StyleURL.SatelliteStreet
-                }
+                // {
+                //     name: `${row.key}_SATELLITE`,
+                //     styleURL: Mapbox.StyleURL.SatelliteStreet
+                // }
             ]
         }
     }
@@ -123,10 +123,10 @@ export class MapPackGroupRepository {
                     name: `${row.key}_OUTDOORS`,
                     styleURL: Mapbox.StyleURL.Outdoors
                 },
-                {
-                    name: `${row.key}_SATELLITE`,
-                    styleURL: Mapbox.StyleURL.SatelliteStreet
-                }
+                // {
+                //     name: `${row.key}_SATELLITE`,
+                //     styleURL: Mapbox.StyleURL.SatelliteStreet
+                // }
             ]
         }
     }

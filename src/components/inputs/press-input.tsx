@@ -4,10 +4,10 @@ import { normalise } from '../../functions/helpers';
 import Icon from '../misc/icon';
 
 
-type PropsType = { placeHolder?: string, label?: string, value?: string, onPress: ()=>void, error?: string };
+type PropsType = { placeHolder?: string, label?: string, value?: string, onPress: ()=>void, onFocus?: () => void, error?: string };
 
-export default function PressInput ({ placeHolder, value, label, onPress, error } : PropsType) {
-    
+export default function PressInput ({ placeHolder, value, label, onPress, onFocus=()=>{}, error } : PropsType) {
+
 
     return (
         <View>
@@ -19,7 +19,10 @@ export default function PressInput ({ placeHolder, value, label, onPress, error 
                     styles.input,
                     error && styles.error
                 ]}
-                onPress={onPress}
+                onPress={() => {
+                    onPress();
+                    onFocus();
+                }}
                 activeOpacity={0.8}
             >
                 {value ?
