@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SavedTabsView from '../screens/saved/tab-view';
-import AreaBuilderSaveAreaScreen from '../screens/saved/area-builder/save-area';
-import AreaBuilderScreen from '../screens/saved/area-builder/builder';
+import AreaBuilderSaveAreaScreen from '../screens/area-builder/save-area';
+import AreaBuilderScreen from '../screens/area-builder/builder';
 
 const Stack = createNativeStackNavigator();
 

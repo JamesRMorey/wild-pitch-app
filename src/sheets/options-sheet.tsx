@@ -4,7 +4,7 @@ import { COLOUR, OPACITY, TEXT } from "../styles";
 import { normalise } from "../functions/helpers";
 import Icon from "../components/misc/icon";
 
-type PropsType = { id: string, options: Array<{ label: string, icon: string, colour?: string, onPress: ()=>void }> }
+type PropsType = { id: string, options: Array<{ label: string, icon: string, colour?: string, showArrow?: boolean, onPress: ()=>void }> }
 export default function OptionsSheet ({ id, options } : PropsType ) {
 
     
@@ -29,12 +29,14 @@ export default function OptionsSheet ({ id, options } : PropsType ) {
                             />
                             <Text style={[TEXT.md, { color: option.colour ?? COLOUR.black }]}>{option.label}</Text>
                         </View>
-                        <View>
-                            <Icon
-                                icon={'chevron-forward-outline'}
-                                colour={COLOUR.black}
-                            />
-                        </View>
+                        {(option.showArrow ?? true) && (
+                            <View>
+                                <Icon
+                                    icon={'chevron-forward-outline'}
+                                    colour={COLOUR.black}
+                                />
+                            </View>
+                        )}
                     </TouchableOpacity>
                 )
             })}

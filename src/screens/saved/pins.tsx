@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { delay, normalise } from "../../functions/helpers"
-import { usePointsOfInterest } from "../../hooks/usePointsOfInterest"
+import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest"
 import PointOfInterestCard from "../../components/cards/point-of-interest-card";
 import { COLOUR, TEXT } from "../../styles";
 import { PointOfInterest } from "../../types";
@@ -49,8 +49,8 @@ export default function PinsScreen({  } : PropsType) {
     }
 
     const SHEET_OPTIONS = [
-        { label: 'View', icon: 'eye', onPress: ()=>viewSelectedPOI() },
-        { label: 'Edit', icon: 'pencil', onPress: ()=>editSelectedPOI() },
+        { label: 'View', icon: 'eye-outline', onPress: ()=>viewSelectedPOI() },
+        { label: 'Edit', icon: 'pencil-outline', onPress: ()=>editSelectedPOI() },
     ];
 
 
@@ -76,6 +76,7 @@ export default function PinsScreen({  } : PropsType) {
                                 key={i}
                                 point={poi}
                                 onOtherPress={() => openOptionsSheet(poi)}
+                                onPress={() => openOptionsSheet(poi)}
                             />
                         )
                     })}

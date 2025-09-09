@@ -29,6 +29,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.27.2",
     "react-native-haptic-feedback": "^2.3.3",
+    "react-native-loader-kit": "^3.0.0",
     "react-native-nitro-modules": "^0.27.2",
     "react-native-nitro-sqlite": "^9.1.10",
     "react-native-pager-view": "^6.9.1",

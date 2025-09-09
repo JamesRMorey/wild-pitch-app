@@ -75,3 +75,38 @@ export type PointType = {
     colour: string,
     icon: string
 }
+
+export type Place = {
+    id: number,
+    name: string,
+    latitude: number,
+    longitude: number,
+    category: string,
+    address: string,
+    point_type?: PointType
+}
+
+export type Route = {
+    id?: number,
+    name: string,
+    notes?: string,
+    markers: Array<Coordinate>,
+    latitude: number,
+    longitude: number,
+    distance?: number,
+    elevation_gain?: number,
+    elevation_loss?: number,
+    created_at?: string,
+}
+
+export type RouteSearchResult = {
+    id: string,
+    name: string,
+    slug: string,
+    latitude: number,
+    longitude: number,
+    distance?: number,
+    elevation_gain?: number,
+    elevation_loss?: number,
+    created_at?: string,
+}

@@ -7,7 +7,7 @@ import { Format } from "../../services/formatter";
 import { MapService } from "../../services/map-service";
 import useUserPosition from "../../hooks/useUserPosition";
 import Header from "../../components/sheets/header";
-import { usePointsOfInterest } from "../../hooks/usePointsOfInterest";
+import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 
 
 export default function PointOfInterestNavigation({ point, onBack } : { point: PointOfInterest, onBack: ()=>void }) {

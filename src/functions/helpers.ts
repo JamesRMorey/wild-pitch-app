@@ -1,5 +1,6 @@
 import { Dimensions, PixelRatio } from 'react-native';
 import { ValidationError } from 'yup';
+import { PointType } from '../types';
 
 /** function to normalise fonts etc based on screen size */
 const {
@@ -201,4 +202,57 @@ export function parseValidationErrors(error: ValidationError): { [key: string]: 
     });
 
     return errors;
+}
+
+export function getPointType(category: string, pointTypes: Array<PointType>): PointType {
+    let pointName;
+    switch (category.toLowerCase()) {
+        case 'restaurant':
+        case 'food & drink':
+            pointName = 'food & drink';
+            break;
+        case 'cafe':
+            pointName = 'cafe';
+            break;
+        case 'shop':
+        case 'shopping':
+            pointName = 'cafe';
+            break;
+        case 'parking':
+            pointName = 'point of interest';
+            break;
+        case 'mountain':
+        case 'peak':
+            pointName = 'mountain';
+            break;
+        case 'lake':
+            pointName = 'point of interest';
+            break;
+        case 'river':
+            pointName = 'point of interest';
+            break;
+        case 'forest':
+            pointName = 'point of interest';
+            break;
+        case 'waterfall':
+            pointName = 'point of interest';
+            break;
+        case 'viewpoint':
+            pointName = 'point of interest';
+            break;
+        case 'camp spot':
+            pointName = 'point of interest';
+            break;
+        case 'meeting point':
+            pointName = 'point of interest';
+            break;
+        case 'other':
+            pointName = 'point of interest';
+            break;
+        default:
+            pointName = 'point of interest';
+            break;
+    }
+
+    return pointTypes.find(type => type.name.toLowerCase() === pointName.toLowerCase());
 }

@@ -1,11 +1,12 @@
 import Mapbox from '@rnmapbox/maps';
 import { SETTING } from '../consts';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 
 export function useMapCameraControls() {
 
     const cameraRef = useRef<Mapbox.Camera>(null);
+    const [initialRegion, setInitialRegion] = useState<Position>();
 
     const moveTo = (coordinate: Position): void => {
         cameraRef.current?.moveTo(coordinate);
@@ -17,6 +18,7 @@ export function useMapCameraControls() {
             zoomLevel: zoom,
             animationMode: 'flyTo',
             animationDuration: duration,
+            heading: 0
         });
     };
 
@@ -35,5 +37,19 @@ export function useMapCameraControls() {
         });
     }
 
-    return { moveTo, flyTo, flyToLow, zoomTo, resetHeading, cameraRef };
+    const fitToBounds = (ne: Position, sw: Position, padding: number = 50, duration: number = 1000): void => {
+        cameraRef.current?.fitBounds(ne, sw, [padding, padding, padding, padding], duration);
+    }
+
+    return { 
+        moveTo, 
+        flyTo, 
+        flyToLow, 
+        zoomTo, 
+        resetHeading,
+        setInitialRegion,
+        fitToBounds,
+        cameraRef,
+        initialRegion,
+    };
 }

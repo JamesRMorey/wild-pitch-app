@@ -22,7 +22,7 @@ export default function IconButton({ icon, onPress, disabled=false, active=false
         >
             <Icon
                 icon={icon}
-                size={small ? 20 : 24}
+                size={small ? 20 : 20}
                 colour={active ? COLOUR.white : COLOUR.black}
             />
         </TouchableOpacity>
@@ -44,8 +44,6 @@ const styles = StyleSheet.create({
     },
     iconOnly: {
         padding: 0,
-        width: 'auto',
-        height: 'auto',
         backgroundColor: COLOUR.transparent
     },
     disabled: {

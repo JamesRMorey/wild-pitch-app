@@ -1,5 +1,6 @@
 import { hasNotch, hasDynamicIsland } from "react-native-device-info";
 import { normalise } from "../functions/helpers";
+import { COLOUR } from "../styles";
 
 const deviceHasNotch = hasNotch();
 const deviceHasDynamicIsland = hasDynamicIsland();
@@ -13,6 +14,9 @@ export const settings = {
     MAP_MARKER_ZOOM: 14,
     MAP_PACK_MIN_ZOOM: 9,
     MAP_PACK_MAX_ZOOM: 18,
+    ROUTE_CLOSE_ZOOM: 16,
+    ROUTE_DEFAULT_ZOOM: 12,
+    ROUTE_LINE_COLOUR: COLOUR.blue[500],
 
     TOP_PADDING: ( deviceHasNotch || deviceHasDynamicIsland || unknownDevice ) ? normalise(50) : normalise(15),
 }

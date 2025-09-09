@@ -2,7 +2,9 @@ import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/Offli
 import { MapPackGroupRepository } from "../database/repositories/map-pack-group-repository";
 import { MapPack, MapPackGroup } from "../types";
 import Mapbox from "@rnmapbox/maps";
+import { NativeModules } from 'react-native';
 
+const { MapboxOfflineManager } = NativeModules;
 
 export class MapPackService {
 
@@ -20,15 +22,28 @@ export class MapPackService {
         Mapbox.offlineManager.createPack(pack, (pack, status) => this.downloadProgress(pack, group, status, onProgress), onError);
     }
 
+    static async downloadRoute ( pack: MapPack, onProgress: (pack: any, status: any) => void, onError: (offlineRegion: any, err: any) => void) 
+    {
+        Mapbox.offlineManager.createPack(pack, (pack, status) => onProgress(pack, status), onError);
+    }
+
     static async removeDownload ( pack: MapPack ) 
     {
         Mapbox.offlineManager.deletePack(pack.name);
+        try {
+            await MapboxOfflineManager.removeOfflineRegion(pack.name);
+            console.log('Deleted Mapbox offline database');
+        }
+        catch (e) {
+            console.error('Failed to delete Mapbox offline database', e);
+        }
+        console.log('Deleted pack:', pack.name);
     }
 
     static async removeDownloads ( packGroup: MapPackGroup ) 
     {
         const packName = `${packGroup.key}_OUTDOORS`;
-        Mapbox.offlineManager.deletePack(packName);
+        await this.removeDownload({ name: packName, styleURL: '' });
     }
 
     static getKey ( input: string ): string {
@@ -40,7 +55,7 @@ export class MapPackService {
         return name;
     }
 
-    static getPackName ( input: string, styleURL: Mapbox.StyleURL ): string|null {
+    static getPackName ( input: string, styleURL: Mapbox.StyleURL ): string {
         const name = input
             .trim()
             .toUpperCase()
@@ -53,9 +68,9 @@ export class MapPackService {
                 return `${name}_SATELLITE`;
             case Mapbox.StyleURL.Street:
                 return `${name}_STREET`;
+            default:
+                return name;
         }
-
-        return null;
     }
 
     static async getPack ( name: string ): Promise<OfflinePack|undefined> {

@@ -4,7 +4,7 @@ import { MapPackGroup, PointOfInterest } from '../types';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
-import { usePointsOfInterest } from '../hooks/usePointsOfInterest';
+import { usePointsOfInterest } from '../hooks/repositories/usePointsOfInterest';
 
 type MapContextState = {
     styleURL: Mapbox.StyleURL;

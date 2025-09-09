@@ -1,5 +1,5 @@
 import Mapbox from '@rnmapbox/maps';
-import { MapPackGroup } from '../types';
+import { Coordinate, MapPackGroup } from '../types';
 import { useState } from 'react';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 
@@ -10,7 +10,18 @@ export function useMapSettings() {
     const [activePackGroup, setActivePackGroup] = useState<MapPackGroup>();
     const [enable3DMode, setEnable3DMode] = useState<boolean>(false);
     const [followUserLocation, setFollowUserLocation] = useState<boolean>(false);
+    const [initialRegion, setInitialRegion] = useState<Coordinate>();
+    const [userPosition, setUserPosition] = useState<Coordinate>();
+    const [loaded, setLoaded] = useState<boolean>(false);
 
+    const updateUserPosition = ( latitude: number, longitude: number ) => {
+        if (!latitude || !longitude) return;
+        if (!initialRegion) {
+            setInitialRegion({ latitude, longitude });
+            setTimeout(() => setLoaded(true), 1000);
+        }
+        setUserPosition({ latitude, longitude });
+    }
 
     return { 
         styleURL,
@@ -18,11 +29,18 @@ export function useMapSettings() {
         activePackGroup,
         enable3DMode,
         followUserLocation,
+        initialRegion,
+        userPosition,
+        loaded,
 
         setStyleURL,
         setCenter,
         setActivePackGroup,
         setEnable3DMode,
-        setFollowUserLocation
+        setFollowUserLocation,
+        setUserPosition,
+        updateUserPosition,
+        setInitialRegion,
+        setLoaded,
      };
 }

@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { MapPackService } from "../../services/map-pack-service";
 import ProgressBar from "../misc/progress-bar";
 import { EventBus } from "../../services/event-bus";
-import Mapbox from "@rnmapbox/maps";
 import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack";
 import { Format } from "../../services/formatter";
 import { ASSET } from "../../consts";
@@ -42,8 +41,10 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
     }
 
     const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
+        console.log('adwwadad')
         setProgress(status.percentage);
         setDownloaded(status.percentage == 100 ? true : false);
+
         if (status.percentage == 100) {
             EventBus.emit.mapPackDownload(pack.name);
             setDownloading(false);
@@ -53,6 +54,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
     }
 
     const onDownloadError = (offlineRegion: any, err: any) => {
+        console.log('error', err)
         setErrored(true);
         setDownloading(false);
         setProgress(0);
@@ -60,7 +62,6 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
 
     const download = () => {
         setErrored(false);
-        setDownloading(true);
         setProgress(0);
 
         MapPackService.download({ 
@@ -70,6 +71,8 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
             maxZoom: mapPackGroup.maxZoom, 
             bounds: mapPackGroup.bounds 
         }, mapPackGroup, onDownloadProgress, onDownloadError);
+
+        setDownloading(true);
     }
 
 
@@ -83,8 +86,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
         >
             <TouchableOpacity 
                 style={styles.leftContainer}
-                onPress={onPress}
-                disabled={true}
+                onPress={checkDownloaded}
                 activeOpacity={0.8}
             >
                 <View style={styles.iconContainer}>
@@ -95,7 +97,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{mapPackGroup.name}</Text>
-                    <Text style={TEXT.xs}>{mapPackGroup.description.slice(0,80)}{mapPackGroup.description.length > 80 ? '...' : ''}</Text>
+                    <Text style={TEXT.xs}>{mapPackGroup.description.slice(0,5)}{mapPackGroup.description.length > 50 ? '...' : ''}</Text>
                     <Text style={[TEXT.sm, TEXT.medium]}>Outdoor Terrain  
                         {downloading ? 
                         <Text> • {Math.ceil(progress)}%</Text>
@@ -105,7 +107,6 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                         null}
                     </Text>
                     <View style={styles.downloadContainer}>
-                        
                         {errored ?
                         <TouchableOpacity style={styles.downloadButton} onPress={download}>
                             <Icon
@@ -120,7 +121,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                             step={Math.ceil(progress)}
                             steps={100}
                             height={normalise(5)}
-                            colour={COLOUR.wp_green[500]}
+                            colour={COLOUR.green[500]}
                         />
                         :downloaded ?
                         <View style={styles.downloadedContainer}>

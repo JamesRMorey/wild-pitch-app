@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-wildpitchmaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-wildpitchmaps.a */; };
+		0E0CCF602E6C293900D6D852 /* MapboxOfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0CCF5F2E6C293000D6D852 /* MapboxOfflineManager.swift */; };
+		0E0D620D2E6C7A7D009A625F /* MapboxOfflineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0D620C2E6C7A7D009A625F /* MapboxOfflineManager.m */; };
 		0E32A70B2E5224D2000E6A29 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E32A70A2E5224D2000E6A29 /* BootSplash.storyboard */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		6CCF351E2E334D4F8E258562 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
@@ -16,6 +18,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E0CCF5F2E6C293000D6D852 /* MapboxOfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapboxOfflineManager.swift; sourceTree = "<group>"; };
+		0E0D620C2E6C7A7D009A625F /* MapboxOfflineManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapboxOfflineManager.m; sourceTree = "<group>"; };
+		0E0D620E2E6C9143009A625F /* wildpitchmaps-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "wildpitchmaps-Bridging-Header.h"; sourceTree = "<group>"; };
 		0E32A70A2E5224D2000E6A29 /* BootSplash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BootSplash.storyboard; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* wildpitchmaps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wildpitchmaps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = wildpitchmaps/Images.xcassets; sourceTree = "<group>"; };
@@ -44,12 +49,15 @@
 		13B07FAE1A68108700A75B9A /* wildpitchmaps */ = {
 			isa = PBXGroup;
 			children = (
+				0E0CCF5F2E6C293000D6D852 /* MapboxOfflineManager.swift */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				0E32A70A2E5224D2000E6A29 /* BootSplash.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				0E0D620C2E6C7A7D009A625F /* MapboxOfflineManager.m */,
+				0E0D620E2E6C9143009A625F /* wildpitchmaps-Bridging-Header.h */,
 			);
 			name = wildpitchmaps;
 			sourceTree = "<group>";
@@ -250,6 +258,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E0CCF602E6C293900D6D852 /* MapboxOfflineManager.swift in Sources */,
+				0E0D620D2E6C7A7D009A625F /* MapboxOfflineManager.m in Sources */,
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -281,6 +291,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "org.reactjs.native.example.wild-pitch-maps";
 				PRODUCT_NAME = wildpitchmaps;
+				SWIFT_OBJC_BRIDGING_HEADER = "wildpitchmaps-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -310,6 +321,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "org.reactjs.native.example.wild-pitch-maps";
 				PRODUCT_NAME = wildpitchmaps;
+				SWIFT_OBJC_BRIDGING_HEADER = "wildpitchmaps-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -384,10 +396,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -456,10 +465,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

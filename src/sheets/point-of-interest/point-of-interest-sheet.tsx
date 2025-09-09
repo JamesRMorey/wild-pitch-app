@@ -1,5 +1,5 @@
-import ActionSheet, { SheetManager } from "react-native-actions-sheet";
-import { View, StyleSheet, Text } from "react-native";
+import ActionSheet from "react-native-actions-sheet";
+import { View, StyleSheet } from "react-native";
 import { PointOfInterest } from "../../types";
 import { SHEET } from "../../consts";
 import { COLOUR } from "../../styles";

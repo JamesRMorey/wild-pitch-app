@@ -9,6 +9,7 @@ import ConfirmModal from "../../modals/confirm";
 import { useNavigation } from "@react-navigation/native";
 import { SheetManager } from "react-native-actions-sheet";
 import { SHEET } from "../../consts";
+import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 
 type PropsType = { point: PointOfInterest, onChangeSection: (section: string)=>void, onUpdatePoint: (poi: PointOfInterest)=>void };
 export default function PointOfInterestDetails({ point, onChangeSection, onUpdatePoint } : PropsType) {
@@ -25,13 +26,14 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
             onPress: () => getDirections()
         },
         {
-            icon: 'share-outline',
+            icon: 'share-social-outline',
             title: 'Share location',
             onPress: () => shareLocation()
         }
     ];
     const { modals, close: closeModals, open: openModal } = useModals({ delete: false });
     const navigation = useNavigation();
+    const { remove: deletePoint } = usePointsOfInterest();
 
 
     const getDirections = async () => {
@@ -57,10 +59,17 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
         navigation.navigate('map-point-of-interest', { 
             screen: 'point-of-interest-edit', 
             params: {
-                point: point
+                point: point,
+                onGoBack: (params?: { point: PointOfInterest}) => {
+                    if (params?.point) {
+                        onUpdatePoint(params.point)
+                    }
+                }
             }
         });
     }
+
+
     return (
         <View>
             <View style={styles.topContainer}>
@@ -123,8 +132,9 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                 <ConfirmModal
                     onClose={closeModals}
                     onConfirm={() => {
-                        
-                        closeModals()
+                        deletePoint(point.id);
+                        closeModals();
+                        SheetManager.hide(SHEET.MAP_POI_SHEET);
                     }}
                     text="Are you sure you want to delete this point permanently?"
                     title="Delete Point"

@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableWithoutFeedback, View, KeyboardAvoidingView, Keyboard } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { PointOfInterest, PointType } from "../../types";
 import { normalise, parseValidationErrors } from "../../functions/helpers";
 import { TEXT } from "../../styles";
@@ -6,11 +6,12 @@ import TextInput from "../../components/inputs/text-input";
 import { useCallback, useState } from "react";
 import Button from "../../components/buttons/button";
 import TextArea from "../../components/inputs/text-area";
-import { usePointTypes } from "../../hooks/usePointType";
+import { usePointTypes } from "../../hooks/repositories/usePointType";
 import { FormErrors } from "../../types";
 import PressInput from "../../components/inputs/press-input";
-import { usePointsOfInterest } from "../../hooks/usePointsOfInterest";
+import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import { useFocusEffect } from "@react-navigation/native";
+import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";
 
 type PropsType = { navigation: any, route: any };
 export default function PointOfInterestEditScreen({ navigation, route } : PropsType) {
@@ -28,9 +29,11 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
             if (onGoBack) {
                 onGoBack({ point: updated });
             }
+
             navigation.goBack();
         }
         catch (err: any) {
+            console.log(err);
             const errs = parseValidationErrors(err);
             setErrors(errs);
         }
@@ -55,50 +58,48 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
     );
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <KeyboardAvoidingView behavior="padding" enabled>
-                <View style={styles.container}>
-                    <View style={styles.form}>
-                        <TextInput
-                            label="Name"
-                            placeHolder="Name your point..."
-                            value={data.name}
-                            onChangeText={(text: string) => setData({...data, name: text})}
-                            error={errors?.name?.[0] ?? undefined}
-                            onFocus={() => {
-                                setErrors(({ ...errors, name: [] }));
-                                if (data.name.startsWith('New Location')) {
-                                    setData({...data, name: ''});
-                                }
-                            }}
-                        />
-                        <PressInput
-                            onPress={selectPointType}
-                            label="Category"
-                            placeHolder="Category..."
-                            value={pointTypes.find(p => p.id == data.point_type_id)?.name}
-                            error={errors?.point_type_id?.[0] ?? undefined}
-                            onFocus={() => setErrors(({ ...errors, point_type_id: [] }))}
-                        />
-                        <TextArea
-                            label="Notes"
-                            placeHolder="Notes about your point..."
-                            value={data.notes}
-                            onChangeText={(text: string) => setData({...data, notes: text})}
-                            error={errors?.notes?.[0] ?? undefined}
-                            onFocus={() => setErrors(({ ...errors, notes: [] }))}
-                        />
-                    </View>
-                    <View style={styles.buttons}>
-                        <Button
-                            onPress={() => validate()}
-                            title="Save"
-                            style="large"
-                        />
-                    </View>
+        <KeyboardAvoidingView>
+            <View style={styles.container}>
+                <View style={styles.form}>
+                    <TextInput
+                        label="Name"
+                        placeHolder="Name your point..."
+                        value={data.name}
+                        onChangeText={(text: string) => setData({...data, name: text})}
+                        error={errors?.name?.[0] ?? undefined}
+                        onFocus={() => {
+                            setErrors(({ ...errors, name: [] }));
+                            if (data.name.startsWith('New Location')) {
+                                setData({...data, name: ''});
+                            }
+                        }}
+                    />
+                    <PressInput
+                        onPress={selectPointType}
+                        label="Category"
+                        placeHolder="Category..."
+                        value={pointTypes.find(p => p.id == data.point_type_id)?.name}
+                        error={errors?.point_type_id?.[0] ?? undefined}
+                        onFocus={() => setErrors(({ ...errors, point_type_id: [] }))}
+                    />
+                    <TextArea
+                        label="Notes"
+                        placeHolder="Notes about your point..."
+                        value={data.notes}
+                        onChangeText={(text: string) => setData({...data, notes: text})}
+                        error={errors?.notes?.[0] ?? undefined}
+                        onFocus={() => setErrors(({ ...errors, notes: [] }))}
+                    />
                 </View>
-            </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+                <View style={styles.buttons}>
+                    <Button
+                        onPress={() => validate()}
+                        title="Save"
+                        style="large"
+                    />
+                </View>
+            </View>
+        </KeyboardAvoidingView>
     )
 }
 

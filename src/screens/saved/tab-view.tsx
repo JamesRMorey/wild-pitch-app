@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
+import { StyleSheet, View, useWindowDimensions, Text, TouchableOpacity } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import PacksScreen from './packs';
 import PinsScreen from './pins';
@@ -10,14 +10,20 @@ import { normalise } from '../../functions/helpers';
 import IconButton from '../../components/buttons/icon-button';
 import OptionsSheet from '../../sheets/options-sheet';
 import { SheetManager } from 'react-native-actions-sheet';
+import RoutesScreen from './routes';
+import Icon from '../../components/misc/icon';
+import Mapbox from '@rnmapbox/maps';
+import { EventBus } from '../../services/event-bus';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
     pins: PinsScreen,
+    routes: RoutesScreen
 });
 
 const ROUTES = [
     { key: 'packs', title: 'Offline maps' },
+    { key: 'routes', title: 'Routes' },
     { key: 'pins', title: 'Pins' },
 ];
 
@@ -44,9 +50,17 @@ export default function SavedTabsView({ navigation } : PropsType) {
         SheetManager.hide(SHEET.SAVED_OPTIONS)
     }
 
+    const clearAllDownloadedMaps =() => {
+        Mapbox.offlineManager.resetDatabase();
+        EventBus.emit.packsRefresh();
+        EventBus.emit.routesRefresh();
+        closeOptions();
+    }
+
     const OPTIONS = [
-        { label: 'Create Area', icon: 'map-outline', onPress: navigateToBuilder },
-        { label: 'Create Pin', icon: 'location-outline', onPress: createPin },
+        { label: 'Download map', icon: 'map-outline', onPress: navigateToBuilder },
+        { label: 'Create pin', icon: 'location-outline', onPress: createPin },
+        { label: 'Clear all downloaded maps', icon: 'trash-outline', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },
     ];
     
 
@@ -54,11 +68,14 @@ export default function SavedTabsView({ navigation } : PropsType) {
         <View style={styles.container}>
             <View style={styles.titleContainer}>
                 <Text style={TEXT.h1}>Saved</Text>
-                <IconButton
-                    icon={'add'}
+                <TouchableOpacity 
                     onPress={openOptionsMenu}
-                    iconOnly={true}
-                />
+                    style={styles.addButton}
+                >
+                    <Icon
+                        icon={'add'}
+                    />
+                </TouchableOpacity>
             </View>
             <TabView
                 renderTabBar={props => <CustomTabView {...props} />}
@@ -82,9 +99,13 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.white
     },
     titleContainer: {
-        paddingHorizontal: normalise(20),
+        paddingLeft: normalise(20),
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
+    },
+    addButton: {
+        paddingRight: normalise(20),
+        paddingLeft: normalise(10),
     }
 })

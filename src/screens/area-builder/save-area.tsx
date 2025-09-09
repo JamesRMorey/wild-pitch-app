@@ -1,16 +1,16 @@
 import { View, StyleSheet, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
-import { SETTING } from "../../../consts";
-import { COLOUR, TEXT } from "../../../styles";
-import { normalise, parseValidationErrors } from "../../../functions/helpers";
-import { FormErrors, MapPackGroup } from "../../../types";
+import { SETTING } from "../../consts";
+import { COLOUR, TEXT } from "../../styles";
+import { normalise, parseValidationErrors } from "../../functions/helpers";
+import { FormErrors, MapPackGroup } from "../../types";
 import { useState } from "react";
-import { MapPackService } from "../../../services/map-pack-service";
-import { MapService } from "../../../services/map-service";
+import { MapPackService } from "../../services/map-pack-service";
+import { MapService } from "../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
-import Button from "../../../components/buttons/button";
-import { useMapPackGroups } from "../../../hooks/useMapPackGroups";
-import TextArea from "../../../components/inputs/text-area";
-import TextInput from "../../../components/inputs/text-input";
+import Button from "../../components/buttons/button";
+import { useMapPackGroups } from "../../hooks/useMapPackGroups";
+import TextArea from "../../components/inputs/text-area";
+import TextInput from "../../components/inputs/text-input";
 import { object, string } from "yup";
 
 const schema = object({

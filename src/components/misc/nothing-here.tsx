@@ -3,17 +3,22 @@ import { normalise } from "../../functions/helpers"
 import { TEXT } from "../../styles"
 import { ASSET } from "../../consts"
 import Button from "../buttons/button"
+import * as Animatable from 'react-native-animatable';
 
-type PropsType = { title: string, text: string, onPress?: ()=>void, buttonText?: string }
+type PropsType = { title: string|null, text: string|null, onPress?: ()=>void, buttonText?: string }
 export default function NothingHere ({ title, text, onPress, buttonText } : PropsType) {
     return (
-       <View style={styles.container}>
+       <Animatable.View animation={'fadeIn'} style={styles.container}>
             <Image
                 source={ASSET.LOGO}
                 style={styles.logo}
             />
-            <Text style={TEXT.h2}>{title}</Text>
-            <Text style={styles.text}>{text}</Text>
+            {title && (
+                <Text style={TEXT.h2}>{title}</Text>
+            )}
+            {text && (
+                <Text style={styles.text}>{text}</Text>
+            )}
             {onPress && buttonText && (
                 <View style={styles.buttons}>
                     <Button
@@ -22,7 +27,7 @@ export default function NothingHere ({ title, text, onPress, buttonText } : Prop
                     />
                 </View>
             )}
-        </View>
+        </Animatable.View>
     )
 }
 

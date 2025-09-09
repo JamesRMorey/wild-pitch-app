@@ -3,7 +3,7 @@ import { COLOUR, TEXT } from "../../styles"
 import { normalise } from "../../functions/helpers"
 import { useNavigation } from "@react-navigation/native"
 import { SHEET } from "../../consts"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { MapPackGroup } from "../../types"
 import { useMapPackGroups } from "../../hooks/useMapPackGroups"
 import { SheetManager } from "react-native-actions-sheet"
@@ -12,6 +12,7 @@ import OptionsSheet from "../../sheets/options-sheet"
 import NothingHere from "../../components/misc/nothing-here"
 import { useMapActions } from "../../contexts/map-context"
 import { MapPackService } from "../../services/map-pack-service"
+import { EventBus } from "../../services/event-bus"
 
 
 export default function PacksScreen({}) {
@@ -65,6 +66,15 @@ export default function PacksScreen({}) {
     ];
 
 
+    useEffect(() => {
+        const refreshListener = EventBus.listen.packsRefresh(triggerReRender);
+
+        return () => {
+            refreshListener.remove();
+        }
+    }, []);
+
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -72,14 +82,14 @@ export default function PacksScreen({}) {
             >
                 {mapPackGroups.length > 0 ? 
                 <View>
-                    <Text style={styles.title}>{mapPackGroups.length} Areas created</Text>
+                    <Text style={styles.title}>{`${mapPackGroups.length} Map${mapPackGroups.length > 1 ? 's' : ''}`}</Text>
                     <View style={styles.cardContainer}>
                         {mapPackGroups.map((packGroup, i) => {
                             return (
                                 <MapPackGroupCard
                                     key={`${i}${refresh}`}
                                     mapPackGroup={packGroup}
-                                    onPress={() => onPackGroupPress(packGroup)}
+                                    onPress={() => openPackGroupOptionsSheet(packGroup)}
                                     onOtherPress={() => openPackGroupOptionsSheet(packGroup)}
                                 />
                             )
@@ -88,8 +98,8 @@ export default function PacksScreen({}) {
                 </View>
                 :
                 <NothingHere
-                    title="No areas yet?"
-                    text="Press the button below to create your own area"
+                    title="No offline maps downloaded"
+                    text="Press the button below to download an offline map area"
                     onPress={navigateToBuilder}
                     buttonText="Create new area"
                 />

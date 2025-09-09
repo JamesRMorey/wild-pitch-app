@@ -9,10 +9,6 @@ export default function ProgressBar({ step, steps, height, colour }: PropsType) 
     const reactive = React.useRef(new Animated.Value(-500)).current;
     const [width, setWidth] = useState(0);
 
-    if (step <= 0) {
-        step = steps / 30;
-    };
-
     useEffect(() => {
         Animated.timing(animatedValue, {
             toValue: reactive,
@@ -30,7 +26,8 @@ export default function ProgressBar({ step, steps, height, colour }: PropsType) 
                 borderRadius: height,
                 overflow: 'hidden',
             }}>
-                <Animated.View
+                {step > 5 && (
+                 <Animated.View
                     onLayout={e => {
                         const newWidth = e.nativeEvent.layout.width;
                         setWidth(newWidth);
@@ -44,7 +41,9 @@ export default function ProgressBar({ step, steps, height, colour }: PropsType) 
                         transform: [{
                             translateX: animatedValue,
                         }]
-                    }} />
+                    }} 
+                />
+                )}
             </View>
         </View>
     );

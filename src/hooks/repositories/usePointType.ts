@@ -1,6 +1,6 @@
-import { PointType } from '../types';
+import { PointType } from '../../types';
 import { useEffect, useState } from 'react';
-import { PointTypeRepository } from '../database/repositories/point-type-repository';
+import { PointTypeRepository } from '../../database/repositories/point-type-repository';
 
 export function usePointTypes() {
 

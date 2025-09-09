@@ -21,16 +21,8 @@ export default function ConfirmModal ({ onClose, onConfirm, text, title }: Props
             <View style={styles.buttons}>
                 <View style={{ flex: 1 }}>
                      <Button
-                        title="Cancel"
-                        onPress={onClose}
-                        style='large'
-                    />
-                </View>
-                <View style={{ flex: 1 }}>
-                     <Button
                         title="Confirm"
                         onPress={onConfirm}
-                        style='large'
                     />
                 </View>
             </View>

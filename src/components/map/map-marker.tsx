@@ -5,9 +5,9 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { normalise } from "../../functions/helpers";
 import Icon from "../misc/icon";
 
-type PropsType = { coordinate: Position, icon: string, colour: string, onPress?: Function }
+type PropsType = { coordinate: Position, icon: string, colour: string, disabled?: boolean, onPress?: Function }
 
-export default function PointOfInterestMarker ({ coordinate, icon='flag', colour=COLOUR.red[500], onPress=()=>{} } : PropsType ) {
+export default function PointOfInterestMarker ({ coordinate, icon='flag', colour=COLOUR.red[500], disabled=false, onPress=()=>{} } : PropsType ) {
 
     if (!coordinate) return;
     return (
@@ -18,13 +18,14 @@ export default function PointOfInterestMarker ({ coordinate, icon='flag', colour
         >
             <TouchableOpacity
                 onPress={() => onPress()}
+                disabled={disabled}
                 style={[
                     styles.container,
                     { backgroundColor: colour }
                 ]}
             >
                 <Icon
-                    icon={icon.replace('-outline', '')}
+                    icon={icon}
                     size={18}
                     colour={COLOUR.white}
                 />

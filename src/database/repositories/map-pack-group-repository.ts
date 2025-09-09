@@ -3,6 +3,7 @@ import { MapPackGroup, PointOfInterest } from '../../types';
 import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { PointTypeRepository } from './point-type-repository';
 import Mapbox from '@rnmapbox/maps';
+import { getDB } from '../db';
 
 
 export class MapPackGroupRepository {
@@ -11,7 +12,7 @@ export class MapPackGroupRepository {
     tableName;
 
     constructor () {
-        const db = open({ name: `database.sqlite` })
+        const db = getDB();
         this.db = db;
         this.tableName = 'map_pack_groups';
         this.createTable();

@@ -1,7 +1,7 @@
-import { PointOfInterest } from '../types';
+import { PointOfInterest } from '../../types';
 import { useEffect, useState } from 'react';
-import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
-import { EventBus } from '../services/event-bus';
+import { PointOfInterestRepository } from '../../database/repositories/points-of-interest-repository';
+import { EventBus } from '../../services/event-bus';
 import { number, object, string } from "yup";
 
 const schema = object({
@@ -58,6 +58,30 @@ export function usePointsOfInterest() {
         });
     }
 
+    const find = ( id: number ): PointOfInterest|void => {
+        try {
+            const point = repo.find(id);
+            if (!point) return;
+
+            return point;
+        }
+        catch (err) {
+            return;
+        }
+    }
+
+    const findByLatLng = ( latitude: number, longitude: number ): PointOfInterest|void => {
+        try {
+            const point = repo.findByLatLng(latitude, longitude);
+            if (!point) return;
+
+            return point;
+        }
+        catch (err) {
+            return;
+        }
+    }
+
     const remove = ( id: number ) => {
         if (!id) return;
         
@@ -78,6 +102,8 @@ export function usePointsOfInterest() {
     return { 
         pointsOfInterest,
         get,
+        find,
+        findByLatLng,
         create,
         update,
         remove

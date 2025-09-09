@@ -26,7 +26,9 @@ export default function PointOfInterestCard ({ point, onPress, onOtherPress } : 
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{point.name}</Text>
-                    <Text style={TEXT.sm}>{point.notes}</Text>
+                    {point.notes && (
+                        <Text style={TEXT.sm}>{point.notes}</Text>
+                    )}
                     <Text style={TEXT.sm}>{new Date(point.created_at).toDateString()}</Text>
                 </View>
             </TouchableOpacity>

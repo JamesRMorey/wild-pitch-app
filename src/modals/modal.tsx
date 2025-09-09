@@ -36,11 +36,11 @@ export default function Modal({ children, onClose=()=>{}, dismiss=true } : Props
 const styles = StyleSheet.create({
     modal: {
         paddingHorizontal: normalise(30),
-        paddingVertical: normalise(35),
+        paddingVertical: normalise(30),
         borderColor: COLOUR.white,
         backgroundColor: COLOUR.white,
         maxHeight: '100%',
-        borderRadius: normalise(10),
+        borderRadius: normalise(20),
         zIndex: 100,
         gap: normalise(15),
         ...SHADOW.lg

@@ -74,10 +74,10 @@ export default function MapPackSheet ({ id=SHEET.MAP_PACKS, packGroup } : { id?:
 const styles = StyleSheet.create({
     sheet: {
         backgroundColor: COLOUR.white,
-        padding: 20,
+        padding: normalise(20),
     },
     container: {
-        gap: 15,
+        gap: normalise(15),
     },
     titleContainer: {
         flexDirection: 'row',

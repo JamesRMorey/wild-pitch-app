@@ -1,5 +1,6 @@
 import { open } from 'react-native-nitro-sqlite'
 import { PointType } from '../../types';
+import { getDB } from '../db';
 
 
 export class PointTypeRepository {
@@ -8,7 +9,7 @@ export class PointTypeRepository {
     tableName;
 
     constructor () {
-        const db = open({ name: `database.sqlite` })
+        const db = getDB();
         this.db = db;
         this.tableName = 'point_types';
         this.createTable();
@@ -29,18 +30,20 @@ export class PointTypeRepository {
     seed (): void {
         this.db.execute(`
             INSERT INTO point_types (name, icon, colour) VALUES
-            ('Point of Interest', 'location-outline', '#c2410c'),
-            ('Meeting Point', 'people-outline', '#eab308'),
-            ('Camp Spot', 'bonfire-outline', '#3b7a57'),
-            ('Parking', 'car-outline', '#0264A0'),
-            ('Food & Drink', 'restaurant-outline', '#7b687d'),
-            ('Mountain', 'triangle-outline', '#7B3F00'),
-            ('Lake', 'water-outline', '#1E90FF'),
-            ('River', 'water-outline', '#00BFFF'),
-            ('Forest', 'leaf-outline', '#228B22'),
-            ('Waterfall', 'rainy-outline', '#00CED1'),
-            ('Viewpoint', 'eye-outline', '#FFD700'),
-            ('Other', 'heart-outline', '#acc286')
+            ('Point of Interest', 'location', '#c2410c'),
+            ('Meeting Point', 'people', '#eab308'),
+            ('Camp Spot', 'bonfire', '#3b7a57'),
+            ('Parking', 'car', '#0264A0'),
+            ('Food & Drink', 'restaurant', '#7b687d'),
+            ('Cafe', 'cafe', '#A0522D'),
+            ('Shop', 'storefront', '#4682B4'),
+            ('Mountain', 'triangle', '#7B3F00'),
+            ('Lake', 'water', '#1E90FF'),
+            ('River', 'water', '#00BFFF'),
+            ('Forest', 'leaf', '#228B22'),
+            ('Waterfall', 'rainy', '#00CED1'),
+            ('Viewpoint', 'eye', '#FFD700'),
+            ('Other', 'heart', '#acc286')
 
             ON CONFLICT(name) DO UPDATE SET
                 icon = excluded.icon,
