@@ -39,6 +39,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
 
     return (
         <>
+            <Mapbox.Images images={{arrow: ASSET.ROUTE_LINE_ARROW}} />
             {(start && end) && (
                 <>
                     <PointOfInterestMarker
@@ -68,7 +69,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
 
                         }}
                     />
-                    {/* <Mapbox.SymbolLayer
+                    <Mapbox.SymbolLayer
                         id={`arrowLayer`}
                         style={{
                             symbolPlacement: "line",
@@ -78,7 +79,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                             iconIgnorePlacement: true,
                             symbolSpacing: 50,
                         }}
-                    /> */}
+                    />
                 </Mapbox.ShapeSource>
             )}
         </>

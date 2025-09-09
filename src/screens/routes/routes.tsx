@@ -21,6 +21,7 @@ import { OSMaps } from "../../services/os-maps";
 import { RouteService } from "../../services/route-service";
 import { EventBus } from "../../services/event-bus";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
+import RouteLine from "../../components/routes/route-line";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -159,7 +160,6 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 					setMapHeading(heading);
 				}}
             >
-				<Mapbox.Images images={{arrow: ASSET.ROUTE_LINE_ARROW}} />
                 {initialRegion && (
                     <Mapbox.Camera
                         ref={(ref) => {
@@ -181,47 +181,14 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 						/>
 					)
 				})}
-				{(activeRouteStart && activeRouteEnd && activeRoute) && (
-					<>
-						<PointOfInterestMarker
-							coordinate={[activeRouteStart.longitude, activeRouteStart.latitude]}
-							icon={'location'}
-							colour={COLOUR.blue[500]}
-							disabled={true}
-						/>
-						<PointOfInterestMarker
-							coordinate={[activeRouteEnd.longitude, activeRouteEnd.latitude]}
-							icon={'flag'}
-							colour={COLOUR.blue[500]}
-							disabled={true}
-						/>
-					</>
-				)}
-				{activeRouteLine && (
-					<Mapbox.ShapeSource id={`lineSource-${lineKey}`} shape={activeRouteLine}>
-						<Mapbox.LineLayer
-							id={`lineLayer`}
-							style={{
-								lineColor: SETTING.ROUTE_LINE_COLOUR,
-								lineWidth: 12,
-								lineOpacity: 0.9,
-								lineCap: 'round',
-								lineJoin: 'round'
-
-							}}
-						/>
-						<Mapbox.SymbolLayer
-							id={`arrowLayer`}
-							style={{
-								symbolPlacement: "line",
-								iconImage: "arrow",
-								iconSize: 0.4,
-								iconAllowOverlap: true,
-								iconIgnorePlacement: true,
-								symbolSpacing: 50,
-							}}
-						/>
-					</Mapbox.ShapeSource>
+				{activeRoute && (
+					<RouteLine
+						key={`line-${lineKey}`}
+						start={{ latitude: activeRoute.latitude, longitude: activeRoute.longitude }}
+						end={activeRoute.markers[activeRoute.markers.length - 1]}
+						markers={activeRoute.markers}
+						lineKey={lineKey}
+					/>
 				)}
 				<UserPosition
 					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
