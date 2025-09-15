@@ -1,12 +1,19 @@
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Share } from "react-native"
-import { normalise } from "../../functions/helpers"
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Share as RNShare, Linking } from "react-native"
+import { normalise, stripHtml } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
 import { useRoutes } from "../../hooks/repositories/useRoutes";
-import { useState } from "react";
-import { Route } from "../../types";
+import { useEffect, useState } from "react";
+import { MapPack, Route } from "../../types";
 import Button from "../../components/buttons/button";
+import SectionItemCard from "../../components/cards/section-item-card";
+import Mapbox from "@rnmapbox/maps";
+import { MapPackService } from "../../services/map-pack-service";
+import { RouteService } from "../../services/route-service";
+import RNFS from "react-native-fs";
+import { useMapPackDownload } from "../../hooks/useMapPackDownload";
+import Share from 'react-native-share';
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
@@ -14,6 +21,17 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const { route } = navRoute.params;
     const { create, findByLatLng } = useRoutes();
     const [savedRoute, setSavedRoute] = useState<Route|undefined>(findByLatLng(route.latitude, route.longitude));
+    const pack: MapPack = {
+        name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
+        styleURL: Mapbox.StyleURL.Outdoors,
+        minZoom: SETTING.MAP_PACK_MIN_ZOOM,
+        maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
+        bounds: RouteService.getBounds(route.markers)
+    };
+    const { progress, errored, downloading, downloaded, checkDownloaded, setPack, download } = useMapPackDownload({ 
+        mapPack: pack, 
+        onSuccess: ()=>saveRoute() 
+    });
 
     const goBack = () => {
         navigation.goBack();
@@ -21,12 +39,17 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
 
     const shareRoute = async () => {
         try {
-            await Share.share({
+            await RNShare.share({
                 message: `Here\'s a location i've plotted on Wild Pitch Maps (${route.name}) - https://www.google.com/maps/search/?api=1&query=${route.latitude},${route.longitude}`,
             });
         } 
         catch (error: any) {
         }
+    }
+
+    const directionsToStart = async () => {
+        const appleMapsUrl = `http://maps.apple.com/?ll=${route.latitude},${route.longitude}`;
+        Linking.openURL(appleMapsUrl);
     }
 
     const saveRoute = async () => {
@@ -41,12 +64,27 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         }
     }
 
-    const downloadRoute = () => {
-    }
-
     const startRoute = () => {
         navigation.navigate('routes', { screen: 'route-navigation', params: { route: route } });
     }
+
+    const saveGPX = async () => {
+        const gpx = RouteService.generateGPX(route);
+        const fileName = RouteService.getFileName(route.name) + '.gpx';
+
+        const path = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+        await RNFS.writeFile(path, gpx, 'utf8');
+
+        await Share.open({
+            title: "Export GPX",
+            url: "file://" + path,
+            type: "application/gpx+xml",
+        });
+    }
+
+    useEffect(() => {
+        checkDownloaded();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -61,7 +99,6 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         colour={COLOUR.gray[700]}
                     />
                 </TouchableOpacity>
-                {/* <Text style={styles.sectionTitle}>{route.name}</Text> */}
                 <View style={styles.rightIconsContainer}>
                     <TouchableOpacity
                         onPress={saveRoute}
@@ -89,6 +126,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             <ScrollView
                 contentContainerStyle={styles.scrollContainerContent}
                 style={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
             >
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>{route.name}</Text>
@@ -125,14 +163,49 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         )}
                     </View>
                 </View>
+                <View style={styles.section}>
+                    {route.notes && (
+                        <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
+                    )}
+                </View>
+                <View style={[styles.section, { paddingVertical: normalise(0) }]}>
+                    <SectionItemCard
+                        title="Export GPX"
+                        icon="save-outline"
+                        onPress={saveGPX}
+                        arrow={true}
+                    />
+                    <SectionItemCard
+                        title="Directions to start"
+                        icon="globe-outline"
+                        onPress={directionsToStart}
+                        arrow={true}
+                        last={true}
+                    />
+                </View>
             </ScrollView>
             <View style={styles.buttons}>
+                {downloading ?
                 <Button
-                    title="Download"
-                    onPress={downloadRoute}
+                    title={`${progress}%`}
                     style='outline'
                     flex={true}
                 />
+                :downloaded ?
+                <Button
+                    title="Downloaded"
+                    style='outline'
+                    flex={true}
+                    icon="checkmark"
+                />
+                :
+                <Button
+                    title="Download"
+                    onPress={download}
+                    style='outline'
+                    flex={true}
+                />
+                }
                 <Button
                     title="Start Route"
                     onPress={startRoute}
@@ -163,7 +236,7 @@ const styles = StyleSheet.create({
     scrollContainerContent: {
         gap: normalise(10),
         backgroundColor: COLOUR.wp_brown[100],
-        paddingTop: normalise(8)
+        paddingVertical: normalise(8)
     },
     sectionTitle: {
         ...TEXT.h3,

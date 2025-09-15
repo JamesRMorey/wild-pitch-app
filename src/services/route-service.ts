@@ -49,4 +49,32 @@ export class RouteService {
             inner.sw[1] >= outer.sw[1]
         );
     }
+
+    static generateGPX( route: Route ): string {
+        const header = `<?xml version="1.0" encoding="UTF-8"?>
+            <gpx version="1.1" creator="MyApp" xmlns="http://www.topografix.com/GPX/1/1">
+                <trk>
+                <name>${route.name}</name>
+                <trkseg>`;
+
+        const trkpts = route.markers
+            .map(
+            (p) =>
+                `<trkpt lat="${p.latitude}" lon="${p.longitude}">
+                <time>${new Date().toISOString()}</time>
+                </trkpt>`
+            )
+            .join("\n");
+
+        const footer = `
+            </trkseg>
+            </trk>
+        </gpx>`;
+
+        return header + trkpts + footer;
+    }
+
+    static getFileName( name: string ): string {
+        return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
 }

@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View, Text } from "react-native"
+import { ScrollView, StyleSheet, View, Text, Share, Linking } from "react-native"
 import { normalise } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
@@ -6,6 +6,17 @@ import SectionItemCard from "../../components/cards/section-item-card";
 
 
 export default function ProfileScreen() {
+
+    const shareWithFriends = () => {
+        Share.share({
+            message: 'Check out Wild Pitch Maps! The best app for discovering and sharing walking and hiking routes. Download it now from https://wildpitchmaps.com',
+            title: 'Wild Pitch Maps'
+        });
+    }
+
+    const follow = () => {
+        Linking.openURL('https://www.instagram.com/wildpitch_camping/');
+    }
 
     return (
         <View style={styles.container}>
@@ -21,6 +32,7 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Follow our adventures"
                         icon="logo-instagram"
+                        onPress={follow}
                     />
                     <SectionItemCard
                         title="About Wild Pitch"
@@ -29,6 +41,7 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Invite friends"
                         icon="link-outline"
+                        onPress={shareWithFriends}
                     />
                 </View>
                 <View style={styles.section}>
@@ -36,6 +49,7 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Follow us on Instagram"
                         icon="logo-instagram"
+                        onPress={follow}
                     />
                     <SectionItemCard
                         title="Visit our website"

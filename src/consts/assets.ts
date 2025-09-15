@@ -7,4 +7,5 @@ export const ASSETS = {
     LOGO: require('../assets/logos/icon.webp'),
     COMPASS_NEEDLE: require('../assets/misc/compass-needle.png'),
     ROUTE_LINE_ARROW: require('../assets/misc/route-line-arrow.png'),
+    ROUTE_FLAG: require('../assets/misc/route-flag.png'),
 }

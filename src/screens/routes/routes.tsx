@@ -33,9 +33,8 @@ type PropsType = { navigation: any , route: any }
 export default function RoutesScreen({ navigation } : PropsType) {
 
 	const { styleURL, cameraRef, enable3DMode, activeRoute } = useRoutesState();
-	const { flyTo, setCenter, resetHeading, fitToRoute, fitToBounds, setActiveRoute } = useRoutesActions();
+	const { flyTo, setCenter, fitToRoute, fitToBounds, setActiveRoute } = useRoutesActions();
     const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
-	const { heading, setHeading } = useMapCameraControls();
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
 	const { routes } = useRoutes();
 	const { tick } = useHaptic();
@@ -228,7 +227,7 @@ export default function RoutesScreen({ navigation } : PropsType) {
 						/>
 					)
 				})}
-				{routes && (
+				{routes && !activeRoute && (
 					<RouteClusterMap
 						id="routes-cluster"
 						routes={routesInMap}
@@ -265,6 +264,11 @@ export default function RoutesScreen({ navigation } : PropsType) {
 						/>
 					</View>
 				)}
+				{loading && (
+					<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
+						<Loader />
+					</View>
+				)}
 				<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
 					<IconButton
 						icon={'navigate-outline'}
@@ -281,21 +285,6 @@ export default function RoutesScreen({ navigation } : PropsType) {
 						shadow={true}
 					/>
 				</View>
-				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
-					{heading > 0 && !activeRoute && (
-						<CompassButton
-							onPress={resetHeading}
-							disabled={!userPosition}
-							shadow={true}
-							heading={heading}
-						/>
-					)}
-				</View>
-				{loading && (
-					<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
-						<Loader />
-					</View>
-				)}
             </Mapbox.MapView>
             <View style={styles.bottomBar}>
                 <Button
@@ -323,7 +312,8 @@ const styles = StyleSheet.create({
 	controlsContainer: {
 		position: 'absolute',
 		gap: normalise(8),
-		alignItems: 'flex-start'
+		alignItems: 'flex-start',
+		zIndex: 10,
 	},
 	controls: {
 		gap: normalise(8),

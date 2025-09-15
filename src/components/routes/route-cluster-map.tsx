@@ -2,6 +2,8 @@ import Mapbox from "@rnmapbox/maps"
 import { COLOUR } from "../../styles"
 import { PositionArray, RouteSearchResult } from "../../types";
 import { useRef } from "react";
+import Icon from "../misc/icon";
+import { ASSET } from "../../consts";
 
 
 type PropsType = { id?: string, routes: any, onRoutePress?: (route: RouteSearchResult) => void, onClusterPress?: (clusterCoordinates: PositionArray) => void };
@@ -34,44 +36,60 @@ export default function RouteClusterMap({ id="routes-cluster", routes, onRoutePr
     }
 
     return (
-        <Mapbox.ShapeSource
-            id={id}
-            shape={routes}
-            ref={shapeRef}
-            cluster
-            clusterRadius={50}
-            onPress={handlePress}
-        >
-            <Mapbox.CircleLayer
-                id="clusteredPoints"
-                filter={["has", "point_count"]}
-                style={{
-                    circleColor: COLOUR.blue[500],
-                    circleRadius: 20,
-                    circleOpacity: 0.8,
-                    circleStrokeWidth: 2,
-                    circleStrokeColor: COLOUR.white,
-                }}
-            />
-            <Mapbox.SymbolLayer
-                id="clusterCount"
-                filter={["has", "point_count"]}
-                style={{
-                    textField: "{point_count}",
-                    textSize: 14,
-                    textColor: "#fff",
-                    textIgnorePlacement: true,
-                    textAllowOverlap: true,
-                }}
-            />
-            <Mapbox.CircleLayer
-                id="singlePoint"
-                filter={["!", ["has", "point_count"]]}
-                style={{
-                    circleColor: COLOUR.blue[500],
-                    circleRadius: 8
-                }}
-            />
-        </Mapbox.ShapeSource>
+        <>
+            <Mapbox.Images images={{ flag: ASSET.ROUTE_FLAG }} />
+            <Mapbox.ShapeSource
+                id={id}
+                shape={routes}
+                ref={shapeRef}
+                cluster
+                clusterRadius={50}
+                onPress={handlePress}
+            >
+                <Mapbox.CircleLayer
+                    id="clusteredPoints"
+                    filter={["has", "point_count"]}
+                    style={{
+                        circleColor: COLOUR.blue[500],
+                        circleRadius: 20,
+                        circleOpacity: 0.8,
+                        circleStrokeWidth: 2,
+                        circleStrokeColor: COLOUR.white,
+                    }}
+                />
+                <Mapbox.SymbolLayer
+                    id="clusterCount"
+                    filter={["has", "point_count"]}
+                    style={{
+                        textField: "{point_count}",
+                        textSize: 14,
+                        textColor: "#fff",
+                        textIgnorePlacement: true,
+                        textAllowOverlap: true,
+                    }}
+                />
+                <Mapbox.CircleLayer
+                    id="singlePoint"
+                    filter={["!", ["has", "point_count"]]}
+                    style={{
+                        circleColor: COLOUR.blue[500],
+                        circleOpacity: 0.8,
+                        circleRadius: 15,
+                        circleStrokeWidth: 2,
+                        circleStrokeColor: COLOUR.white,
+                    }}
+                />
+                <Mapbox.SymbolLayer
+                    id="singlePointFlag"
+                    filter={["!", ["has", "point_count"]]}
+                    style={{
+                        iconImage: "flag",
+                        iconSize: 0.4,
+                        iconAllowOverlap: true,
+                        iconIgnorePlacement: true,
+                    }}
+                />
+            </Mapbox.ShapeSource>
+        </>
     )
 }

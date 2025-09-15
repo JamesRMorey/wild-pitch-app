@@ -37,8 +37,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
 
 
     const getDirections = async () => {
-        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${point.latitude},${point.longitude}`;
-
+        const mapsUrl = `http://maps.apple.com/?ll=${point.latitude},${point.longitude}`;
         Linking.openURL(mapsUrl);
     }
 

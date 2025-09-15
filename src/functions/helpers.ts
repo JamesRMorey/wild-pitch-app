@@ -256,3 +256,7 @@ export function getPointType(category: string, pointTypes: Array<PointType>): Po
 
     return pointTypes.find(type => type.name.toLowerCase() === pointName.toLowerCase());
 }
+
+export function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>?/gm, '');
+}

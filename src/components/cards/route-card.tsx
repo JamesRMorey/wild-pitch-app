@@ -6,20 +6,15 @@ import Icon from "../misc/icon";
 import { MapPackService } from "../../services/map-pack-service";
 import { SETTING } from "../../consts";
 import ProgressBar from "../misc/progress-bar";
-import { EventBus } from "../../services/event-bus";
 import Mapbox from "@rnmapbox/maps";
 import { RouteService } from "../../services/route-service";
-import { useEffect, useState } from "react";
-import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack";
+import { useEffect } from "react";
 import { Format } from "../../services/formatter";
+import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 
 type PropsType = { route: Route, onPress?: ()=>void, onOtherPress?: ()=>void }
 export default function RouteCard ({ route, onPress=()=>{}, onOtherPress } : PropsType ) {
 
-    const [progress, setProgress] = useState<number>(0);
-    const [downloaded, setDownloaded] = useState<boolean>(false);
-    const [errored, setErrored] = useState<boolean>(false);
-    const [downloading, setDownloading] = useState<boolean>(false);
     const pack: MapPack = {
         name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
         styleURL: Mapbox.StyleURL.Outdoors,
@@ -27,59 +22,9 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress } : Pro
         maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
         bounds: RouteService.getBounds(route.markers)
     };
-    const [offlinePack, setOfflinePack] = useState<OfflinePack>();
-
-    const checkDownloaded = async () => {
-        fetchPack();
-    }
-
-    const fetchPack = async () => {
-        const p = await MapPackService.getPack(pack.name);
-        
-        if (!p) {
-            setProgress(0);
-            setDownloaded(false);
-            setOfflinePack(undefined);
-            return;
-        }
-
-        setOfflinePack(p);
-        setDownloaded(p.pack.state == "complete");
-        setProgress(p.pack.percentage);
-    }
-
-    const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
-        setProgress(status.percentage);
-        setDownloaded(status.percentage == 100 ? true : false);
-
-        if (status.percentage == 100) {
-            EventBus.emit.mapPackDownload(pack.name);
-            setDownloading(false);
-            setDownloaded(true);
-            checkDownloaded();
-        }
-    }
-
-    const onDownloadError = (offlineRegion: any, err: any) => {
-        setErrored(true);
-        setDownloading(false);
-        setProgress(0);
-    }
-
-    const download = () => {
-        setErrored(false);
-        setProgress(0);
-
-        MapPackService.downloadRoute({
-            name: pack.name, 
-            styleURL: pack.styleURL, 
-            minZoom: SETTING.MAP_PACK_MIN_ZOOM, 
-            maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-            bounds: pack.bounds 
-        }, onDownloadProgress, onDownloadError);
-
-        setDownloading(true);
-    } 
+    const { progress, errored, downloading, downloaded, offlinePack, checkDownloaded, download } = useMapPackDownload({ 
+        mapPack: pack
+    });
 
     useEffect(() => {
         checkDownloaded();
@@ -155,7 +100,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress } : Pro
                         />
                         <Text style={styles.errorText}>Error</Text>
                     </TouchableOpacity>
-                    :downloading ?
+                    :downloading && progress !== undefined ?
                     <ProgressBar
                         step={Math.ceil(progress)}
                         steps={100}

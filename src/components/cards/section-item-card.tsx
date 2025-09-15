@@ -4,12 +4,12 @@ import { MapPackGroup, PointOfInterest } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 
-type PropsType = { title: string, icon: string, onPress?: ()=>void, onOtherPress?: ()=>void }
-export default function SectionItemCard ({ title, icon, onPress=()=>{} } : PropsType ) {
+type PropsType = { title: string, icon: string, last?: boolean, arrow?: boolean, onPress?: ()=>void, onOtherPress?: ()=>void }
+export default function SectionItemCard ({ title, icon, last=false, arrow=false, onPress=()=>{} } : PropsType ) {
 
     return (
         <View
-            style={styles.container}
+            style={[styles.container, last && { borderBottomWidth: 0 }]}
         >
             <TouchableOpacity 
                 style={styles.leftContainer}
@@ -19,11 +19,18 @@ export default function SectionItemCard ({ title, icon, onPress=()=>{} } : Props
                 <Icon
                     icon={icon}
                     colour={COLOUR.black}
-                    size={normalise(30)}
+                    size={normalise(25)}
                 />
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{title}</Text>
                 </View>
+                {arrow && (
+                    <Icon
+                        icon='chevron-forward'
+                        colour={COLOUR.gray[700]}
+                        size={normalise(18)}
+                    />
+                )}
             </TouchableOpacity>
         </View>
     )

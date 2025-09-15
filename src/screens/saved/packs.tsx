@@ -96,7 +96,7 @@ export default function PacksScreen({}) {
                     title="No offline maps downloaded"
                     text="Press the button below to download an offline map area"
                     onPress={navigateToBuilder}
-                    buttonText="Create new area"
+                    buttonText="Download map area"
                 />
                 }
             </ScrollView>

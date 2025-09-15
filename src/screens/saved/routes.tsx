@@ -62,10 +62,10 @@ export default function RoutesScreen({}) {
                 </View>
                 :
                 <NothingHere
-                    title="No offline maps downloaded"
-                    text="Press the button below to download an offline map area"
+                    title="No routes saved"
+                    text="Head to the routes section to find and creates routes"
                     // onPress={navigateToBuilder}
-                    buttonText="Create new area"
+                    buttonText="Create new route"
                 />
                 }
             </ScrollView>

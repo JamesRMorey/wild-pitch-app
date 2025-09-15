@@ -71,20 +71,20 @@ export default function PinsScreen({  } : PropsType) {
                     <Text style={styles.title}>{pointsOfInterest.length} Pins</Text>
                     <View style={styles.cardContainer}>
                         {pointsOfInterest?.map((poi, i) => {
-                        return (
-                            <PointOfInterestCard
-                                key={i}
-                                point={poi}
-                                onOtherPress={() => openOptionsSheet(poi)}
-                                onPress={() => openOptionsSheet(poi)}
-                            />
-                        )
-                    })}
+                            return (
+                                <PointOfInterestCard
+                                    key={i}
+                                    point={poi}
+                                    onOtherPress={() => openOptionsSheet(poi)}
+                                    onPress={() => openOptionsSheet(poi)}
+                                />
+                            )
+                        })}
                     </View>
                 </View>
                 :
                 <NothingHere
-                    title="No POI's yet?"
+                    title="No Point of Interest yet?"
                     text="Press the button below to add some pins to your map."
                     onPress={() => onPoiPress()}
                     buttonText="Add a POI pin"

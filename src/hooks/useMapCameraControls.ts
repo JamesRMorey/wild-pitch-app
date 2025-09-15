@@ -40,7 +40,7 @@ export function useMapCameraControls() {
     }
 
     const fitToBounds = (ne: Position, sw: Position, padding: number = 50, duration: number = 1000): void => {
-        cameraRef.current?.fitBounds(ne, sw, [padding, padding, padding, padding], duration);
+        cameraRef.current?.fitBounds(ne, sw, [Math.max(padding, 120), padding, Math.max(padding, 140), padding], duration);
     }
 
     return { 
