@@ -103,22 +103,26 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                                 <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
                             </View>
                         )}
+                        {route.elevation_gain !== undefined && (
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-up'
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>+1000 m</Text>
+                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.elevation_gain).toFixed(2)} m`}</Text>
                         </View>
+                        )}
+                        {route.elevation_loss !== undefined && (
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-down'
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>-1000 m</Text>
+                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.elevation_loss).toFixed(2)} m`}</Text>
                         </View>
+                        )}
                     </View>
                 </View>
             </ScrollView>

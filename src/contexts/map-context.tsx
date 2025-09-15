@@ -26,14 +26,12 @@ type MapContextActions = {
     zoomTo: (zoom: number) => void;
     flyTo: (coord: Position, zoom?: number, duration?: number,) => void;
     flyToLow: (coord: Position, zoom?: number, duration?: number,) => void;
+    fitToBounds: (ne: Position, sw: Position, padding?: number, duration?: number) => void;
     reCenter: () => void;
     setEnable3DMode: (enabled: boolean) => void;
     setShowPointsOfInterest: (enabled: boolean) => void;
     setFollowUserLocation: (enabled: boolean) => void;
     resetHeading: () => void;
-    createPointOfInterest:( data: PointOfInterest) => PointOfInterest|void;
-    updatePointOfInterest:( data: PointOfInterest) => PointOfInterest|void;
-    deletePointOfInterest: (id: number) => void
 };
 
 const StateContext = createContext<MapContextState | undefined>(undefined);
@@ -42,9 +40,8 @@ const ActionsContext = createContext<MapContextActions | undefined>(undefined);
 export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
     const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
-    const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, cameraRef } = useMapCameraControls();
-    const { pointsOfInterest, create: createPointOfInterest, update: updatePointOfInterest, remove: deletePointOfInterest } = usePointsOfInterest();
-
+    const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef } = useMapCameraControls();
+    const { pointsOfInterest } = usePointsOfInterest();
     const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
 
     const clearActivePackGroup = () => setActivePackGroup(undefined);
@@ -82,11 +79,9 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     setEnable3DMode,
                     setFollowUserLocation,
                     resetHeading,
-                    createPointOfInterest,
-                    updatePointOfInterest,
-                    deletePointOfInterest,
                     setShowPointsOfInterest,
-                    flyToLow
+                    flyToLow,
+                    fitToBounds
                 }}
             >
                 {children}

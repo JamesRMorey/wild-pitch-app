@@ -1,12 +1,12 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { act, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
-import { delay, normalise } from "../../functions/helpers";
-import { ASSET, SETTING, SHEET } from "../../consts";
+import { delay, getDistanceBetweenPoints, normalise } from "../../functions/helpers";
+import { SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
-import { Coordinate, Place, PointOfInterest, Route, RouteSearchResult } from "../../types";
+import { Bounds, Coordinate, Place, PointOfInterest, PositionArray, Route, RouteSearchResult } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import { COLOUR } from "../../styles";
 import useHaptic from "../../hooks/useHaptic";
@@ -18,29 +18,38 @@ import { useMapSettings } from "../../hooks/useMapSettings";
 import { useRoutes } from "../../hooks/repositories/useRoutes";
 import ActiveRouteInformation from "../../components/routes/active-route-information";
 import { OSMaps } from "../../services/os-maps";
-import { RouteService } from "../../services/route-service";
-import { EventBus } from "../../services/event-bus";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import RouteLine from "../../components/routes/route-line";
+import { useMapCameraControls } from "../../hooks/useMapCameraControls";
+import { RouteService } from "../../services/route-service";
+import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
+import Loader from "../../components/map/loader";
+import RouteClusterMap from "../../components/routes/route-cluster-map";
+import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
 type PropsType = { navigation: any , route: any }
-export default function RoutesScreen({ navigation, route: navRoute } : PropsType) {
+export default function RoutesScreen({ navigation } : PropsType) {
 
-	const { styleURL, cameraRef, enable3DMode } = useRoutesState();
-	const { flyTo, setCenter, resetHeading, fitToBounds } = useRoutesActions();
+	const { styleURL, cameraRef, enable3DMode, activeRoute } = useRoutesState();
+	const { flyTo, setCenter, resetHeading, fitToRoute, fitToBounds, setActiveRoute } = useRoutesActions();
     const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
+	const { heading, setHeading } = useMapCameraControls();
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
 	const { routes } = useRoutes();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
-	const [mapHeading, setMapHeading] = useState<number>(0);
-	const [activeRoute, setActiveRoute] = useState<Route>();
-	const [activeRouteLine, setActiveRouteLine] = useState<any>();
-	const [activeRouteStart, setActiveRouteStart] = useState<Coordinate>();
-	const [activeRouteEnd, setActiveRouteEnd] = useState<Coordinate>();
 	const [lineKey, setLineKey] = useState<number>(0);
+	const [activePOI, setActivePOI] = useState<PointOfInterest>();
+	const [routesInMap, setRoutesInMap] = useState<any>({
+		type: 'FeatureCollection',
+		features: []
+	});
+	const { debounce, cancel: cancelDebounce } = useDebouncedCallback();
+	const [loading, setLoading] = useState<boolean>(false);
+	const [currentBounds, setCurrentBounds] = useState<{ bounds: Bounds, zoom: number }>();
+	const mapSearchEnabled = useRef<boolean>(true);
 	
 
 	const reCenter = async () => {
@@ -55,13 +64,10 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 		SheetManager.show(SHEET.MAP_SEARCH);
 	}
 
-	const resetMapHeading = () => {
-		setMapHeading(0)
-		resetHeading();
-	}
-
     const navigateToBuilder = () => {
-        navigation.navigate('route-builder', { onGoBack: (params: any) => navigation.navigate('routes') });
+        navigation.navigate('route-builder', { 
+			onGoBack: (params: any) => navigation.navigate('routes') 
+		});
     }
 
 	const handleRoutePress = ( route: Route ) => {
@@ -71,39 +77,20 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 
 	const updateActiveRoute = ( route: Route ) => {
 		setActiveRoute(route);
-		updateActiveRouteLine(route.markers);
-		setActiveRouteStart(route.markers[0]);
-		setActiveRouteEnd(route.markers[route.markers.length - 1]);
+		reDrawRoute();
 
-		const boundingBox = RouteService.calculateBoundingBox(route.markers);
-		if (boundingBox) {
-			fitToBounds(boundingBox.ne, boundingBox.sw);
-		}
+		fitToRoute(route);
 	}
 
 	const clearActiveRoute = () => {
 		setActiveRoute(undefined);
-		setActiveRouteLine(undefined);
-		setActiveRouteStart(undefined);
-		setActiveRouteEnd(undefined);
 	}
 
 	const navigateToRoute = ( route: Route ) => {
 		navigation.navigate('route-details', { route: route });
 	}
 
-	const updateActiveRouteLine = ( markers: Array<Coordinate> ) => {
-		console.log(markers.length)
-		setActiveRouteLine({
-			type: 'FeatureCollection',
-			features: [{
-				type: 'Feature',
-				geometry: {
-					type: 'LineString',
-					coordinates: markers.map(m => [m.longitude, m.latitude])
-				}
-			}]
-		});
+	const reDrawRoute = () => {
 		setLineKey((prev) => prev + 1);
 	}
 
@@ -118,15 +105,20 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 			point_type_id: place?.point_type?.id ?? undefined,
 			point_type: place?.point_type ?? undefined
 		};
+		
+		pointOfInterestPress(poi);
+	}
 
-		navigation.navigate('map', { screen: 'map' });
-		await delay(700);
-
-		EventBus.emit.mapInspectPOI(poi);
+	const pointOfInterestPress = ( point: PointOfInterest ) => {
+		tick();
+		setActivePOI(point);
+		flyTo([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
 	}
 
 	const handleRouteSearchPress = async ( route: RouteSearchResult ) => {
 		try {
+			mapSearchEnabled.current = false;
+			setLoading(true);
 			SheetManager.hide(SHEET.MAP_SEARCH);
 			const data = await OSMaps.fetchRoute(route.id, route.slug);
 
@@ -135,17 +127,68 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 		catch(err) {
 			console.log(err);
 		}
+		finally {
+			setTimeout(() => setLoading(false), 300);
+			setTimeout(() => mapSearchEnabled.current = true, 1000);
+		}
 	}
 
-	// Activate route if passed in navigation params
-	useEffect(() => {
-		console.log(navRoute?.params?.route);
-		if (navRoute?.params?.route) {
-			setTimeout(() => updateActiveRoute(navRoute.params.route), 500);
-			navigation.setParams({ route: undefined });
-		}
-	}, [navRoute?.params]);
+	const updateClusters = ( routesSearchResults: Array<RouteSearchResult> ) => {
+		const clustered = routesSearchResults.map(r => {
+			return {
+				id: r.id,
+				type: 'Feature',
+				geometry: {
+					type: 'Point',
+					coordinates: [r.longitude, r.latitude]
+				},
+				properties: {
+					slug: r.slug,
+					id: r.id,
+				}
+			}
+		});
+		
+		setRoutesInMap({
+			type: 'FeatureCollection',
+			features: clustered
+		});
+	}
+	
+	const handleMapRegionChange = async ( bounds: Bounds, zoom: number ) => {
+		try {
+			if (!mapSearchEnabled.current) return;
 
+			const { ne, sw } = bounds;
+			if (currentBounds && RouteService.boundsInsideBounds({ ne: ne, sw: sw }, currentBounds.bounds) && zoom < (currentBounds.zoom + 2)) return;
+
+			setLoading(true);
+			const rts = await RouteService.getForMapArea({ latitude: ne[1], longitude: ne[0] }, { latitude: sw[1], longitude: sw[0] });
+			updateClusters(rts);
+
+			setCurrentBounds({ bounds: { ne: ne, sw: sw }, zoom: zoom });
+		}
+		catch (err) {
+			console.log(err);
+		}
+		finally {
+			setTimeout(() => setLoading(false), 300);
+		}
+	}
+
+	const debouncedHandleMapRegionChange = debounce(handleMapRegionChange, 300);
+
+	const handleClusterPress = ( points: Array<Position> ) => {
+		if (points.length == 1) {
+			flyTo([points[0][0], points[0][1]], SETTING.MAP_MARKER_ZOOM);
+			return;
+		}
+
+		const bounds = RouteService.calculateBoundingBox(points.map(pt => ({ latitude: pt[1], longitude: pt[0] })));
+		if (!bounds) return;
+
+		fitToBounds(bounds.ne, bounds.sw, 100);
+	}
 
     return (
         <View style={styles.container}>
@@ -155,10 +198,14 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 				pitchEnabled={enable3DMode}
 				attributionEnabled={false}
 				ref={mapRef}
-				onMapIdle={(event) => {
-					const heading = event.properties?.heading;
-					setMapHeading(heading);
+				onRegionIsChanging={(e) => {
+					if (!mapSearchEnabled.current) {
+						cancelDebounce();
+						return;
+					};
+					debouncedHandleMapRegionChange({ ne: e.properties.visibleBounds[0], sw: e.properties.visibleBounds[1] }, e.properties.zoomLevel);
 				}}
+
             >
                 {initialRegion && (
                     <Mapbox.Camera
@@ -181,6 +228,14 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 						/>
 					)
 				})}
+				{routes && (
+					<RouteClusterMap
+						id="routes-cluster"
+						routes={routesInMap}
+						onRoutePress={(result: RouteSearchResult) => handleRouteSearchPress(result)}
+						onClusterPress={(points: PositionArray) => handleClusterPress(points)}
+					/>
+				)}
 				{activeRoute && (
 					<RouteLine
 						key={`line-${lineKey}`}
@@ -188,6 +243,14 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 						end={activeRoute.markers[activeRoute.markers.length - 1]}
 						markers={activeRoute.markers}
 						lineKey={lineKey}
+					/>
+				)}
+				{activePOI && (
+					<PointOfInterestMarker
+						coordinate={[activePOI.longitude, activePOI.latitude]}
+						icon={activePOI.point_type?.icon ?? 'flag'}
+						colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
+						onPress={() => pointOfInterestPress(activePOI)}
 					/>
 				)}
 				<UserPosition
@@ -202,33 +265,38 @@ export default function RoutesScreen({ navigation, route: navRoute } : PropsType
 						/>
 					</View>
 				)}
-            </Mapbox.MapView>
-			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
-				<IconButton
-					icon={'navigate-outline'}
-					onPress={reCenter}
-					disabled={!userPosition}
-					shadow={true}
-					style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
-				/>
-			</View>
-			<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
-				<IconButton
-					icon={'search-outline'}
-					onPress={openSearch}
-					shadow={true}
-				/>
-			</View>
-			<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
-				{mapHeading > 0 && (
-					<CompassButton
-						onPress={resetMapHeading}
+				<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
+					<IconButton
+						icon={'navigate-outline'}
+						onPress={reCenter}
 						disabled={!userPosition}
 						shadow={true}
-						heading={mapHeading}
+						style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
 					/>
+				</View>
+				<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
+					<IconButton
+						icon={'search-outline'}
+						onPress={openSearch}
+						shadow={true}
+					/>
+				</View>
+				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
+					{heading > 0 && !activeRoute && (
+						<CompassButton
+							onPress={resetHeading}
+							disabled={!userPosition}
+							shadow={true}
+							heading={heading}
+						/>
+					)}
+				</View>
+				{loading && (
+					<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
+						<Loader />
+					</View>
 				)}
-			</View>
+            </Mapbox.MapView>
             <View style={styles.bottomBar}>
                 <Button
                     title="Create new route"

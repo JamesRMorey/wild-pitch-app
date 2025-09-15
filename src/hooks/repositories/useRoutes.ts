@@ -1,8 +1,9 @@
-import { PointOfInterest, Route } from '../../types';
+import { Coordinate, PointOfInterest, Route } from '../../types';
 import { useEffect, useState } from 'react';
 import { EventBus } from '../../services/event-bus';
 import { array, number, object, string } from "yup";
 import { RouteRepository } from '../../database/repositories/route-repository';
+import { OSMaps } from '../../services/os-maps';
 
 const schema = object({
     name: string().required("Name is required"),
@@ -92,7 +93,6 @@ export function useRoutes() {
         EventBus.emit.routesRefresh();
     }
 
-
     useEffect(() => {
         const getListener = EventBus.listen.routesRefresh(() => get());
         get();
@@ -109,6 +109,6 @@ export function useRoutes() {
         findByLatLng,
         create,
         update,
-        remove
+        remove,
     };
 }

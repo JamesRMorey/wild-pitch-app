@@ -110,3 +110,8 @@ export type RouteSearchResult = {
     elevation_loss?: number,
     created_at?: string,
 }
+
+export type Bounds = {
+    ne: [number, number], 
+    sw: [number, number]
+}

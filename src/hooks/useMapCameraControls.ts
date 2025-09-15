@@ -7,6 +7,7 @@ export function useMapCameraControls() {
 
     const cameraRef = useRef<Mapbox.Camera>(null);
     const [initialRegion, setInitialRegion] = useState<Position>();
+    const [heading, setHeading] = useState<number>(0);
 
     const moveTo = (coordinate: Position): void => {
         cameraRef.current?.moveTo(coordinate);
@@ -35,6 +36,7 @@ export function useMapCameraControls() {
             heading: 0,
             animationDuration: 500
         });
+        setHeading(0);
     }
 
     const fitToBounds = (ne: Position, sw: Position, padding: number = 50, duration: number = 1000): void => {
@@ -51,5 +53,7 @@ export function useMapCameraControls() {
         fitToBounds,
         cameraRef,
         initialRegion,
+        heading,
+        setHeading
     };
 }

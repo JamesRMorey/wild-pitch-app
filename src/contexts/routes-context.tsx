@@ -1,8 +1,10 @@
-import React, { createContext,useContext,RefObject } from 'react';
+import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
+import { Route } from '../types';
+import { RouteService } from '../services/route-service';
 
 type RoutesContextState = {
     styleURL: Mapbox.StyleURL;
@@ -10,6 +12,7 @@ type RoutesContextState = {
     cameraRef: RefObject<Mapbox.Camera>;
     enable3DMode: boolean;
     followUserLocation: boolean;
+    activeRoute?: Route;
 };
 
 type RoutesContextActions = {
@@ -23,6 +26,8 @@ type RoutesContextActions = {
     setFollowUserLocation: (enabled: boolean) => void;
     resetHeading: () => void;
     fitToBounds: (ne: Position, sw: Position, padding?: number, duration?: number) => void;
+    setActiveRoute: (route?: Route) => void;
+    fitToRoute: (route: Route) => void;
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -32,12 +37,20 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     const { center, setCenter, styleURL, setStyleURL, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
     const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef } = useMapCameraControls();
+    const [activeRoute, setActiveRoute] = useState<Route>();
     
     const setEnable3DMode = ( enabled: boolean ) => {
         cameraRef.current?.setCamera({
             pitch: 0
         });
         toggle3dMode(enabled)
+    }
+
+    const fitToRoute = ( route: Route ) => {
+        const boundingBox = RouteService.calculateBoundingBox(route.markers);
+        if (boundingBox) {
+            fitToBounds(boundingBox.ne, boundingBox.sw);
+        }
     }
     
 
@@ -49,6 +62,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 cameraRef,
                 enable3DMode,
                 followUserLocation,
+                activeRoute
             }}
         >
             <ActionsContext.Provider
@@ -62,7 +76,9 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     setFollowUserLocation,
                     resetHeading,
                     flyToLow,
-                    fitToBounds
+                    fitToBounds,
+                    setActiveRoute,
+                    fitToRoute
                 }}
             >
                 {children}

@@ -8,12 +8,14 @@ import { useRoutes } from "../../hooks/repositories/useRoutes"
 import RouteCard from "../../components/cards/route-card"
 import { EventBus } from "../../services/event-bus"
 import { Route } from "../../types"
+import { useRoutesActions } from "../../contexts/routes-context"
 
 
 export default function RoutesScreen({}) {
 
     const navigation = useNavigation();
     const { routes, get: getPackGroups, remove: removePackGroup } = useRoutes();
+    const { setActiveRoute, fitToRoute } = useRoutesActions();
     const [refresh, setRefresh] = useState<number>(0);
     
     
@@ -22,7 +24,11 @@ export default function RoutesScreen({}) {
     }
 
     const inspectRoute = async ( route: Route ) => {
-        navigation.navigate('routes', { screen: 'routes-map', params: { route: route } });
+        navigation.navigate('routes', { screen: 'routes-map' });
+        
+        await delay(200);
+        setActiveRoute(route);
+        fitToRoute(route)
     }
 
     useEffect(() => {

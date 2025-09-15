@@ -18,18 +18,13 @@ import { EventBus } from "../../services/event-bus"
 export default function PacksScreen({}) {
 
     const navigation = useNavigation();
-    const { flyTo, setActivePackGroup } = useMapActions();
+    const { fitToBounds, setActivePackGroup } = useMapActions();
     const { mapPackGroups, get: getPackGroups, remove: removePackGroup } = useMapPackGroups();
     const [activeMapPackGroup, setActiveMapPackGroup] = useState<MapPackGroup>();
     const [refresh, setRefresh] = useState<number>(0);
     
     const navigateToBuilder = () => {
         navigation.navigate('area-builder')
-    }
-    
-    const onPackGroupPress = (packGroup: MapPackGroup) => {
-        setActiveMapPackGroup(packGroup);
-        SheetManager.show(SHEET.MAP_PACKS_SAVED_PACKS)
     }
 
     const triggerReRender = () => {
@@ -56,7 +51,7 @@ export default function PacksScreen({}) {
         await SheetManager.hide(SHEET.MAP_PACK_GROUP_OPTIONS);
         navigation.navigate('map');
         setActivePackGroup(packGroup);
-        setTimeout(() => flyTo(packGroup.center), 100)
+        setTimeout(() => fitToBounds(packGroup.bounds[0], packGroup.bounds[1], 100), 100)
     }
     
     const OPTIONS = [

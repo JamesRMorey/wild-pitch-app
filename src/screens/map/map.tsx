@@ -23,6 +23,7 @@ import SearchSheet from "../../sheets/search-sheet";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import { useMapSettings } from "../../hooks/useMapSettings";
 import { OSMaps } from "../../services/os-maps";
+import { useMapCameraControls } from "../../hooks/useMapCameraControls";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -32,10 +33,10 @@ export default function MapScreen({ navigation } : PropsType) {
 	const { styleURL, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest } = useMapState();
 	const { clearActivePackGroup, flyTo, flyToLow, setCenter, resetHeading } = useMapActions();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
+	const { heading, setHeading } = useMapCameraControls();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
-	const [mapHeading, setMapHeading] = useState<number>(0);
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
 
 	const reCenter = async () => {
@@ -55,12 +56,6 @@ export default function MapScreen({ navigation } : PropsType) {
 		};
 
 		pointOfInterestPress(poi);
-	}
-
-	const openActivePackGroupSheet = () => {
-		if (!activePackGroup) return;
-		flyTo(activePackGroup.center)
-		SheetManager.show(SHEET.MAP_PACKS);
 	}
 
 	const pointOfInterestPress = ( point: PointOfInterest ) => {
@@ -92,11 +87,6 @@ export default function MapScreen({ navigation } : PropsType) {
 
 	const openSearch = () => {
 		SheetManager.show(SHEET.MAP_SEARCH);
-	}
-
-	const resetMapHeading = () => {
-		setMapHeading(0)
-		resetHeading();
 	}
 
 	const handleRouteSearchPress = async ( route: RouteSearchResult ) => {
@@ -135,7 +125,7 @@ export default function MapScreen({ navigation } : PropsType) {
 				ref={mapRef}
 				onMapIdle={(event) => {
 					const heading = event.properties?.heading;
-					setMapHeading(heading);
+					setHeading(heading);
 				}}
             >
 				{enable3DMode && (
@@ -175,7 +165,6 @@ export default function MapScreen({ navigation } : PropsType) {
 					<MapArea 
 						id='test'
 						bounds={activePackGroup.bounds}
-						onPress={() => openActivePackGroupSheet()}
 					/>
 				)}
 				<UserPosition
@@ -200,12 +189,12 @@ export default function MapScreen({ navigation } : PropsType) {
 				/>
 			</View>
 			<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
-				{mapHeading > 0 && (
+				{heading > 0 && (
 					<CompassButton
-						onPress={resetMapHeading}
+						onPress={resetHeading}
 						disabled={!userPosition}
 						shadow={true}
-						heading={mapHeading}
+						heading={heading}
 					/>
 				)}
 			</View>

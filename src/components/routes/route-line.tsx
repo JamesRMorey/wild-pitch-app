@@ -77,7 +77,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                             iconSize: 0.4,
                             iconAllowOverlap: true,
                             iconIgnorePlacement: true,
-                            symbolSpacing: 50,
+                            symbolSpacing: 20,
                         }}
                     />
                 </Mapbox.ShapeSource>
