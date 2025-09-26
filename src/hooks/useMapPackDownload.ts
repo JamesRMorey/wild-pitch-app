@@ -15,12 +15,16 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
     const [offlinePack, setOfflinePack] = useState<OfflinePack>();
     const [pack, setPack] = useState<MapPack>(mapPack);
 
-    const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
-        setProgress(status.percentage);
+    const onDownloadProgress = (status: { percentage: number }, refreshOnSuccess: boolean=true) => {
+        setProgress(Math.ceil(status.percentage));
         setDownloaded(status.percentage == 100 ? true : false);
 
         if (status.percentage == 100) {
             EventBus.emit.mapPackDownload(pack.name);
+            if (refreshOnSuccess) {
+                EventBus.emit.routesRefresh();
+                EventBus.emit.packsRefresh();
+            }
     
             setDownloading(false);
             setDownloaded(true);
@@ -42,7 +46,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
 
         setOfflinePack(p);
         setDownloaded(p.pack.state == "complete");
-        setProgress(p.pack.percentage);
+        setProgress(Math.ceil(p.pack.percentage));
     }
 
     const onDownloadError = (offlineRegion: any, err: any) => {
@@ -53,7 +57,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
         if (onFail) onFail();
     }
 
-    const download = () => {
+    const download = (refreshOnSuccess: boolean=true) => {
         setErrored(false);
         setProgress(0);
 
@@ -62,8 +66,8 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
             styleURL: pack.styleURL, 
             minZoom: SETTING.MAP_PACK_MIN_ZOOM, 
             maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-            bounds: pack.bounds 
-        }, onDownloadProgress, onDownloadError);
+            bounds: pack.bounds
+        }, (offlineRegion: any, status: { percentage: number }) => onDownloadProgress(status, refreshOnSuccess), onDownloadError);
 
         setDownloading(true);
     }

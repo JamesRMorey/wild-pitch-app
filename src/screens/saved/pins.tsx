@@ -16,7 +16,7 @@ type PropsType = { navigation: any }
 export default function PinsScreen({  } : PropsType) {
 
     const navigation: any = useNavigation();
-    const { pointsOfInterest, get: getPoints } = usePointsOfInterest();
+    const { pointsOfInterest, get: getPoints, remove: removePoint } = usePointsOfInterest();
     const [selectedPOI, setSelectedPOI] = useState<PointOfInterest>();
 
 
@@ -48,9 +48,15 @@ export default function PinsScreen({  } : PropsType) {
         }
     }
 
+    const deleteSelectedPOI = async () => {
+        if (selectedPOI?.id) removePoint(selectedPOI.id);
+        await SheetManager.hide(SHEET.PINS_EDIT_OPTIONS);
+    }
+
     const SHEET_OPTIONS = [
         { label: 'View', icon: 'eye-outline', onPress: ()=>viewSelectedPOI() },
         { label: 'Edit', icon: 'pencil-outline', onPress: ()=>editSelectedPOI() },
+        { label: 'Delete', icon: 'trash-outline', colour: COLOUR.red[500], onPress: ()=>deleteSelectedPOI() },
     ];
 
 
@@ -85,9 +91,8 @@ export default function PinsScreen({  } : PropsType) {
                 :
                 <NothingHere
                     title="No Point of Interest yet?"
-                    text="Press the button below to add some pins to your map."
+                    text="Head to the map and add some pins to your map"
                     onPress={() => onPoiPress()}
-                    buttonText="Add a POI pin"
                 />
                 }
             </ScrollView>

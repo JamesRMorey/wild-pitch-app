@@ -41,7 +41,6 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
     }
 
     const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
-        console.log('adwwadad')
         setProgress(status.percentage);
         setDownloaded(status.percentage == 100 ? true : false);
 

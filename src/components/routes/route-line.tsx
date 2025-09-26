@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 type PropsType = { start: Coordinate, end: Coordinate, markers: Array<Coordinate>, lineKey: number };
 export default function RouteLine({ start, end, markers, lineKey } : PropsType) {
 
+    const [ready, setReady] = useState(false);
     const [line, setLine] = useState<any>({
         type: 'FeatureCollection',
         features: [{
@@ -35,11 +36,11 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
 
     useEffect(() => {
         updateLine(markers);
+        setReady(true); // without this it crashes on first load
     }, [markers])
 
     return (
         <>
-            <Mapbox.Images images={{arrow: ASSET.ROUTE_LINE_ARROW}} />
             {(start && end) && (
                 <>
                     <PointOfInterestMarker
@@ -56,7 +57,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                     />
                 </>
             )}
-            {markers && (
+            {ready && markers && markers.length >= 2 && (
                 <Mapbox.ShapeSource id={`lineSource-${lineKey}`} shape={line}>
                     <Mapbox.LineLayer
                         id={`lineLayer-${lineKey}`}
@@ -70,14 +71,24 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                         }}
                     />
                     <Mapbox.SymbolLayer
-                        id={`arrowLayer`}
+                        id={`arrowLayer-${lineKey}`}
                         style={{
                             symbolPlacement: "line",
                             iconImage: "arrow",
                             iconSize: 0.4,
                             iconAllowOverlap: true,
                             iconIgnorePlacement: true,
-                            symbolSpacing: 20,
+                            symbolSpacing: 60,
+                        }}
+                    />
+                    <Mapbox.LineLayer 
+                        id={`dashedLayer-${lineKey}`} 
+                        style={{
+                            lineColor: "white",
+                            lineWidth: 1.5,
+                            lineDasharray: [4, 4],
+                            lineCap: "round",
+                            lineJoin: "round",
                         }}
                     />
                 </Mapbox.ShapeSource>

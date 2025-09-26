@@ -1,30 +1,22 @@
 import { NavigationContainer } from '@react-navigation/native';
-import MainTabs from './src/navigation/main-tabs';
-import { MapProvider } from './src/contexts/map-context';
 import BootSplash from "react-native-bootsplash";
 import { useEffect } from 'react';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { RoutesProvider } from './src/contexts/routes-context';
+import { GlobalProvider } from './src/contexts/global-context';
+import App from './src/App';
 
-function App() {
+export default function AppWrapper() {
 
 	useEffect(() => {
 		setTimeout(() => {
 			BootSplash.hide()
-		}, 2000)
+		}, 500)
 	}, [])
 
 	return (
 		<NavigationContainer>
-			<MapProvider>
-				<RoutesProvider>
-					<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-						<MainTabs />
-					</TouchableWithoutFeedback>
-				</RoutesProvider>
-			</MapProvider>
+			<GlobalProvider>
+				<App />
+			</GlobalProvider>
 		</NavigationContainer>
 	);
 }
-
-export default App;

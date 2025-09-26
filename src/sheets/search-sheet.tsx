@@ -62,7 +62,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
             }
         }
         catch (err) {
-            console.log(err)
+            console.error(err)
             setResults([]);
         }
         finally {
@@ -175,7 +175,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                 :
                 <NothingHere
                     title={searchTerm.length > 3 && results !== undefined ?  "No Results" : null}
-                    text={searchTerm.length < 3 && results !== undefined ? "Start typing to search for places." : "No places found, try a different search term."}
+                    text={searchTerm.length < 3 && results !== undefined ? `Start typing to search for ${searchType == 'place' ? 'places' : 'routes'}.` : `No ${searchType == 'place' ? 'places' : 'routes'} found, try a different search term.`}
                 />
                 }
             </View>

@@ -8,6 +8,7 @@ export function useMapCameraControls() {
     const cameraRef = useRef<Mapbox.Camera>(null);
     const [initialRegion, setInitialRegion] = useState<Position>();
     const [heading, setHeading] = useState<number>(0);
+    const [followUserPosition, setFollowUserPosition] = useState<boolean>(false);
 
     const moveTo = (coordinate: Position): void => {
         cameraRef.current?.moveTo(coordinate);
@@ -39,11 +40,25 @@ export function useMapCameraControls() {
         setHeading(0);
     }
 
+    const reCenter = async (center: Position) => {
+		if (!center) return;
+		cameraRef.current?.setCamera({
+			centerCoordinate: center,
+			zoomLevel: SETTING.MAP_CLOSEST_ZOOM,
+			animationDuration: 1000,
+		});
+	}
+
     const fitToBounds = (ne: Position, sw: Position, padding: number = 50, duration: number = 1000): void => {
-        cameraRef.current?.fitBounds(ne, sw, [Math.max(padding, 120), padding, Math.max(padding, 140), padding], duration);
+        cameraRef.current?.fitBounds(ne, sw, [Math.max(padding, 120), padding, Math.max(padding, 160), padding], duration);
     }
 
     return { 
+        cameraRef,
+        initialRegion,
+        heading,
+        followUserPosition,
+
         moveTo, 
         flyTo, 
         flyToLow, 
@@ -51,9 +66,8 @@ export function useMapCameraControls() {
         resetHeading,
         setInitialRegion,
         fitToBounds,
-        cameraRef,
-        initialRegion,
-        heading,
-        setHeading
+        setHeading,
+        setFollowUserPosition,
+        reCenter
     };
 }

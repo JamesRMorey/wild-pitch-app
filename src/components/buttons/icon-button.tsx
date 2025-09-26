@@ -17,7 +17,7 @@ export default function IconButton({ icon, onPress, disabled=false, active=false
                 iconOnly ? { borderColor: COLOUR.transparent } : { borderColor : COLOUR.black + OPACITY[50] },
                 style
             ]}
-            activeOpacity={0.7}
+            activeOpacity={0.6}
             disabled={disabled || blocked}
         >
             <Icon

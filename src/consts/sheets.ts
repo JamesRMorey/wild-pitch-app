@@ -10,5 +10,6 @@ export const sheets = {
     MAP_PACKS_SAVED_PACKS: 'map-pack-saved-packs',
     SAVED_OPTIONS: 'saved-options',
     MAP_PACK_GROUP_OPTIONS: 'map-pack-group-options',
-    MAP_POI_SHEET: 'map-point-of-interest'
+    MAP_POI_SHEET: 'map-point-of-interest',
+    ROUTES_EDIT_OPTIONS: 'routes-edit-options',
 }

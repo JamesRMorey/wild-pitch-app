@@ -16,7 +16,7 @@ export default function RoutesStack({}) {
             <Stack.Screen name="routes-map" component={RoutesScreen} options={{...SCREEN_OPTIONS }}/>
             <Stack.Screen name="route-builder" component={RouteBuilderScreen} options={{...SCREEN_OPTIONS }}/>
             <Stack.Screen name="route-details" component={RouteDetailsScreen} options={{...SCREEN_OPTIONS }}/>
-            <Stack.Screen name="route-navigation" component={RouteNavigationScreen} options={{...SCREEN_OPTIONS }}/>
+            <Stack.Screen name="route-navigation" component={RouteNavigationScreen} options={{...SCREEN_OPTIONS, presentation: 'fullScreenModal' }}/>
             <Stack.Screen name="route-save" component={RouteSaveScreen} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
         </Stack.Navigator>
     )

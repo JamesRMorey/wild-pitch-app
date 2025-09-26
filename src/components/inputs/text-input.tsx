@@ -2,11 +2,14 @@ import { TextInput as RNTextInput, StyleSheet, Text, View, TouchableOpacity } fr
 import { COLOUR, TEXT } from '../../styles';
 import { normalise } from '../../functions/helpers';
 import Icon from '../misc/icon';
+import { useState } from 'react';
 
 
-type PropsType = { placeHolder?: string, icon?: string, label?: string, value?: string, onChangeText: (text: string)=>void, onFocus?: ()=>void, error?: string, onClear?: ()=>void, autoCorrect?: boolean };
+type PropsType = { placeHolder?: string, icon?: string, label?: string, secureTextEntry?: boolean, value?: string, onChangeText: (text: string)=>void, onFocus?: ()=>void, error?: string, onClear?: ()=>void, autoCorrect?: boolean };
 
-export default function TextInput ({ placeHolder, icon, value, label, onChangeText, onFocus=()=>{}, error, onClear, autoCorrect=false } : PropsType) {
+export default function TextInput ({ placeHolder, icon, value, label, secureTextEntry=false, onChangeText, onFocus=()=>{}, error, onClear, autoCorrect=false } : PropsType) {
+
+    const [showSecureText, setShowSecureText] = useState<boolean>(secureTextEntry);
 
     return (
         <View style={{ width: '100%' }}>
@@ -27,17 +30,22 @@ export default function TextInput ({ placeHolder, icon, value, label, onChangeTe
                         icon && { paddingLeft: normalise(40) },
                         onClear && { paddingRight: normalise(40) }
                     ]}
+                    secureTextEntry={showSecureText}
                     value={value}
                     placeholderTextColor={COLOUR.gray[500]}
                     onChangeText={onChangeText}
                     onFocus={onFocus}
                     autoCorrect={autoCorrect}
                 />
-                {onClear && (
-                    <TouchableOpacity style={styles.close} onPress={onClear}>
-                        <Icon icon={'close-outline'} size={normalise(20)} colour={COLOUR.gray[600]} />
-                    </TouchableOpacity>
-                )}
+                {onClear ? 
+                <TouchableOpacity style={styles.close} onPress={onClear}>
+                    <Icon icon={'close-outline'} size={normalise(20)} colour={COLOUR.gray[600]} />
+                </TouchableOpacity>
+                :secureTextEntry ?
+                <TouchableOpacity style={styles.close} onPress={()=>setShowSecureText(!showSecureText)}>
+                    <Icon icon={showSecureText ? 'eye-off-outline' : 'eye-outline'} size={normalise(20)} colour={COLOUR.gray[600]} />
+                </TouchableOpacity>
+                :null}
             </View>
             {error && (
                 <Text style={styles.errorText}>{error}</Text>

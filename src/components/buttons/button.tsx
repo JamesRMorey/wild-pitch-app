@@ -25,7 +25,7 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
             {icon && 
             <Icon
                 icon={icon}
-                size={normalise(18)}
+                size={normalise(16)}
                 colour={style == 'outline' ? COLOUR.wp_brown[700] : COLOUR.white}
             />
             }

@@ -30,7 +30,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     };
     const { progress, errored, downloading, downloaded, checkDownloaded, setPack, download } = useMapPackDownload({ 
         mapPack: pack, 
-        onSuccess: ()=>saveRoute() 
+        onSuccess: () => saveRoute() 
     });
 
     const goBack = () => {
@@ -65,7 +65,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const startRoute = () => {
-        navigation.navigate('routes', { screen: 'route-navigation', params: { route: route } });
+        navigation.navigate('route-navigation', { route: route });
     }
 
     const saveGPX = async () => {
@@ -185,7 +185,14 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 </View>
             </ScrollView>
             <View style={styles.buttons}>
-                {downloading ?
+                {errored ?
+                <Button
+                    title="Retry"
+                    onPress={download}
+                    style='outline'
+                    flex={true}
+                />
+                :downloading ?
                 <Button
                     title={`${progress}%`}
                     style='outline'

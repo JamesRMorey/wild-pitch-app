@@ -3,9 +3,12 @@ import { normalise } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import SectionItemCard from "../../components/cards/section-item-card";
+import { useGlobalActions } from "../../contexts/global-context";
 
 
 export default function ProfileScreen() {
+
+    const { logout } = useGlobalActions();
 
     const shareWithFriends = () => {
         Share.share({
@@ -69,6 +72,11 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Shop Wild Pitch"
                         icon="storefront-outline"
+                    />
+                    <SectionItemCard
+                        title="Logout"
+                        icon="exit-outline"
+                        onPress={logout}
                     />
                 </View>
             </ScrollView>

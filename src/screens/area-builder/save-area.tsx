@@ -21,6 +21,7 @@ const schema = object({
 type PropsType = { navigation: any, route: any }
 export default function AreaBuilderSaveAreaScreen ({ navigation, route } : PropsType) {
 
+    const resetTo = route.params?.resetTo ?? "saved";
     const { bounds, onBack } = route.params;
     const { create } = useMapPackGroups();
     const [data, setData] = useState<any>({
@@ -53,9 +54,14 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
             if (onBack) {
                 onBack()
             }
-            navigation.replace('saved');
+            
+            navigation.reset({
+                index: 0,
+                routes: [{ name: resetTo }],
+            });
         }
         catch (err: any) {
+            console.log(err);
             const errs = parseValidationErrors(err);
             setErrors(errs);
         }

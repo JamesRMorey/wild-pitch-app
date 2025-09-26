@@ -1,10 +1,10 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
 import { delay, getDistanceBetweenPoints, normalise } from "../../functions/helpers";
-import { SETTING, SHEET } from "../../consts";
+import { ASSET, SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
 import { Bounds, Coordinate, Place, PointOfInterest, PositionArray, Route, RouteSearchResult } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
@@ -49,6 +49,7 @@ export default function RoutesScreen({ navigation } : PropsType) {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [currentBounds, setCurrentBounds] = useState<{ bounds: Bounds, zoom: number }>();
 	const mapSearchEnabled = useRef<boolean>(true);
+	const [ready, setReady] = useState(false);
 	
 
 	const reCenter = async () => {
@@ -74,11 +75,13 @@ export default function RoutesScreen({ navigation } : PropsType) {
 		updateActiveRoute(route);
 	}
 
-	const updateActiveRoute = ( route: Route ) => {
+	const updateActiveRoute = ( route: Route, fit:boolean=true ) => {
 		setActiveRoute(route);
 		reDrawRoute();
 
-		fitToRoute(route);
+		if (fit) {
+			fitToRoute(route);
+		}
 	}
 
 	const clearActiveRoute = () => {
@@ -114,14 +117,14 @@ export default function RoutesScreen({ navigation } : PropsType) {
 		flyTo([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
 	}
 
-	const handleRouteSearchPress = async ( route: RouteSearchResult ) => {
+	const handleRouteSearchPress = async ( route: RouteSearchResult, fit:boolean=true ) => {
 		try {
 			mapSearchEnabled.current = false;
 			setLoading(true);
 			SheetManager.hide(SHEET.MAP_SEARCH);
 			const data = await OSMaps.fetchRoute(route.id, route.slug);
 
-			updateActiveRoute(data);
+			updateActiveRoute(data, fit);
 		}
 		catch(err) {
 			console.log(err);
@@ -189,6 +192,12 @@ export default function RoutesScreen({ navigation } : PropsType) {
 		fitToBounds(bounds.ne, bounds.sw, 100);
 	}
 
+
+	useEffect(() => {
+		setReady(true);
+	}, [])
+
+
     return (
         <View style={styles.container}>
             <Mapbox.MapView
@@ -204,88 +213,96 @@ export default function RoutesScreen({ navigation } : PropsType) {
 					};
 					debouncedHandleMapRegionChange({ ne: e.properties.visibleBounds[0], sw: e.properties.visibleBounds[1] }, e.properties.zoomLevel);
 				}}
-
             >
-                {initialRegion && (
-                    <Mapbox.Camera
-                        ref={(ref) => {
-                            if (ref) cameraRef.current = ref;
-                        }}
-                        centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
-                        zoomLevel={SETTING.ROUTE_DEFAULT_ZOOM}
-                        animationDuration={loaded ? 500 : 0}
-                    />
-                )}
-				{routes.map((route, i) => {
-					return (
+            	{ready && (
+					<>
+					<Mapbox.Images images={{arrow: ASSET.ROUTE_LINE_ARROW, flag: ASSET.ROUTE_FLAG}} />
+					{initialRegion && (
+						<Mapbox.Camera
+							ref={(ref) => {
+								if (ref) cameraRef.current = ref;
+							}}
+							centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
+							zoomLevel={SETTING.ROUTE_DEFAULT_ZOOM}
+							animationDuration={loaded ? 500 : 0}
+						/>
+					)}
+					{routes && !activeRoute && (
+						<>
+						{routes.map((route, i) => {
+							return (
+								<PointOfInterestMarker
+									key={i}
+									coordinate={[route.longitude, route.latitude]}
+									icon={'location'}
+									colour={COLOUR.blue[500]}
+									onPress={() => handleRoutePress(route)}
+								/>
+							)
+						})}
+						</>
+					)}
+					{/* {routesInMap && !activeRoute && (
+						<RouteClusterMap
+							id="routes-cluster"
+							routes={routesInMap}
+							onRoutePress={(result: RouteSearchResult) => handleRouteSearchPress(result, false)}
+							onClusterPress={(points: PositionArray) => handleClusterPress(points)}
+						/>
+					)} */}
+					{activeRoute && (
+						<RouteLine
+							key={`line-${lineKey}`}
+							start={{ latitude: activeRoute.latitude, longitude: activeRoute.longitude }}
+							end={activeRoute.markers[activeRoute.markers.length - 1]}
+							markers={activeRoute.markers}
+							lineKey={lineKey}
+						/>
+					)}
+					{activePOI && (
 						<PointOfInterestMarker
-							key={i}
-							coordinate={[route.longitude, route.latitude]}
-							icon={'location'}
-							colour={COLOUR.blue[500]}
-							onPress={() => handleRoutePress(route)}
+							coordinate={[activePOI.longitude, activePOI.latitude]}
+							icon={activePOI.point_type?.icon ?? 'flag'}
+							colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
+							onPress={() => pointOfInterestPress(activePOI)}
 						/>
-					)
-				})}
-				{routes && !activeRoute && (
-					<RouteClusterMap
-						id="routes-cluster"
-						routes={routesInMap}
-						onRoutePress={(result: RouteSearchResult) => handleRouteSearchPress(result)}
-						onClusterPress={(points: PositionArray) => handleClusterPress(points)}
+					)}
+					<UserPosition
+						onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
 					/>
+					{activeRoute && (
+						<View style={styles.activeRouteContainer}>
+							<ActiveRouteInformation
+								route={activeRoute}
+								onPress={() => navigateToRoute(activeRoute)}
+								onClose={() => clearActiveRoute()}
+							/>
+						</View>
+					)}
+					{loading && (
+						<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
+							<Loader />
+						</View>
+					)}
+					</>
 				)}
-				{activeRoute && (
-					<RouteLine
-						key={`line-${lineKey}`}
-						start={{ latitude: activeRoute.latitude, longitude: activeRoute.longitude }}
-						end={activeRoute.markers[activeRoute.markers.length - 1]}
-						markers={activeRoute.markers}
-						lineKey={lineKey}
-					/>
-				)}
-				{activePOI && (
-					<PointOfInterestMarker
-						coordinate={[activePOI.longitude, activePOI.latitude]}
-						icon={activePOI.point_type?.icon ?? 'flag'}
-						colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
-						onPress={() => pointOfInterestPress(activePOI)}
-					/>
-				)}
-				<UserPosition
-					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
-				/>
-				{activeRoute && (
-					<View style={styles.activeRouteContainer}>
-						<ActiveRouteInformation
-							route={activeRoute}
-							onPress={() => navigateToRoute(activeRoute)}
-							onClose={() => clearActiveRoute()}
-						/>
-					</View>
-				)}
-				{loading && (
-					<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
-						<Loader />
-					</View>
-				)}
-				<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
-					<IconButton
-						icon={'navigate-outline'}
-						onPress={reCenter}
-						disabled={!userPosition}
-						shadow={true}
-						style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
-					/>
-				</View>
-				<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
-					<IconButton
-						icon={'search-outline'}
-						onPress={openSearch}
-						shadow={true}
-					/>
-				</View>
             </Mapbox.MapView>
+			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
+				<IconButton
+					icon={'location-outline'}
+					onPress={reCenter}
+					disabled={!userPosition}
+					shadow={true}
+					style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
+				/>
+			</View>
+			<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
+				<IconButton
+					icon={'search-outline'}
+					onPress={openSearch}
+					shadow={true}
+				/>
+			</View>
             <View style={styles.bottomBar}>
                 <Button
                     title="Create new route"

@@ -95,7 +95,6 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
                     <Button
                         onPress={() => validate()}
                         title="Save"
-                        style="large"
                     />
                 </View>
             </View>

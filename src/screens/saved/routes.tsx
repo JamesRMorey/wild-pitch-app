@@ -9,6 +9,9 @@ import RouteCard from "../../components/cards/route-card"
 import { EventBus } from "../../services/event-bus"
 import { Route } from "../../types"
 import { useRoutesActions } from "../../contexts/routes-context"
+import { SheetManager } from "react-native-actions-sheet"
+import { SHEET } from "../../consts"
+import OptionsSheet from "../../sheets/options-sheet"
 
 
 export default function RoutesScreen({}) {
@@ -17,19 +20,43 @@ export default function RoutesScreen({}) {
     const { routes, get: getPackGroups, remove: removePackGroup } = useRoutes();
     const { setActiveRoute, fitToRoute } = useRoutesActions();
     const [refresh, setRefresh] = useState<number>(0);
+    const [selectedRoute, setSelectedRoute] = useState<Route>();
     
     
     const triggerReRender = () => {
         setRefresh(prev => prev + 1);
     }
 
-    const inspectRoute = async ( route: Route ) => {
+    const openRouteOptions = ( route: Route ) => {
+        setSelectedRoute(route);
+        SheetManager.show(SHEET.ROUTES_EDIT_OPTIONS);
+    }
+
+    const inspectRoute = async () => {
+        await closeRouteOptions();
+        if (!selectedRoute) return;
+
         navigation.navigate('routes', { screen: 'routes-map' });
         
         await delay(200);
-        setActiveRoute(route);
-        fitToRoute(route)
+        setActiveRoute(selectedRoute);
+        fitToRoute(selectedRoute);
     }
+
+    const viewRouteDetails = async () => {
+        await closeRouteOptions();
+        if (!selectedRoute) return;
+        navigation.navigate('route-details', { route: selectedRoute });
+    }
+
+    const closeRouteOptions = async () => {
+        await SheetManager.hide(SHEET.ROUTES_EDIT_OPTIONS);
+    }
+
+    const SHEET_OPTIONS = [
+        { label: 'Inspect', icon: 'eye-outline', onPress: ()=>inspectRoute() },
+        { label: 'View Details', icon: 'walk-outline', onPress: ()=>viewRouteDetails() },
+    ];
 
     useEffect(() => {
         const refreshListener = EventBus.listen.routesRefresh(triggerReRender);
@@ -54,7 +81,7 @@ export default function RoutesScreen({}) {
                                 <RouteCard
                                     route={route}
                                     key={`route-card-${i}-${route.id}-${refresh}`}
-                                    onPress={() => inspectRoute(route)}
+                                    onOtherPress={() => openRouteOptions(route)}
                                 />
                             )
                         })}
@@ -63,12 +90,16 @@ export default function RoutesScreen({}) {
                 :
                 <NothingHere
                     title="No routes saved"
-                    text="Head to the routes section to find and creates routes"
+                    text="Head to the routes tab to find and creates routes"
                     // onPress={navigateToBuilder}
-                    buttonText="Create new route"
+                    // buttonText="Create new route"
                 />
                 }
             </ScrollView>
+            <OptionsSheet
+                id={SHEET.ROUTES_EDIT_OPTIONS}
+                options={SHEET_OPTIONS}
+            />
         </View>
     )
 }

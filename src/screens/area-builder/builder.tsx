@@ -4,24 +4,30 @@ import { useEffect, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
 import { normalise } from "../../functions/helpers";
-import { useMapState } from "../../contexts/map-context";
 import MapArea from "../../components/map/map-area";
 import { SETTING } from "../../consts";
 import { MapMarker as MapMarkerType, PositionArray } from "../../types";
 import MapPointAnnotation from "../../components/map/map-point-annotation";
 import useHaptic from "../../hooks/useHaptic";
+import { useMapSettings } from "../../hooks/useMapSettings";
+import { useMapCameraControls } from "../../hooks/useMapCameraControls";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
-type PropsType = { navigation: any }
-export default function AreaBuilderScreen({ navigation } : PropsType) {
+type PropsType = { navigation: any, route: any }
+export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 
-	const { center, cameraRef, followUserLocation } = useMapState();
+	const resetTo = route.params?.resetTo ?? "saved";
+	const initialCenter = route.params?.initialCenter;
+	console.log(initialCenter)
+
+	const { cameraRef } = useMapCameraControls();
+	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const [markers, setMarkers] = useState<Array<MapMarkerType>>([]);
 	const [areaBounds, setAreaBounds] = useState<PositionArray>();
 	const { tick } = useHaptic();
 
-	const back = () => {
+	const goBack = () => {
 		navigation.goBack();
 	}
 
@@ -49,7 +55,7 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 	}
 
 	const saveArea = () => {
-		navigation.navigate('area-builder-save-area', { bounds: areaBounds })
+		navigation.navigate('area-builder-save-area', { bounds: areaBounds, resetTo: resetTo })
 	}
 
 	const onPointDragEnd = (e: any, point: MapMarkerType) => {
@@ -86,14 +92,25 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 				onLongPress={addMarkerFromLongPress}
 				attributionEnabled={false}
             >
-                <Mapbox.Camera
-					ref={cameraRef}
-                    centerCoordinate={center}
-                    zoomLevel={SETTING.MAP_DEFAULT_ZOOM}
-					followUserLocation={followUserLocation}
-					animationDuration={0}
-					animationMode="none"
-                />
+                {initialCenter ?
+					<Mapbox.Camera
+						ref={(ref) => {
+							if (ref) cameraRef.current = ref;
+						}}
+						centerCoordinate={initialCenter}
+						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
+						animationDuration={loaded ? 500 : 0}
+					/>
+				:initialRegion ?
+					<Mapbox.Camera
+						ref={(ref) => {
+							if (ref) cameraRef.current = ref;
+						}}
+						centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
+						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
+						animationDuration={loaded ? 500 : 0}
+					/>
+				:null}
                 {markers.map((marker, i) => {
 					return (
 						<MapPointAnnotation
@@ -107,7 +124,9 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
 						/>
 					)
 				})}
-				<UserPosition />
+				<UserPosition
+					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
+				/>
 				{(areaBounds && areaBounds.length == 2) && (
 					<MapArea
 						id="map-create-area"
@@ -117,6 +136,11 @@ export default function AreaBuilderScreen({ navigation } : PropsType) {
             </Mapbox.MapView>
 			<View style={styles.controlsContainer}>
 				<View style={styles.controls}>
+					<IconButton
+						icon={'close'}
+						onPress={goBack}
+						shadow={true}
+					/>
 					<IconButton
 						icon={'cloud-download-outline'}
 						onPress={() => saveArea()}

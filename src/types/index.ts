@@ -24,7 +24,7 @@ export type MapStyle = {
 }
 
 export type MapPackGroup = {
-    id: number,
+    id?: number,
     name: string,
     key: string,
     description: string,
@@ -34,8 +34,7 @@ export type MapPackGroup = {
     center: Position,
     packs: Array<{
         name: string,
-        styleURL: Mapbox.StyleURL,
-        size: number
+        styleURL: Mapbox.StyleURL
     }>
 }
 

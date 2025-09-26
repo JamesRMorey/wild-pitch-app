@@ -8,7 +8,7 @@ import { delay, normalise } from "../../functions/helpers";
 import { useMapActions, useMapState } from "../../contexts/map-context";
 import MapArea from "../../components/map/map-area";
 import ActiveItemControls from "../../components/map/active-item-controls";
-import { SETTING, SHEET } from "../../consts";
+import { ASSET, SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
 import { Place, PointOfInterest, RouteSearchResult } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
@@ -24,6 +24,10 @@ import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInteres
 import { useMapSettings } from "../../hooks/useMapSettings";
 import { OSMaps } from "../../services/os-maps";
 import { useMapCameraControls } from "../../hooks/useMapCameraControls";
+import MultiButtonControl from "../../components/map/multi-button-control";
+import MapStyleSheet from "../../sheets/map-style-sheet";
+import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
+import { useRoutesActions } from "../../contexts/routes-context";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -31,21 +35,15 @@ type PropsType = { navigation: any }
 export default function MapScreen({ navigation } : PropsType) {
 
 	const { styleURL, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest } = useMapState();
-	const { clearActivePackGroup, flyTo, flyToLow, setCenter, resetHeading } = useMapActions();
+	const { clearActivePackGroup, flyTo, flyToLow, setCenter, resetHeading, reCenter } = useMapActions();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
-	const { heading, setHeading } = useMapCameraControls();
+	const { heading, setHeading, followUserPosition, setFollowUserPosition } = useMapCameraControls();
+	const { setActiveRoute, fitToRoute } = useRoutesActions();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
-
-	const reCenter = async () => {
-		if (!userPosition) return;
-
-		setCenter([userPosition?.longitude + 0.0001, userPosition?.latitude + 0.0001]);
-		await delay(100);
-		flyTo([userPosition?.longitude + 0.0001, userPosition?.latitude + 0.0001], SETTING.MAP_CLOSEST_ZOOM);
-	}
+	const [mapCenter, setMapCenter] = useState<Position>();
 
 	const addMarkerFromLongPress = async ( e: any ) => {
 		const now = new Date();
@@ -89,19 +87,28 @@ export default function MapScreen({ navigation } : PropsType) {
 		SheetManager.show(SHEET.MAP_SEARCH);
 	}
 
+	const openStyleSheet = () => {
+        SheetManager.show(SHEET.MAP_STYLES)
+    }
+
 	const handleRouteSearchPress = async ( route: RouteSearchResult ) => {
 		try {
-			SheetManager.hide(SHEET.MAP_SEARCH);
+			await SheetManager.hide(SHEET.MAP_SEARCH);
 			const data = await OSMaps.fetchRoute(route.id, route.slug);
 
 			navigation.navigate('routes', { screen: 'routes-map' });
-			await delay(700);
+			await delay(200);
 
-			EventBus.emit.inspectRoute(data);
+			setActiveRoute(data);
+			fitToRoute(data);
 		}
 		catch(err) {
 			console.log(err);
 		}
+	}
+
+	const navigateToAreaBuilder = () => {
+		navigation.navigate('area-builder', { resetTo: 'map', initialCenter: mapCenter });
 	}
 
 
@@ -126,8 +133,13 @@ export default function MapScreen({ navigation } : PropsType) {
 				onMapIdle={(event) => {
 					const heading = event.properties?.heading;
 					setHeading(heading);
+					setMapCenter(event.properties.center);
+				}}
+				onTouchStart={() => {
+					if (followUserPosition) setFollowUserPosition(false);
 				}}
             >
+				<Mapbox.Images images={{arrow: ASSET.ROUTE_LINE_ARROW, flag: ASSET.ROUTE_FLAG}} />
 				{enable3DMode && (
 					<ThreeDMode />
 				)}
@@ -139,6 +151,7 @@ export default function MapScreen({ navigation } : PropsType) {
 						centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
 						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
 						animationDuration={loaded ? 500 : 0}
+						followUserLocation={followUserPosition}
 					/>
 				)}
                 {pointsOfInterest.map((point, i) => {
@@ -171,20 +184,22 @@ export default function MapScreen({ navigation } : PropsType) {
 					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
 				/>
             </Mapbox.MapView>
-			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
-				<MapStyleControls/>
-				<IconButton
-					icon={'navigate-outline'}
-					onPress={reCenter}
-					disabled={!userPosition}
-					shadow={true}
-					style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
-				/>
-			</View>
 			<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
 				<IconButton
 					icon={'search-outline'}
 					onPress={openSearch}
+					shadow={true}
+				/>
+			</View>
+			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
+				<IconButton
+					icon={'compass-outline'}
+					onPress={openSearch}
+					shadow={true}
+				/>
+				<IconButton
+					icon={'cloud-download-outline'}
+					onPress={navigateToAreaBuilder}
 					shadow={true}
 				/>
 			</View>
@@ -197,6 +212,13 @@ export default function MapScreen({ navigation } : PropsType) {
 						heading={heading}
 					/>
 				)}
+				<MultiButtonControl
+					items={[
+						{ icon: 'layers-outline', onPress: () => openStyleSheet() },
+						{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]) },
+						{ icon: followUserPosition ? 'navigate' : 'navigate-outline', onPress: () => setFollowUserPosition(!followUserPosition) },
+					]}
+				/>
 			</View>
 			<View style={[styles.controlsContainer, { bottom: normalise(20), width: '100%', alignItems: 'center' }]}>
 				{activePackGroup && (
@@ -215,6 +237,7 @@ export default function MapScreen({ navigation } : PropsType) {
 				onPlaceResultPress={(place) => handlePlaceResultPress(place)}
 				onRouteResultPress={(route: RouteSearchResult) => handleRouteSearchPress(route)}
 			/>
+			<MapStyleSheet/>
         </View>
     )
 }

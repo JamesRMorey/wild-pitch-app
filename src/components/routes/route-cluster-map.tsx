@@ -37,7 +37,6 @@ export default function RouteClusterMap({ id="routes-cluster", routes, onRoutePr
 
     return (
         <>
-            <Mapbox.Images images={{ flag: ASSET.ROUTE_FLAG }} />
             <Mapbox.ShapeSource
                 id={id}
                 shape={routes}
