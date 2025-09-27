@@ -13,18 +13,24 @@ import { Text } from "react-native-animatable";
 import Icon from "../../../components/misc/icon";
 import { useMapCameraControls } from "../../../hooks/useMapCameraControls";
 import { useMapSettings } from "../../../hooks/useMapSettings";
+import IconButton from "../../../components/buttons/icon-button";
+import PointOfInterestMarker from "../../../components/map/map-marker";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
-type PropsType = { navigation: any }
-export default function RouteBuilderScreen({ navigation } : PropsType) {
+type PropsType = { navigation: any, route: any }
+export default function RouteBuilderScreen({ navigation, route } : PropsType) {
+
+	const initialPoint: Coordinate | undefined = route.params?.initialPoint;
+	const initialCenter: Coordinate | undefined = route.params?.initialCenter;
+	const activePOI: PointOfInterest | undefined = route.params?.activePOI;
 
 	const { resetHeading, cameraRef } = useMapCameraControls();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
 	const [mapHeading, setMapHeading] = useState<number>(0);
-	const [markers, setMarkers] = useState<Array<Coordinate>>([]);
+	const [markers, setMarkers] = useState<Array<Coordinate>>(initialPoint ? [initialPoint] : []);
 	const [line, setLine] = useState<any>({
 		type: 'FeatureCollection',
 		features: [{
@@ -68,8 +74,8 @@ export default function RouteBuilderScreen({ navigation } : PropsType) {
 
 	const saveRoute = () => {
 		if (markers.length === 0) return;
-		navigation.navigate('route-save', { 
-			route: { 
+		navigation.navigate('route-save', {
+			route: {
 				name: null, 
 				notes: null, 
 				markers: markers,
@@ -92,54 +98,70 @@ export default function RouteBuilderScreen({ navigation } : PropsType) {
 
     return (
         <View style={styles.container}>
-            <Mapbox.MapView
-                style={styles.map}
-                styleURL={Mapbox.StyleURL.Outdoors}
-				pitchEnabled={false}
-				attributionEnabled={false}
-				ref={mapRef}
-				onPress={(e) => addMarker(e)}
-				onMapIdle={(event) => {
-					const heading = event.properties?.heading;
-					setMapHeading(heading);
-				}}
-            >
-				{initialRegion && (
-                <Mapbox.Camera
-					ref={(ref) => {
-						if (ref) cameraRef.current = ref;
+            <View style={{ flex: 1 }}>
+				<Mapbox.MapView
+					style={styles.map}
+					styleURL={Mapbox.StyleURL.Outdoors}
+					pitchEnabled={false}
+					attributionEnabled={false}
+					ref={mapRef}
+					onPress={(e) => addMarker(e)}
+					onMapIdle={(event) => {
+						const heading = event.properties?.heading;
+						setMapHeading(heading);
 					}}
-                    centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
-                    zoomLevel={SETTING.ROUTE_CLOSE_ZOOM}
-					animationDuration={loaded ? 500 : 0}
-                />
-				)}
-				{markers.map((marker, index) => {
-					return (
-						<RouteMarker
-							key={`route-marker-${marker.latitude}-${marker.longitude}-${index}`}
-							coordinate={[marker.longitude, marker.latitude]}
-							colour={SETTING.ROUTE_LINE_COLOUR}
-							onPress={() => {}}
-							onDragEnd={(e: any) => onMarkerDragEnd(e, index)}
-						/>
-					)
-				})}
-				<Mapbox.ShapeSource id="lineSource" shape={line}>
-					<Mapbox.LineLayer
-						id="lineLayer"
-						style={{
-							lineColor: SETTING.ROUTE_LINE_COLOUR,
-							lineWidth: 4,
-							lineOpacity: 0.7,
-							lineCap: 'round',
-							lineJoin: 'round'
+				>
+					{(initialPoint || initialCenter || initialRegion) && (
+					<Mapbox.Camera
+						ref={(ref) => {
+							if (ref) cameraRef.current = ref;
 						}}
+						centerCoordinate={
+						initialPoint ?
+							[initialPoint.longitude, initialPoint.latitude]
+						:initialCenter ?
+							[initialCenter.longitude, initialCenter.latitude]
+						:initialRegion &&
+							[initialRegion.longitude, initialRegion.latitude]
+						}
+						zoomLevel={SETTING.ROUTE_CLOSE_ZOOM}
+						animationDuration={loaded ? 500 : 0}
 					/>
-				</Mapbox.ShapeSource>
-				<UserPosition
-					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
-				/>
+					)}
+					{markers.map((marker, index) => {
+						return (
+							<RouteMarker
+								key={`route-marker-${marker.latitude}-${marker.longitude}-${index}`}
+								coordinate={[marker.longitude, marker.latitude]}
+								colour={SETTING.ROUTE_LINE_COLOUR}
+								onPress={() => {}}
+								onDragEnd={(e: any) => onMarkerDragEnd(e, index)}
+							/>
+						)
+					})}
+					<Mapbox.ShapeSource id="lineSource" shape={line}>
+						<Mapbox.LineLayer
+							id="lineLayer"
+							style={{
+								lineColor: SETTING.ROUTE_LINE_COLOUR,
+								lineWidth: 4,
+								lineOpacity: 0.7,
+								lineCap: 'round',
+								lineJoin: 'round'
+							}}
+						/>
+					</Mapbox.ShapeSource>
+					<UserPosition
+						onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
+					/>
+					{activePOI && (
+						<PointOfInterestMarker
+							coordinate={[activePOI.longitude, activePOI.latitude]}
+							icon={activePOI.point_type?.icon ?? 'flag'}
+							colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
+						/>
+					)}
+				</Mapbox.MapView>
 				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
 					{mapHeading > 0 && (
 						<CompassButton
@@ -150,7 +172,15 @@ export default function RouteBuilderScreen({ navigation } : PropsType) {
 						/>
 					)}
 				</View>
-            </Mapbox.MapView>
+				<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
+					<IconButton
+						icon={'chevron-back-outline'}
+						onPress={() => navigation.goBack()}
+						shadow={true}
+						style={{paddingRight: normalise(2)}}
+					/>
+				</View>
+			</View>
 			<View style={styles.bottomBar}>
 				<TouchableOpacity 
 					style={[styles.undo, { opacity: markers.length === 0 ? 0.5 : 1 }]}

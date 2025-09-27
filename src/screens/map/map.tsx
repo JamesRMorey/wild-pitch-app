@@ -148,7 +148,7 @@ export default function MapScreen({ navigation } : PropsType) {
 						ref={(ref) => {
 							if (ref) cameraRef.current = ref;
 						}}
-						centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
+						centerCoordinate={(!activePOI) && [initialRegion.longitude, initialRegion.latitude]}
 						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
 						animationDuration={loaded ? 500 : 0}
 						followUserLocation={followUserPosition}

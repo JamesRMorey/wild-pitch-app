@@ -8,8 +8,9 @@ import useModals from "../../hooks/useModals";
 import ConfirmModal from "../../modals/confirm";
 import { useNavigation } from "@react-navigation/native";
 import { SheetManager } from "react-native-actions-sheet";
-import { SHEET } from "../../consts";
+import { SETTING, SHEET } from "../../consts";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
+import { useRoutesActions } from "../../contexts/routes-context";
 
 type PropsType = { point: PointOfInterest, onChangeSection: (section: string)=>void, onUpdatePoint: (poi: PointOfInterest)=>void };
 export default function PointOfInterestDetails({ point, onChangeSection, onUpdatePoint } : PropsType) {
@@ -26,6 +27,11 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
             onPress: () => getDirections()
         },
         {
+            icon: 'walk-outline',
+            title: 'Create a route',
+            onPress: () => createRoute()
+        },
+        {
             icon: 'share-social-outline',
             title: 'Share location',
             onPress: () => shareLocation()
@@ -34,10 +40,11 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
     const { modals, close: closeModals, open: openModal } = useModals({ delete: false });
     const navigation = useNavigation();
     const { remove: deletePoint } = usePointsOfInterest();
+    const { flyTo: setRouteMapCenter, setActivePOI: setRouteMapActivePOI, setActiveRoute } = useRoutesActions();
 
 
     const getDirections = async () => {
-        const mapsUrl = `http://maps.apple.com/?ll=${point.latitude},${point.longitude}`;
+        const mapsUrl = `http://maps.apple.com/?daddr=${point.latitude},${point.longitude}`;
         Linking.openURL(mapsUrl);
     }
 
@@ -66,6 +73,17 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                 }
             }
         });
+    }
+
+    const createRoute = async () => {
+        await SheetManager.hide(SHEET.MAP_POI_SHEET);
+
+        setActiveRoute(undefined);
+        navigation.navigate('routes', { screen: 'routes-map' });
+        
+        await delay(200);
+        setRouteMapCenter([point.longitude, point.latitude], SETTING.ROUTE_CLOSE_ZOOM);
+        setRouteMapActivePOI(point);
     }
 
 

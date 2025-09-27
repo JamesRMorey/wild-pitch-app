@@ -14,7 +14,7 @@ export default function SavedStack({}) {
     return (
         <Stack.Navigator>
             <Stack.Screen name="saved" component={SavedTabsView} options={{...SCREEN_OPTIONS }}/>
-            <Stack.Screen name="area-builder" component={AreaBuilderScreen} options={{...SCREEN_OPTIONS }}/>
+            <Stack.Screen name="area-builder" component={AreaBuilderScreen} options={{...SCREEN_OPTIONS, presentation: 'fullScreenModal' }}/>
             <Stack.Screen name="area-builder-save-area" component={AreaBuilderSaveAreaScreen} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
             <Stack.Screen name="route-details" component={RouteDetailsScreen} options={{...SCREEN_OPTIONS }}/>
             <Stack.Screen name="route-navigation" component={RouteNavigationScreen} options={{...SCREEN_OPTIONS, presentation: 'fullScreenModal' }}/>

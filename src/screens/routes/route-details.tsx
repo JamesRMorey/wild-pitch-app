@@ -48,7 +48,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const directionsToStart = async () => {
-        const appleMapsUrl = `http://maps.apple.com/?ll=${route.latitude},${route.longitude}`;
+        const appleMapsUrl = `http://maps.apple.com?daddr=${route.latitude},${route.longitude}`;
         Linking.openURL(appleMapsUrl);
     }
 
@@ -163,11 +163,11 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         )}
                     </View>
                 </View>
+                {route.notes && (
                 <View style={styles.section}>
-                    {route.notes && (
-                        <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
-                    )}
+                    <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
                 </View>
+                )}
                 <View style={[styles.section, { paddingVertical: normalise(0) }]}>
                     <SectionItemCard
                         title="Export GPX"

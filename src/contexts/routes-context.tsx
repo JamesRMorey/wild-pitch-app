@@ -3,7 +3,7 @@ import Mapbox from '@rnmapbox/maps';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
-import { Route } from '../types';
+import { PointOfInterest, Route } from '../types';
 import { RouteService } from '../services/route-service';
 
 type RoutesContextState = {
@@ -13,6 +13,7 @@ type RoutesContextState = {
     enable3DMode: boolean;
     followUserLocation: boolean;
     activeRoute?: Route;
+    activePOI?: PointOfInterest;
 };
 
 type RoutesContextActions = {
@@ -28,6 +29,7 @@ type RoutesContextActions = {
     fitToBounds: (ne: Position, sw: Position, padding?: number, duration?: number) => void;
     setActiveRoute: (route?: Route) => void;
     fitToRoute: (route: Route) => void;
+    setActivePOI: (poi?: PointOfInterest) => void;
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -38,6 +40,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const { center, setCenter, styleURL, setStyleURL, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
     const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef } = useMapCameraControls();
     const [activeRoute, setActiveRoute] = useState<Route>();
+	const [activePOI, setActivePOI] = useState<PointOfInterest>();
     
     const setEnable3DMode = ( enabled: boolean ) => {
         cameraRef.current?.setCamera({
@@ -62,7 +65,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 cameraRef,
                 enable3DMode,
                 followUserLocation,
-                activeRoute
+                activeRoute,
+                activePOI
             }}
         >
             <ActionsContext.Provider
@@ -78,7 +82,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     flyToLow,
                     fitToBounds,
                     setActiveRoute,
-                    fitToRoute
+                    fitToRoute,
+                    setActivePOI
                 }}
             >
                 {children}

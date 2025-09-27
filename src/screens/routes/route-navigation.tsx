@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { normalise } from "../../functions/helpers";
 import { ASSET, SETTING, SHEET } from "../../consts";
 import { COLOUR, SHADOW, TEXT } from "../../styles";
@@ -26,12 +26,29 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 	const { resetHeading, cameraRef, heading, setHeading, followUserPosition, setFollowUserPosition, fitToBounds, reCenter } = useMapCameraControls();
 	const { userPosition, updateUserPosition, loaded } = useMapSettings();
 	const mapRef = useRef<Mapbox.MapView>(null);
+	const [distanceAlongRoute, setDistanceAlongRoute] = useState<{ distance: number, index: number }>();
+	const [paused, setPaused] = useState<boolean | undefined>(undefined);
 
 	const centerOnRoute = () => {
 		if (route.markers.length < 2) return;
 		const bounds = RouteService.getBounds(route.markers);
 		fitToBounds(bounds[1], bounds[0]);
 	}
+
+	useEffect(() => {
+		if (!userPosition || paused !== false) return;
+		const point = RouteService.getPreviouslyPassedPointOnRoute(userPosition, route.markers);
+
+		if (point.distancePast > 1000) {
+			setDistanceAlongRoute(undefined);
+			return;
+		}
+
+		const distanceAlong = RouteService.getRouteDistanceToPoint(point.index, route.markers);
+		if (!distanceAlong) return;
+
+		setDistanceAlongRoute({ distance: distanceAlong + point.distancePast, index: point.index });
+	}, [userPosition])
 
     return (
         <View style={styles.container}>
@@ -73,7 +90,7 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 						onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
 					/>
 				</Mapbox.MapView>
-				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(90) }]}>
+				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(112) }]}>
 					{heading > 0 && (
 						<CompassButton
 							onPress={resetHeading}
@@ -99,27 +116,40 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 					/>
 				</View>
 			</View>
-			{/* <View style={[styles.controlsContainer, { right: normalise(65), bottom: normalise(30) }]}>
-				<View style={styles.bottomBar}>
-					<Icon
-						icon="walk-outline"
-						size={normalise(15)}
-					/>
-					<Text style={TEXT.sm}>{(route.distance/1000).toFixed(2)} km</Text>
-				</View>
-			</View> */}
 			<View style={styles.bottomBar}>
 				<View style={styles.buttons}>
+					<View style={styles.infoItem}>
+						<Text style={styles.infoText}>Est Distance Walked</Text>
+						<View style={styles.info}>
+							<Icon
+								icon="walk-outline"
+								size={normalise(18)}
+							/>
+							<Text style={TEXT.md}>{distanceAlongRoute?.distance ? (distanceAlongRoute.distance/1000).toFixed(2) : 0}/{(route.distance/1000).toFixed(2)} km</Text>
+						</View>
+					</View>
+					{paused === undefined ?
 					<Button
-						title="Cancel"
+						title="Start"
 						flex={true}
-						style="secondary"
-						onPress={() => navigation.goBack()}
+						icon="play"
+						onPress={() => setPaused(false)}
 					/>
+					:paused ?
 					<Button
-						title="Complete"
+						title="Resume"
 						flex={true}
+						icon="play-outline"
+						onPress={() => setPaused(false)}
 					/>
+					:
+					<Button
+						title="Pause"
+						flex={true}
+						icon="pause-outline"
+						style="outline"
+						onPress={() => setPaused(true)}
+					/>}
 				</View>
 			</View>
 			<MapStyleSheet/>
@@ -146,14 +176,13 @@ const styles = StyleSheet.create({
     bottomBar: {
         width: '100%',
         backgroundColor: COLOUR.white,
-        paddingVertical: normalise(10),
-        paddingHorizontal: normalise(10),
-		flexDirection: 'row',
+        paddingVertical: normalise(20),
+        paddingHorizontal: normalise(20),
 		alignItems: 'center',
 		borderRadius: normalise(30),
-		gap: normalise(5),
+		gap: normalise(10),
 		...SHADOW.xl,
-		paddingBottom: normalise(20),
+		paddingBottom: normalise(30),
 		position: 'absolute',
 		bottom: 0,
 		left: 0,
@@ -170,6 +199,27 @@ const styles = StyleSheet.create({
    	},
 	buttons: {
 		flexDirection: 'row',
-		gap: normalise(10)
+		gap: normalise(15)
+	},
+	infoContainer: {
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginVertical: normalise(5),
+	},
+	infoItem: {
+		flex: 1,
+		alignItems: 'center',
+	},
+	info: {
+		flex: 1,
+		justifyContent: 'center',
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	infoText: {
+		...TEXT.md,
+		...TEXT.medium,
+		marginBottom: normalise(5),
 	}
 });

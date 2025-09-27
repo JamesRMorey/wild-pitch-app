@@ -3,7 +3,7 @@ import { COLOUR, TEXT } from "../../styles";
 import { normalise } from "../../functions/helpers";
 import Icon from "../misc/icon";
 
-type PropsType = { title: string, onPress?: Function, disabled?: boolean, active?: boolean, style?: 'primary' | 'secondary' | 'outline', icon?: string, flex?: boolean }
+type PropsType = { title: string, onPress?: Function, disabled?: boolean, active?: boolean, style?: 'primary' | 'secondary' | 'tertiary' | 'outline', icon?: string, flex?: boolean }
 export default function Button ({ title, onPress, disabled=false, active=false, style='primary', icon, flex=false } : PropsType) {
 
     return (
@@ -11,8 +11,9 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
             onPress={onPress ? ()=>onPress() : undefined}
             style={[
                 styles.button,
-                style == 'secondary' && { backgroundColor: COLOUR.wp_orange[500] },
-                style == 'outline' && { borderWidth: normalise(1), borderColor: COLOUR.wp_brown[700], backgroundColor: COLOUR.transparent },
+                style == 'secondary' && { borderColor: COLOUR.wp_orange[500], backgroundColor: COLOUR.wp_orange[500] },
+                style == 'tertiary' && { borderColor: COLOUR.wp_brown[500], backgroundColor: COLOUR.wp_brown[500] },
+                style == 'outline' && { borderColor: COLOUR.wp_brown[700], backgroundColor: COLOUR.transparent },
                 flex && { flex: 1 }
             ]}
             activeOpacity={0.8}
@@ -42,7 +43,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: normalise(10)
+        gap: normalise(10),
+        borderWidth: normalise(1),
+        borderColor: COLOUR.wp_green[500],
     },
     text: {
         color: COLOUR.white,

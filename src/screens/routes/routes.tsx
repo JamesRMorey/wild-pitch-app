@@ -6,11 +6,10 @@ import IconButton from "../../components/buttons/icon-button";
 import { delay, getDistanceBetweenPoints, normalise } from "../../functions/helpers";
 import { ASSET, SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
-import { Bounds, Coordinate, Place, PointOfInterest, PositionArray, Route, RouteSearchResult } from "../../types";
+import { Bounds, Place, PointOfInterest, PositionArray, Route, RouteSearchResult } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import { COLOUR } from "../../styles";
 import useHaptic from "../../hooks/useHaptic";
-import CompassButton from "../../components/buttons/compass-button";
 import SearchSheet from "../../sheets/search-sheet";
 import Button from "../../components/buttons/button";
 import { useRoutesActions, useRoutesState } from "../../contexts/routes-context";
@@ -20,7 +19,6 @@ import ActiveRouteInformation from "../../components/routes/active-route-informa
 import { OSMaps } from "../../services/os-maps";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import RouteLine from "../../components/routes/route-line";
-import { useMapCameraControls } from "../../hooks/useMapCameraControls";
 import { RouteService } from "../../services/route-service";
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
 import Loader from "../../components/map/loader";
@@ -32,15 +30,14 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdT
 type PropsType = { navigation: any , route: any }
 export default function RoutesScreen({ navigation } : PropsType) {
 
-	const { styleURL, cameraRef, enable3DMode, activeRoute } = useRoutesState();
-	const { flyTo, setCenter, fitToRoute, fitToBounds, setActiveRoute } = useRoutesActions();
+	const { styleURL, cameraRef, enable3DMode, activeRoute, activePOI } = useRoutesState();
+	const { flyTo, setCenter, fitToRoute, fitToBounds, setActiveRoute, setActivePOI } = useRoutesActions();
     const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
 	const { routes } = useRoutes();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
 	const [lineKey, setLineKey] = useState<number>(0);
-	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 	const [routesInMap, setRoutesInMap] = useState<any>({
 		type: 'FeatureCollection',
 		features: []
@@ -50,6 +47,7 @@ export default function RoutesScreen({ navigation } : PropsType) {
 	const [currentBounds, setCurrentBounds] = useState<{ bounds: Bounds, zoom: number }>();
 	const mapSearchEnabled = useRef<boolean>(true);
 	const [ready, setReady] = useState(false);
+	const [mapCenter, setMapCenter] = useState<Position>();
 	
 
 	const reCenter = async () => {
@@ -66,7 +64,9 @@ export default function RoutesScreen({ navigation } : PropsType) {
 
     const navigateToBuilder = () => {
         navigation.navigate('route-builder', { 
-			onGoBack: (params: any) => navigation.navigate('routes') 
+			onGoBack: (params: any) => navigation.navigate('routes'),
+			activePOI: activePOI,
+			initialCenter: mapCenter && { latitude: mapCenter[1], longitude: mapCenter[0] }
 		});
     }
 
@@ -207,10 +207,12 @@ export default function RoutesScreen({ navigation } : PropsType) {
 				attributionEnabled={false}
 				ref={mapRef}
 				onRegionIsChanging={(e) => {
-					if (!mapSearchEnabled.current) {
+					if (!mapSearchEnabled.current || activeRoute) {
 						cancelDebounce();
 						return;
 					};
+
+					setMapCenter(e.geometry.coordinates);
 					debouncedHandleMapRegionChange({ ne: e.properties.visibleBounds[0], sw: e.properties.visibleBounds[1] }, e.properties.zoomLevel);
 				}}
             >
@@ -227,7 +229,7 @@ export default function RoutesScreen({ navigation } : PropsType) {
 							animationDuration={loaded ? 500 : 0}
 						/>
 					)}
-					{routes && !activeRoute && (
+					{routes && (
 						<>
 						{routes.map((route, i) => {
 							return (
@@ -242,14 +244,14 @@ export default function RoutesScreen({ navigation } : PropsType) {
 						})}
 						</>
 					)}
-					{/* {routesInMap && !activeRoute && (
+					{routesInMap && (
 						<RouteClusterMap
 							id="routes-cluster"
 							routes={routesInMap}
 							onRoutePress={(result: RouteSearchResult) => handleRouteSearchPress(result, false)}
 							onClusterPress={(points: PositionArray) => handleClusterPress(points)}
 						/>
-					)} */}
+					)}
 					{activeRoute && (
 						<RouteLine
 							key={`line-${lineKey}`}
@@ -257,14 +259,6 @@ export default function RoutesScreen({ navigation } : PropsType) {
 							end={activeRoute.markers[activeRoute.markers.length - 1]}
 							markers={activeRoute.markers}
 							lineKey={lineKey}
-						/>
-					)}
-					{activePOI && (
-						<PointOfInterestMarker
-							coordinate={[activePOI.longitude, activePOI.latitude]}
-							icon={activePOI.point_type?.icon ?? 'flag'}
-							colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
-							onPress={() => pointOfInterestPress(activePOI)}
 						/>
 					)}
 					<UserPosition
@@ -284,7 +278,15 @@ export default function RoutesScreen({ navigation } : PropsType) {
 							<Loader />
 						</View>
 					)}
-					</>
+					{activePOI && (
+						<PointOfInterestMarker
+							coordinate={[activePOI.longitude, activePOI.latitude]}
+							icon={activePOI.point_type?.icon ?? 'flag'}
+							colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
+							onPress={() => pointOfInterestPress(activePOI)}
+						/>
+					)}
+				</>
 				)}
             </Mapbox.MapView>
 			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>

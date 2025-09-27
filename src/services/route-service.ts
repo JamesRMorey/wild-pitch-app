@@ -77,4 +77,42 @@ export class RouteService {
     static getFileName( name: string ): string {
         return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
+
+    static getPreviouslyPassedPointOnRoute( point: Coordinate, routePoints: Array<Coordinate> ): { coord: Coordinate, distancePast: number, index: number } {
+        if (routePoints.length === 0) throw new Error('No route points provided');
+
+        let closestIndex = 0;
+        let closestDistance = getDistanceBetweenPoints(point, routePoints[closestIndex]);
+
+        for (let i=1; i < routePoints.length; i++) {
+            const p = routePoints[i];
+            const d = getDistanceBetweenPoints(point, p);
+            if (d < closestDistance) {
+                closestDistance = d;
+                closestIndex = i;
+            }
+        }
+
+        const prev = routePoints[closestIndex - 1];
+        const next = routePoints[closestIndex + 1];
+        
+        const dPrev = getDistanceBetweenPoints(point, prev);
+        const dNext = getDistanceBetweenPoints(point, next);
+
+        return dNext < dPrev ? { coord: routePoints[closestIndex], distancePast: closestDistance, index: closestIndex } : { coord: prev, distancePast: dPrev, index: closestIndex - 1 }
+    }
+
+    static getRouteDistanceToPoint( index: number, routePoints: Array<Coordinate> ): number | null {
+        if (routePoints.length === 0 || index <= 0 || index >= routePoints.length) return null;
+        
+        let totalDistance = 0;
+        for (let i=0; i < index; i++) {
+            const start = routePoints[i];
+            const end = routePoints[i + 1];
+            const d = getDistanceBetweenPoints(start, end);
+            totalDistance += d;
+        }
+
+        return totalDistance;
+    }
 }

@@ -2,8 +2,6 @@ import Mapbox from "@rnmapbox/maps"
 import { COLOUR } from "../../styles"
 import { PositionArray, RouteSearchResult } from "../../types";
 import { useRef } from "react";
-import Icon from "../misc/icon";
-import { ASSET } from "../../consts";
 
 
 type PropsType = { id?: string, routes: any, onRoutePress?: (route: RouteSearchResult) => void, onClusterPress?: (clusterCoordinates: PositionArray) => void };
@@ -18,10 +16,10 @@ export default function RouteClusterMap({ id="routes-cluster", routes, onRoutePr
         if (isCluster) {
             if (!onClusterPress || !shapeRef.current) return;
 
-            const clusterPoints = await shapeRef.current.getClusterChildren(feature);
-            const clusterCoordinates = clusterPoints.features.map((pt: any) => pt.geometry.coordinates);
-
-            onClusterPress(clusterCoordinates)
+            // const clusterPoints = await shapeRef.current.getClusterExpansionZoom(feature);
+            // const clusterCoordinates = clusterPoints.features.map((pt: any) => pt.geometry.coordinates);
+            // console.log(clusterPoints);
+            // onClusterPress(clusterCoordinates)
             return;
         }
         
@@ -38,7 +36,7 @@ export default function RouteClusterMap({ id="routes-cluster", routes, onRoutePr
     return (
         <>
             <Mapbox.ShapeSource
-                id={id}
+                id={`${id}-shape`}
                 shape={routes}
                 ref={shapeRef}
                 cluster

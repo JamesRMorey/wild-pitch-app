@@ -107,9 +107,9 @@ export class OSMaps {
                     headers: headers,
                     body: JSON.stringify({
                         "boundingBox":[sw.longitude, sw.latitude, ne.longitude, ne.latitude],
-                        "premiumOnly": false,
+                        "premiumOnly": true,
                         "pageParameters": {
-                            "size": 50,
+                            "size": 30,
                             "order": [
                                 {
                                     "property": "metadata.rating.count",

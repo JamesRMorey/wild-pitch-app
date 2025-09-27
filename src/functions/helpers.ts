@@ -1,6 +1,6 @@
 import { Dimensions, PixelRatio } from 'react-native';
 import { ValidationError } from 'yup';
-import { PointType } from '../types';
+import { Coordinate, PointType } from '../types';
 
 /** function to normalise fonts etc based on screen size */
 const {
@@ -23,7 +23,7 @@ export const normalise = (size) => {
     }
 }
 
-export const getDistanceBetweenPoints = (point1, point2) => {
+export const getDistanceBetweenPoints = (point1: Coordinate, point2: Coordinate) => {
     try {
         let ky = 40000 / 360;
         let kx = Math.cos((Math.PI * point1.latitude) / 180.0) * ky;

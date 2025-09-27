@@ -14,6 +14,7 @@ import { RouteService } from "../../../services/route-service";
 type PropsType = { navigation: any, route: any };
 export default function RouteSaveScreen({ navigation, route } : PropsType) {
 
+    const resetTo = route.params?.resetTo ?? 'routes';
     const { route: WPRoute, onGoBack } = route.params;
     const [data, setData] = useState<Route>(WPRoute);
     const [errors, setErrors] = useState<FormErrors>()
@@ -31,9 +32,10 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                 onGoBack({ point: updated });
             }
 
-            navigation.pop();
-            navigation.navigate('saved');
-            navigation.goBack();
+            navigation.reset({
+                index: 0,
+                routes: [{ name: resetTo }],
+            });
         }
         catch (err: any) {
             console.log(err);

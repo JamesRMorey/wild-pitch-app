@@ -92,25 +92,16 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 				onLongPress={addMarkerFromLongPress}
 				attributionEnabled={false}
             >
-                {initialCenter ?
+                {initialCenter || initialRegion && (
 					<Mapbox.Camera
 						ref={(ref) => {
 							if (ref) cameraRef.current = ref;
 						}}
-						centerCoordinate={initialCenter}
+						centerCoordinate={initialCenter ? initialCenter : [initialRegion.longitude, initialRegion.latitude]}
 						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
 						animationDuration={loaded ? 500 : 0}
 					/>
-				:initialRegion ?
-					<Mapbox.Camera
-						ref={(ref) => {
-							if (ref) cameraRef.current = ref;
-						}}
-						centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
-						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
-						animationDuration={loaded ? 500 : 0}
-					/>
-				:null}
+				)}
                 {markers.map((marker, i) => {
 					return (
 						<MapPointAnnotation
@@ -134,13 +125,15 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 					/>
 				)}
             </Mapbox.MapView>
+			<View style={[styles.controlsContainer, {left: normalise(10), right: 'auto'}]}>
+				<IconButton
+					icon={'chevron-down'}
+					onPress={goBack}
+					shadow={true}
+				/>
+			</View>
 			<View style={styles.controlsContainer}>
 				<View style={styles.controls}>
-					<IconButton
-						icon={'close'}
-						onPress={goBack}
-						shadow={true}
-					/>
 					<IconButton
 						icon={'cloud-download-outline'}
 						onPress={() => saveArea()}

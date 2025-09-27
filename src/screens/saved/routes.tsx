@@ -17,7 +17,7 @@ import OptionsSheet from "../../sheets/options-sheet"
 export default function RoutesScreen({}) {
 
     const navigation = useNavigation();
-    const { routes, get: getPackGroups, remove: removePackGroup } = useRoutes();
+    const { routes, get: getPackGroups, remove: removeRoute } = useRoutes();
     const { setActiveRoute, fitToRoute } = useRoutesActions();
     const [refresh, setRefresh] = useState<number>(0);
     const [selectedRoute, setSelectedRoute] = useState<Route>();
@@ -53,9 +53,17 @@ export default function RoutesScreen({}) {
         await SheetManager.hide(SHEET.ROUTES_EDIT_OPTIONS);
     }
 
+    const deleteRoute = async () => {
+        if (!selectedRoute?.id) return;
+        removeRoute(selectedRoute.id);
+        closeRouteOptions();
+    }
+
+
     const SHEET_OPTIONS = [
         { label: 'Inspect', icon: 'eye-outline', onPress: ()=>inspectRoute() },
-        { label: 'View Details', icon: 'walk-outline', onPress: ()=>viewRouteDetails() },
+        { label: 'View details', icon: 'walk-outline', onPress: ()=>viewRouteDetails() },
+        { label: 'Delete route', icon: 'trash-outline', colour: COLOUR.red[500], onPress: ()=>deleteRoute() },
     ];
 
     useEffect(() => {
