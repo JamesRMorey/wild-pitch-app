@@ -1,6 +1,7 @@
 import { Dimensions, PixelRatio } from 'react-native';
 import { ValidationError } from 'yup';
 import { Coordinate, PointType } from '../types';
+import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 
 /** function to normalise fonts etc based on screen size */
 const {
@@ -259,4 +260,21 @@ export function getPointType(category: string, pointTypes: Array<PointType>): Po
 
 export function stripHtml(html: string): string {
   return html.replace(/<[^>]*>?/gm, '');
+}
+
+export function mercatorToLngLat(x: number, y: number): [number, number] {
+    const R = 6378137.0; // WGS84 major axis
+    const lng = (x / R) * (180 / Math.PI);
+    const lat = (Math.atan(Math.exp(y / R)) * 2 - Math.PI / 2) * (180 / Math.PI);
+    return [lng, lat];
+}
+
+export function isInUK(coord: Coordinate): boolean {
+    const { latitude: lat, longitude: lng } = coord;
+    return (
+        lng >= -8.2 &&
+        lng <= 2.0 &&
+        lat >= 49.8 &&
+        lat <= 60.9
+    );
 }

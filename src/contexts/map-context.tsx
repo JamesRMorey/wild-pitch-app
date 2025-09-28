@@ -1,6 +1,6 @@
 import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
-import { MapPackGroup, PointOfInterest } from '../types';
+import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
@@ -15,6 +15,7 @@ type MapContextState = {
     followUserLocation: boolean;
     showPointsOfInterest: boolean;
     pointsOfInterest: Array<PointOfInterest>;
+    initialRegion: Coordinate | undefined;
 };
 
 type MapContextActions = {
@@ -41,6 +42,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     
     const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
     const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef, reCenter } = useMapCameraControls();
+    const { initialRegion } = useMapSettings();
     const { pointsOfInterest } = usePointsOfInterest();
     const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
 
@@ -65,6 +67,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 followUserLocation,
                 pointsOfInterest,
                 showPointsOfInterest,
+                initialRegion
             }}
         >
             <ActionsContext.Provider

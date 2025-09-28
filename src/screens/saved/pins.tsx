@@ -90,7 +90,7 @@ export default function PinsScreen({  } : PropsType) {
                 </View>
                 :
                 <NothingHere
-                    title="No Point of Interest yet?"
+                    title="No pins saved"
                     text="Head to the map and add some pins to your map"
                     onPress={() => onPoiPress()}
                 />

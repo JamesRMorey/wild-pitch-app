@@ -30,6 +30,7 @@ type RoutesContextActions = {
     setActiveRoute: (route?: Route) => void;
     fitToRoute: (route: Route) => void;
     setActivePOI: (poi?: PointOfInterest) => void;
+    reCenter: (position: Position) => void;
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -38,7 +39,7 @@ const ActionsContext = createContext<RoutesContextActions | undefined>(undefined
 export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
     const { center, setCenter, styleURL, setStyleURL, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
-    const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef } = useMapCameraControls();
+    const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef, reCenter } = useMapCameraControls();
     const [activeRoute, setActiveRoute] = useState<Route>();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
     
@@ -83,7 +84,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     fitToBounds,
                     setActiveRoute,
                     fitToRoute,
-                    setActivePOI
+                    setActivePOI,
+                    reCenter
                 }}
             >
                 {children}

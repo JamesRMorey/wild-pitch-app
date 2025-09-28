@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type GlobalState = {
-    user?: { name: string; id: string };
+    user: { name: string; id: number, email: string };
     isLoading: boolean;
 };
 

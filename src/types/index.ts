@@ -114,3 +114,9 @@ export type Bounds = {
     ne: [number, number], 
     sw: [number, number]
 }
+
+export type User = {
+    id: number;
+    name: string;
+    email: string;
+}

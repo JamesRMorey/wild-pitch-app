@@ -3,25 +3,16 @@ import { COLOUR } from "../../styles";
 import { Coordinate } from "../../types";
 import PointOfInterestMarker from "../map/map-marker";
 import { ASSET, SETTING } from "../../consts";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type PropsType = { start: Coordinate, end: Coordinate, markers: Array<Coordinate>, lineKey: number };
 export default function RouteLine({ start, end, markers, lineKey } : PropsType) {
 
     const [ready, setReady] = useState(false);
-    const [line, setLine] = useState<any>({
-        type: 'FeatureCollection',
-        features: [{
-            type: 'Feature',
-            geometry: {
-                type: 'LineString',
-                coordinates: markers.map(m => [m.longitude, m.latitude])
-            }
-        }]
-    });
-
-    const updateLine = ( markers: Array<Coordinate> ) => {
-        setLine({
+    
+    const line = useMemo(() => {
+        if (!markers || markers.length <= 2) return null;
+        return {
             type: 'FeatureCollection',
             features: [{
                 type: 'Feature',
@@ -30,14 +21,13 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                     coordinates: markers.map(m => [m.longitude, m.latitude])
                 }
             }]
-        });
-    }
+        }
+    }, [markers])
 
 
     useEffect(() => {
-        updateLine(markers);
         setReady(true); // without this it crashes on first load
-    }, [markers])
+    }, [])
 
     return (
         <>
@@ -57,7 +47,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                     />
                 </>
             )}
-            {ready && markers && markers.length >= 2 && (
+            {ready && line && (
                 <Mapbox.ShapeSource id={`lineSource-${lineKey}`} shape={line}>
                     <Mapbox.LineLayer
                         id={`lineLayer-${lineKey}`}

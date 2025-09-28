@@ -14,18 +14,22 @@ export default function LandingScreen({ navigation } : PropsType) {
         navigation.navigate('login');
     }
     
+    const navigateToRegister = () => {
+        navigation.navigate('register');
+    }
+    
     return (
         <View style={styles.container}>
-            <Animatable.Image 
+            {/* <Animatable.Image 
                 source={ASSET.LANDING_1} 
                 style={styles.background}
                 resizeMode="cover"
                 animation={"fadeIn"}
                 duration={2000}
                 delay={500}
-            />
+            /> */}
             <View style={styles.top}>
-                <Animatable.View
+                {/* <Animatable.View
                     animation="fadeInUp"
                     delay={700}
                 >
@@ -33,7 +37,7 @@ export default function LandingScreen({ navigation } : PropsType) {
                         source={ASSET.LOGO_WHITE}
                         style={styles.image}
                     />
-                </Animatable.View>
+                </Animatable.View> */}
             </View>
             <View style={styles.bottom}>
                 <Animatable.View 
@@ -47,7 +51,7 @@ export default function LandingScreen({ navigation } : PropsType) {
                     >
                         <Button 
                             title="Get started" 
-                            onPress={navigateToLogin}
+                            onPress={navigateToRegister}
                         />
                         <TouchableOpacity onPress={navigateToLogin} activeOpacity={0.7}>
                             <Text style={styles.loginText}>Already have an account? <Text style={styles.loginLink}>Login</Text></Text>
@@ -62,7 +66,7 @@ export default function LandingScreen({ navigation } : PropsType) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOUR.wp_green[500],
+        backgroundColor: COLOUR.wp_brown[200],
         alignItems: 'center',
         justifyContent: 'space-between',
     },
@@ -94,24 +98,24 @@ const styles = StyleSheet.create({
     },
     loginLink: {
         ...TEXT.h4,
-        color: COLOUR.white,
+        // color: COLOUR.white,
         ...TEXT.medium,
         textAlign: 'center',
     },
     loginText: {
         ...TEXT.md,
-        color: COLOUR.white,
+        // color: COLOUR.white,
         textAlign: 'center',
     },
     title: {
         fontSize: normalise(40),
-        color: COLOUR.white,
+        // color: COLOUR.white,
         marginBottom: normalise(10),
         textAlign: 'center',
     },
     description: {
         ...TEXT.md,
-        color: COLOUR.white,
+        // color: COLOUR.white,
         textAlign: 'center',
         marginBottom: normalise(30),
         ...SHADOW.lg,

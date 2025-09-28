@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SETTING } from "../../consts";
 import Button from "../../components/buttons/button";
 import { useGlobalActions } from "../../contexts/global-context";
@@ -59,7 +59,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
 
     return (
         <KeyboardAvoidingView>
-            <View style={styles.container}>
+            <ScrollView style={styles.container} stickyHeaderIndices={[0]} showsVerticalScrollIndicator={false}>
                 <View style={styles.top}>
                     <View>
                         <TouchableOpacity 
@@ -78,7 +78,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                         <Text style={TEXT.p}>Let's sign up and get going</Text>
                     </View>
                 </View>
-                <View style={styles.bottom}>
+                <TouchableOpacity activeOpacity={1} style={styles.bottom}>
                     <View>
                         <View style={styles.form}>
                             <TextInput
@@ -136,8 +136,8 @@ export default function RegisterScreen({ navigation } : PropsType) {
                     >
                         <Text style={styles.registerText}>Already have an account? <Text style={styles.link}>Login</Text></Text>
                     </TouchableOpacity>
-                </View>
-            </View>
+                </TouchableOpacity>
+            </ScrollView>
         </KeyboardAvoidingView>
     )
 }
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     },
     bottom: {
         paddingHorizontal: normalise(20),
-        justifyContent: 'space-between',
+        paddingBottom: normalise(50)
     },
     link: {
         ...TEXT.md,

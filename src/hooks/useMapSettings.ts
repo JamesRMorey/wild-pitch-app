@@ -18,7 +18,7 @@ export function useMapSettings() {
         if (!latitude || !longitude) return;
         if (!initialRegion) {
             setInitialRegion({ latitude, longitude });
-            setTimeout(() => setLoaded(true), 1000);
+            setTimeout(() => setLoaded(true), 500);
         }
         setUserPosition({ latitude, longitude });
     }

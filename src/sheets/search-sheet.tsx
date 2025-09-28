@@ -4,20 +4,21 @@ import { SHEET } from "../consts";
 import { COLOUR, SHADOW, TEXT } from "../styles";
 import { getPointType, normalise } from "../functions/helpers";
 import TextInput from "../components/inputs/text-input";
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import { PlaceSearch } from "../services/place-search";
 import { Place, RouteSearchResult } from "../types";
 import PlaceCard from "../components/cards/place-card";
 import Loader from "../components/map/loader";
 import NothingHere from "../components/misc/nothing-here";
 import { usePointTypes } from "../hooks/repositories/usePointType";
-import { OSMaps } from "../services/os-maps";
-import RouteCard from "../components/cards/route-card";
 import RouteSearchCard from "../components/cards/route-search-card";
+import { RouteProvider } from "../services/route-provider";
+import { useGlobalState } from "../contexts/global-context";
 
 type PropsType = { id?: string, onPlaceResultPress: (place: Place) => void, onRouteResultPress: (route: RouteSearchResult) => void }
 export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, onRouteResultPress } : PropsType) {
 
+    const { user } = useGlobalState();
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [results, setResults] = useState<Array<Place>>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -25,6 +26,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
     const { pointTypes } = usePointTypes();
     const [searchType, setSearchType] = useState<'place'|'route'>('place');
     const [routeResults, setRouteResults] = useState<Array<any>>();
+    const routeProvider = useMemo(() => new RouteProvider(user), [user]);
 
     const close = () => {
         SheetManager.hide(id);
@@ -34,7 +36,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
         setLoading(true);
         const currentRequest = ++requestRef.current;
         try {
-            const res = await OSMaps.search(searchTerm);
+            const res = await routeProvider.search(searchTerm);
 
             if (currentRequest === requestRef.current) {
                 setRouteResults(res);

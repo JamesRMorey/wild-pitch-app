@@ -148,7 +148,7 @@ export default function MapScreen({ navigation } : PropsType) {
 						ref={(ref) => {
 							if (ref) cameraRef.current = ref;
 						}}
-						centerCoordinate={(!activePOI) && [initialRegion.longitude, initialRegion.latitude]}
+						centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
 						zoomLevel={SETTING.MAP_CLOSEST_ZOOM}
 						animationDuration={loaded ? 500 : 0}
 						followUserLocation={followUserPosition}
@@ -192,11 +192,11 @@ export default function MapScreen({ navigation } : PropsType) {
 				/>
 			</View>
 			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
-				<IconButton
+				{/* <IconButton
 					icon={'compass-outline'}
 					onPress={openSearch}
 					shadow={true}
-				/>
+				/> */}
 				<IconButton
 					icon={'cloud-download-outline'}
 					onPress={navigateToAreaBuilder}

@@ -33,6 +33,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                             <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
                         </View>
                     )}
+                    {route.elevation_gain && (
                     <View style={styles.itemContainer}>
                         <Icon
                             icon='arrow-up'
@@ -41,6 +42,8 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                         />
                         <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain} m`}</Text>
                     </View>
+                    )}
+                    {route.elevation_loss && (
                     <View style={styles.itemContainer}>
                         <Icon
                             icon='arrow-down'
@@ -49,6 +52,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                         />
                         <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss} m`}</Text>
                     </View>
+                    )}
                 </View>
             </View>
         </TouchableOpacity>

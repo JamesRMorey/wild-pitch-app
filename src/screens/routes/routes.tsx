@@ -1,12 +1,12 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
-import { delay, getDistanceBetweenPoints, normalise } from "../../functions/helpers";
+import { normalise } from "../../functions/helpers";
 import { ASSET, SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
-import { Bounds, Place, PointOfInterest, PositionArray, Route, RouteSearchResult } from "../../types";
+import { Bounds, Place, PointOfInterest, Route, RouteSearchResult } from "../../types";
 import { SheetManager } from "react-native-actions-sheet";
 import { COLOUR } from "../../styles";
 import useHaptic from "../../hooks/useHaptic";
@@ -22,16 +22,18 @@ import RouteLine from "../../components/routes/route-line";
 import { RouteService } from "../../services/route-service";
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
 import Loader from "../../components/map/loader";
-import RouteClusterMap from "../../components/routes/route-cluster-map";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
+import { RouteProvider } from "../../services/route-provider";
+import { useGlobalState } from "../../contexts/global-context";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
 type PropsType = { navigation: any , route: any }
 export default function RoutesScreen({ navigation } : PropsType) {
 
+	const { user } = useGlobalState();
 	const { styleURL, cameraRef, enable3DMode, activeRoute, activePOI } = useRoutesState();
-	const { flyTo, setCenter, fitToRoute, fitToBounds, setActiveRoute, setActivePOI } = useRoutesActions();
+	const { flyTo, fitToRoute, fitToBounds, setActiveRoute, setActivePOI, reCenter } = useRoutesActions();
     const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
 	const { routes } = useRoutes();
@@ -48,16 +50,8 @@ export default function RoutesScreen({ navigation } : PropsType) {
 	const mapSearchEnabled = useRef<boolean>(true);
 	const [ready, setReady] = useState(false);
 	const [mapCenter, setMapCenter] = useState<Position>();
+	const routeProvider = useMemo(() => new RouteProvider(user), [user])
 	
-
-	const reCenter = async () => {
-		if (!userPosition) return;
-
-		setCenter([userPosition?.longitude + 0.0001, userPosition?.latitude + 0.0001]);
-		await delay(100);
-		flyTo([userPosition?.longitude + 0.0001, userPosition?.latitude + 0.0001], SETTING.MAP_CLOSEST_ZOOM);
-	}
-
 	const openSearch = () => {
 		SheetManager.show(SHEET.MAP_SEARCH);
 	}
@@ -122,8 +116,9 @@ export default function RoutesScreen({ navigation } : PropsType) {
 			mapSearchEnabled.current = false;
 			setLoading(true);
 			SheetManager.hide(SHEET.MAP_SEARCH);
-			const data = await OSMaps.fetchRoute(route.id, route.slug);
-
+			const data = await routeProvider.fetchRoute(route.id, route.slug);
+			console.log(data);
+			
 			updateActiveRoute(data, fit);
 		}
 		catch(err) {
@@ -213,7 +208,7 @@ export default function RoutesScreen({ navigation } : PropsType) {
 					};
 
 					setMapCenter(e.geometry.coordinates);
-					debouncedHandleMapRegionChange({ ne: e.properties.visibleBounds[0], sw: e.properties.visibleBounds[1] }, e.properties.zoomLevel);
+					// debouncedHandleMapRegionChange({ ne: e.properties.visibleBounds[0], sw: e.properties.visibleBounds[1] }, e.properties.zoomLevel);
 				}}
             >
             	{ready && (
@@ -244,14 +239,14 @@ export default function RoutesScreen({ navigation } : PropsType) {
 						})}
 						</>
 					)}
-					{routesInMap && (
+					{/* {routesInMap && (
 						<RouteClusterMap
 							id="routes-cluster"
 							routes={routesInMap}
 							onRoutePress={(result: RouteSearchResult) => handleRouteSearchPress(result, false)}
 							onClusterPress={(points: PositionArray) => handleClusterPress(points)}
 						/>
-					)}
+					)} */}
 					{activeRoute && (
 						<RouteLine
 							key={`line-${lineKey}`}
@@ -292,10 +287,9 @@ export default function RoutesScreen({ navigation } : PropsType) {
 			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
 				<IconButton
 					icon={'location-outline'}
-					onPress={reCenter}
+					onPress={() => reCenter([userPosition?.longitude, userPosition?.latitude])}
 					disabled={!userPosition}
 					shadow={true}
-					style={{ paddingRight: normalise(2), paddingTop: normalise(2) }}
 				/>
 			</View>
 			<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
