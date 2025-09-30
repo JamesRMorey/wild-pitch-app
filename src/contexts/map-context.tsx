@@ -1,10 +1,11 @@
 import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
-import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
+import { Coordinate, MapPackGroup, PointOfInterest, Route } from '../types';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
 import { usePointsOfInterest } from '../hooks/repositories/usePointsOfInterest';
+import { RouteService } from '../services/route-service';
 
 type MapContextState = {
     styleURL: Mapbox.StyleURL;
@@ -16,6 +17,7 @@ type MapContextState = {
     showPointsOfInterest: boolean;
     pointsOfInterest: Array<PointOfInterest>;
     initialRegion: Coordinate | undefined;
+    activeRoute: Route|undefined
 };
 
 type MapContextActions = {
@@ -33,6 +35,8 @@ type MapContextActions = {
     setShowPointsOfInterest: (enabled: boolean) => void;
     setFollowUserLocation: (enabled: boolean) => void;
     resetHeading: () => void;
+    fitToRoute: (route: Route) => void;
+    setActiveRoute: (route?: Route) => void;
 };
 
 const StateContext = createContext<MapContextState | undefined>(undefined);
@@ -45,6 +49,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const { initialRegion } = useMapSettings();
     const { pointsOfInterest } = usePointsOfInterest();
     const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
+    const [activeRoute, setActiveRoute] = useState<Route>();
 
     const clearActivePackGroup = () => setActivePackGroup(undefined);
     
@@ -53,6 +58,13 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             pitch: 0
         });
         toggle3dMode(enabled)
+    }
+
+    const fitToRoute = ( route: Route ) => {
+        const boundingBox = RouteService.calculateBoundingBox(route.markers);
+        if (boundingBox) {
+            fitToBounds(boundingBox.ne, boundingBox.sw);
+        }
     }
     
 
@@ -67,7 +79,8 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 followUserLocation,
                 pointsOfInterest,
                 showPointsOfInterest,
-                initialRegion
+                initialRegion,
+                activeRoute
             }}
         >
             <ActionsContext.Provider
@@ -85,7 +98,9 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     setShowPointsOfInterest,
                     flyToLow,
                     fitToBounds,
-                    reCenter
+                    reCenter,
+                    fitToRoute,
+                    setActiveRoute
                 }}
             >
                 {children}

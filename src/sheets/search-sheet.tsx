@@ -109,7 +109,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                     <View style={styles.searchBar}>
                         <TextInput
                             icon="search-outline"
-                            placeHolder="Search for places..."
+                            placeHolder={searchType == 'route' ? 'Search for routes...' : 'Search for places...'}
                             onChangeText={(text) => setSearchTerm(text)}
                             value={searchTerm}
                             onClear={() => setSearchTerm('')}
@@ -135,7 +135,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                         onPress={() => setSearchType('route')}
                         style={[styles.selctor, searchType === 'route' ? styles.active : {}]}
                     >
-                        <Text style={styles.selectorText}>Route</Text>
+                        <Text style={styles.selectorText}>Routes</Text>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.heading}>Results</Text>

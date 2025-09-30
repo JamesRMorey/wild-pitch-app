@@ -1,4 +1,3 @@
-import { open } from 'react-native-nitro-sqlite'
 import { MapPackGroup, PointOfInterest } from '../../types';
 import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { PointTypeRepository } from './point-type-repository';

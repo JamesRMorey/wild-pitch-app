@@ -3,8 +3,8 @@ import { COLOUR, TEXT } from "../../styles";
 import { normalise } from "../../functions/helpers";
 import Icon from "../misc/icon";
 
-type PropsType = { title: string, onPress?: Function, disabled?: boolean, active?: boolean, style?: 'primary' | 'secondary' | 'tertiary' | 'outline', icon?: string, flex?: boolean }
-export default function Button ({ title, onPress, disabled=false, active=false, style='primary', icon, flex=false } : PropsType) {
+type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, active?: boolean, style?: 'primary' | 'secondary' | 'tertiary' | 'outline', icon?: string, flex?: boolean }
+export default function Button ({ title, onPress, disabled=false, active=false, style='primary', padding, icon, flex=false } : PropsType) {
 
     return (
         <TouchableOpacity
@@ -14,7 +14,8 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
                 style == 'secondary' && { borderColor: COLOUR.wp_orange[500], backgroundColor: COLOUR.wp_orange[500] },
                 style == 'tertiary' && { borderColor: COLOUR.wp_brown[500], backgroundColor: COLOUR.wp_brown[500] },
                 style == 'outline' && { borderColor: COLOUR.wp_brown[700], backgroundColor: COLOUR.transparent },
-                flex && { flex: 1 }
+                flex && { flex: 1 },
+                padding ? { paddingVertical: padding } : null
             ]}
             activeOpacity={0.8}
             disabled={disabled || !onPress}
@@ -48,8 +49,8 @@ const styles = StyleSheet.create({
         borderColor: COLOUR.wp_green[500],
     },
     text: {
-        color: COLOUR.white,
         ...TEXT.md,
+        color: COLOUR.white,
         fontWeight: 600,
         textAlign: 'center'
     }

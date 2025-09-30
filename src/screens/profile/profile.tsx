@@ -1,13 +1,14 @@
-import { ScrollView, StyleSheet, View, Text, Share, Linking } from "react-native"
+import { ScrollView, StyleSheet, View, Text, Share, Linking, Image } from "react-native"
 import { normalise } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
-import { SETTING } from "../../consts";
+import { ASSET, SETTING } from "../../consts";
 import SectionItemCard from "../../components/cards/section-item-card";
-import { useGlobalActions } from "../../contexts/global-context";
+import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
 
 
 export default function ProfileScreen() {
 
+    const { user } = useGlobalState();
     const { logout } = useGlobalActions();
 
     const shareWithFriends = () => {
@@ -30,6 +31,17 @@ export default function ProfileScreen() {
                 contentContainerStyle={styles.scrollContainerContent}
                 style={styles.scrollContainer}
             >
+                <View style={[styles.section, {alignItems: 'center' }]}>
+                    <View style={styles.imageContainer}>
+                        <Image
+                            source={ASSET.LOGO}
+                            style={styles.profileImage}
+                        />
+                    </View>
+                    <View style={{ marginTop: normalise(15)}}>
+                        <Text style={styles.name}>{user.name}</Text>
+                    </View>
+                </View>
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Community</Text>
                     <SectionItemCard
@@ -37,17 +49,18 @@ export default function ProfileScreen() {
                         icon="logo-instagram"
                         onPress={follow}
                     />
-                    <SectionItemCard
+                    {/* <SectionItemCard
                         title="About Wild Pitch"
                         icon="telescope-outline"
-                    />
+                    /> */}
                     <SectionItemCard
                         title="Invite friends"
                         icon="link-outline"
                         onPress={shareWithFriends}
+                        last={true}
                     />
                 </View>
-                <View style={styles.section}>
+                {/* <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Follow us</Text>
                     <SectionItemCard
                         title="Follow us on Instagram"
@@ -58,12 +71,13 @@ export default function ProfileScreen() {
                         title="Visit our website"
                         icon="globe-outline"
                     />
-                </View>
+                </View> */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Support us</Text>
                     <SectionItemCard
                         title="Provide feedback on the app"
                         icon="chatbox-ellipses-outline"
+                        onPress={follow}
                     />
                     <SectionItemCard
                         title="Buy me a coffee?"
@@ -72,11 +86,15 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Shop Wild Pitch"
                         icon="storefront-outline"
+                        last={true}
                     />
+                </View>
+                <View style={[styles.section, { paddingTop: 0 }]}>
                     <SectionItemCard
                         title="Logout"
                         icon="exit-outline"
                         onPress={logout}
+                        last={true}
                     />
                 </View>
             </ScrollView>
@@ -115,5 +133,23 @@ const styles = StyleSheet.create({
     section: {
         backgroundColor: COLOUR.white,
         padding: normalise(20)
+    },
+    imageContainer: {
+        width: normalise(150),
+        height: normalise(150),
+        borderWidth: normalise(1),
+        borderRadius: normalise(75),
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: COLOUR.wp_brown[200]
+    },
+    profileImage: {
+        aspectRatio: 1,
+        height: 'auto',
+        width: '60%',
+    },
+    name: {
+        ...TEXT.lg,
+        ...TEXT.medium
     }
 })

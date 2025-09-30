@@ -14,6 +14,7 @@ export default function PointOfInterestMarker ({ coordinate, icon='flag', colour
         <Mapbox.MarkerView
             coordinate={coordinate}
             allowOverlapWithPuck={true}
+            allowOverlap={true}
             anchor={{ x: 0.5, y: 0.5 }}
         >
             <TouchableOpacity

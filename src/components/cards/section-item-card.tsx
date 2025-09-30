@@ -9,7 +9,7 @@ export default function SectionItemCard ({ title, icon, last=false, arrow=false,
 
     return (
         <View
-            style={[styles.container, last && { borderBottomWidth: 0 }]}
+            style={[styles.container, last && { borderBottomWidth: 0, paddingBottom: 0 }]}
         >
             <TouchableOpacity 
                 style={styles.leftContainer}

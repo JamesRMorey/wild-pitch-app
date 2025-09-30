@@ -17,8 +17,7 @@ export default function PointOfInterestCard ({ point, onPress, onOtherPress } : 
                 disabled={!onPress}
                 activeOpacity={0.8}
             >
-                <View 
-                    style={[styles.iconContainer, { backgroundColor: point.point_type?.colour }]}>
+                <View style={[styles.iconContainer, { backgroundColor: point.point_type?.colour }]}>
                     <Icon
                         icon={point.point_type?.icon}
                         colour={COLOUR.white}
@@ -29,7 +28,7 @@ export default function PointOfInterestCard ({ point, onPress, onOtherPress } : 
                     {point.notes && (
                         <Text style={TEXT.sm}>{point.notes}</Text>
                     )}
-                    <Text style={TEXT.sm}>{new Date(point.created_at).toDateString()}</Text>
+                    <Text style={TEXT.xs}>{new Date(point.created_at).toDateString()}</Text>
                 </View>
             </TouchableOpacity>
             {onOtherPress && (
@@ -61,9 +60,10 @@ const styles = StyleSheet.create({
         ...SHADOW.sm
     },
     iconContainer: {
-        padding: normalise(15),
+        padding: normalise(10),
+        paddingTop: normalise(9),
         aspectRatio: 1,
-        borderRadius: normalise(12)
+        borderRadius: normalise(50)
     },
     leftContainer: {
         flex: 1,

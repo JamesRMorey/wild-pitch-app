@@ -1,5 +1,5 @@
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import { SETTING } from "../../consts";
+import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from "react-native";
+import { ASSET, SETTING } from "../../consts";
 import Button from "../../components/buttons/button";
 import { useGlobalActions } from "../../contexts/global-context";
 import { normalise, parseValidationErrors } from "../../functions/helpers";
@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation } : PropsType) {
     const { setUser } = useGlobalActions();
 
     const fakeLogin = () => {
-        setUser({ id: '1', name: 'James Morey' });
+        setUser({ id: 1, name: 'James Morey', email: 'jamesrmorety@gmail.com' });
     }
 
     const goBack = () => {
@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation } : PropsType) {
     }
 
     const navigateToRegister = () => {
-        navigation.navigate('register');
+        navigation.goBack();
     }
 
     const login = async () => {
@@ -57,24 +57,28 @@ export default function LoginScreen({ navigation } : PropsType) {
     return (
         <KeyboardAvoidingView flex={true}>
             <View style={styles.container}>
-                <View style={styles.top}>
-                    <View>
-                        <TouchableOpacity 
-                            onPress={goBack}
-                            style={styles.backButton}
-                        >
-                            <Icon
-                                icon="arrow-back-outline"
-                                size={normalise(25)}
-                                colour={COLOUR.gray[800]}
-                            />
-                        </TouchableOpacity>
+                <ImageBackground
+                    source={ASSET.LANDING_1}
+                >
+                    <View style={styles.top}>
+                        <View>
+                            <TouchableOpacity 
+                                onPress={goBack}
+                                style={styles.backButton}
+                            >
+                                <Icon
+                                    icon="arrow-back-outline"
+                                    size={normalise(25)}
+                                    colour={COLOUR.white}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.header}>
+                            <Text style={styles.title}>Welcome Back</Text>
+                            <Text style={styles.subtitle}>Time to plan that trip</Text>
+                        </View>
                     </View>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Welcome Back</Text>
-                        <Text style={TEXT.p}>Time to plan that trip</Text>
-                    </View>
-                </View>
+                </ImageBackground>
                 <View style={styles.bottom}>
                     <View>
                         <View style={styles.form}>
@@ -124,7 +128,12 @@ const styles = StyleSheet.create({
         marginTop: normalise(30)
     },
     title: {
-        ...TEXT.xxl
+        ...TEXT.xxl,
+        color: COLOUR.white
+    },
+    subtitle: {
+        ...TEXT.p,
+        color: COLOUR.white
     },
     header: {
         marginTop: normalise(60)
@@ -134,7 +143,7 @@ const styles = StyleSheet.create({
         paddingRight: normalise(10),
     },
     top: {
-        backgroundColor: COLOUR.wp_brown[200],
+        // backgroundColor: COLOUR.wp_brown[200],
         paddingTop: SETTING.TOP_PADDING,
         paddingHorizontal: normalise(20),
         paddingBottom: normalise(15),

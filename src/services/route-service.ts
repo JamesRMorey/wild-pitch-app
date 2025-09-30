@@ -103,7 +103,7 @@ export class RouteService {
     }
 
     static getRouteDistanceToPoint( index: number, routePoints: Array<Coordinate> ): number | null {
-        if (routePoints.length === 0 || index <= 0 || index >= routePoints.length) return null;
+        if (routePoints.length === 0 || index >= routePoints.length) return null;
         
         let totalDistance = 0;
         for (let i=0; i < index; i++) {

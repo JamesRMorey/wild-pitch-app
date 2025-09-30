@@ -168,7 +168,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
                 </View>
                 )}
-                <View style={[styles.section, { paddingVertical: normalise(0) }]}>
+                <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
                     <SectionItemCard
                         title="Export GPX"
                         icon="save-outline"

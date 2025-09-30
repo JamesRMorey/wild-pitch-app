@@ -79,7 +79,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
         await SheetManager.hide(SHEET.MAP_POI_SHEET);
 
         setActiveRoute(undefined);
-        navigation.navigate('routes', { screen: 'routes-map' });
+        navigation.navigate('route-builder', { initialPoint: point });
         
         await delay(200);
         setRouteMapCenter([point.longitude, point.latitude], SETTING.ROUTE_CLOSE_ZOOM);

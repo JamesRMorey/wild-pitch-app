@@ -21,7 +21,7 @@ export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{route.name}</Text>
                     {route.notes && (
-                        <Text style={TEXT.xs}>{route.notes.slice(0,80)}{route.notes.length > 80 ? '...' : ''}</Text>
+                        <Text style={TEXT.xs}>{route.notes.replaceAll('\n', '').slice(0,80)}{route.notes.length > 80 ? '...' : ''}</Text>
                     )}
                     <View style={styles.infoContainer}>
                         {route.distance && (
@@ -61,7 +61,7 @@ export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose
                 <TouchableOpacity
                     activeOpacity={0.8}
                     onPress={onClose}
-                    style={styles.ellipseButton}
+                    style={styles.closeButton}
                 >
                     <Icon
                         icon='close'
@@ -95,11 +95,11 @@ const styles = StyleSheet.create({
         gap: normalise(3),
         flex: 1
     },
-    ellipseButton: {
+    closeButton: {
         flexDirection: 'row', 
         alignItems: 'flex-start',
-        paddingLeft: normalise(10),
-        paddingRight: normalise(12),
+        paddingLeft: normalise(20),
+        paddingRight: normalise(15),
         paddingBottom: normalise(10),
     },
     infoContainer: {

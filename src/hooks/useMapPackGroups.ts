@@ -30,7 +30,7 @@ export function useMapPackGroups() {
                 if (!newGroup) return;
 
                 get();
-                EventBus.emit.poiRefresh();
+                EventBus.emit.packsRefresh();
 
                 return resolve(newGroup);
             }

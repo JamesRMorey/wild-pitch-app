@@ -17,9 +17,7 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdT
 type PropsType = { navigation: any, route: any }
 export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 
-	const resetTo = route.params?.resetTo ?? "saved";
 	const initialCenter = route.params?.initialCenter;
-	console.log(initialCenter)
 
 	const { cameraRef } = useMapCameraControls();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
@@ -55,7 +53,7 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 	}
 
 	const saveArea = () => {
-		navigation.navigate('area-builder-save-area', { bounds: areaBounds, resetTo: resetTo })
+		navigation.navigate('area-builder-save-area', { bounds: areaBounds })
 	}
 
 	const onPointDragEnd = (e: any, point: MapMarkerType) => {
@@ -89,10 +87,10 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
             <Mapbox.MapView 
                 style={styles.map}
                 styleURL={Mapbox.StyleURL.Outdoors}
-				onLongPress={addMarkerFromLongPress}
+				onPress={addMarkerFromLongPress}
 				attributionEnabled={false}
             >
-                {initialCenter || initialRegion && (
+                {(initialCenter || initialRegion) && (
 					<Mapbox.Camera
 						ref={(ref) => {
 							if (ref) cameraRef.current = ref;

@@ -8,17 +8,17 @@ import { useRoutes } from "../../hooks/repositories/useRoutes"
 import RouteCard from "../../components/cards/route-card"
 import { EventBus } from "../../services/event-bus"
 import { Route } from "../../types"
-import { useRoutesActions } from "../../contexts/routes-context"
 import { SheetManager } from "react-native-actions-sheet"
 import { SHEET } from "../../consts"
 import OptionsSheet from "../../sheets/options-sheet"
+import { useMapActions } from "../../contexts/map-context"
 
 
 export default function RoutesScreen({}) {
 
     const navigation = useNavigation();
-    const { routes, get: getPackGroups, remove: removeRoute } = useRoutes();
-    const { setActiveRoute, fitToRoute } = useRoutesActions();
+    const { routes, remove: removeRoute } = useRoutes();
+    const { setActiveRoute, fitToRoute } = useMapActions();
     const [refresh, setRefresh] = useState<number>(0);
     const [selectedRoute, setSelectedRoute] = useState<Route>();
     
@@ -36,7 +36,7 @@ export default function RoutesScreen({}) {
         await closeRouteOptions();
         if (!selectedRoute) return;
 
-        navigation.navigate('routes', { screen: 'routes-map' });
+        navigation.navigate('map', { screen: 'routes-map' });
         
         await delay(200);
         setActiveRoute(selectedRoute);

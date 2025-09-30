@@ -41,13 +41,18 @@ export default function SavedTabsView({ navigation } : PropsType) {
         navigation.navigate('map');
     }
 
-    const navigateToBuilder = () => {
+    const createRoute = () => {
         closeOptions();
+        navigation.navigate('route-builder');
+    }
+
+    const navigateToBuilder = async () => {
+        await closeOptions();
         navigation.navigate('area-builder');
     }
 
-    const closeOptions = () => {
-        SheetManager.hide(SHEET.SAVED_OPTIONS)
+    const closeOptions = async () => {
+        await SheetManager.hide(SHEET.SAVED_OPTIONS)
     }
 
     const clearAllDownloadedMaps =() => {
@@ -59,7 +64,8 @@ export default function SavedTabsView({ navigation } : PropsType) {
 
     const OPTIONS = [
         { label: 'Download map', icon: 'map-outline', onPress: navigateToBuilder },
-        { label: 'Create pin', icon: 'location-outline', onPress: createPin },
+        { label: 'Add pin', icon: 'location-outline', onPress: createPin },
+        { label: 'Create route', icon: 'walk-outline', onPress: createRoute },
         { label: 'Clear all downloaded maps', icon: 'trash-outline', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },
     ];
     

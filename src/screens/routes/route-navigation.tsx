@@ -12,7 +12,6 @@ import RouteLine from "../../components/routes/route-line";
 import IconButton from "../../components/buttons/icon-button";
 import MultiButtonControl from "../../components/map/multi-button-control";
 import MapStyleSheet from "../../sheets/map-style-sheet";
-import { SheetManager } from "react-native-actions-sheet";
 import { RouteService } from "../../services/route-service";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
@@ -218,7 +217,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	infoText: {
-		...TEXT.md,
+		...TEXT.sm,
 		...TEXT.medium,
 		marginBottom: normalise(5),
 	}

@@ -1,12 +1,13 @@
 import { StyleSheet, View } from "react-native"
 import IconButton from "../buttons/icon-button"
 import { COLOUR, OPACITY, SHADOW } from "../../styles"
+import * as Animatable from 'react-native-animatable';
 
 type PropsType = { items: Array<{ icon: string, onPress: () => void }> }
 export default function MultiButtonControl({ items } : PropsType) {
     
     return (
-        <View style={styles.container}>
+        <Animatable.View style={styles.container} animation={'fadeIn'}>
             {items.map((item, index) => {
                 return (
                     <View key={index}>
@@ -21,7 +22,7 @@ export default function MultiButtonControl({ items } : PropsType) {
                     </View>
                 )
             })}
-        </View>
+        </Animatable.View>
     )
 }
 

@@ -1,6 +1,5 @@
 import { Route, RouteSearchResult, User } from "../types";
 import { OSMaps } from "./os-maps";
-import { ROUTE_PROVIDER } from "../consts/enums";
 import { WaymarkedTrails } from "./waymarked-trails";
 
 

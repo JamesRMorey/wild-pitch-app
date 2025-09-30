@@ -48,7 +48,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                     <View style={styles.textContainer}>
                         <Text style={TEXT.h4}>{route.name}</Text>
                         {route.notes && (
-                            <Text style={TEXT.xs}>{route.notes.slice(0,80)}{route.notes.length > 80 ? '...' : ''}</Text>
+                            <Text style={TEXT.xs}>{route.notes.replaceAll('\n', '').slice(0,80)}{route.notes.length > 80 ? '...' : ''}</Text>
                         )}
                     </View>
                     <View style={styles.infoContainer}>
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     leftContainer: {
         flex: 1,
         flexDirection: 'row',
-        gap: normalise(20),
+        gap: normalise(15),
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         paddingHorizontal: normalise(20),
@@ -174,6 +174,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         aspectRatio: 1,
+        borderWidth: normalise(1),
+        borderColor: COLOUR.blue[500]
     },
     rightContainer: {
         flex: 1,

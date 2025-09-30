@@ -93,11 +93,17 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                         source={ASSET.ICON_OUTDOORS_MAP}
                         style={styles.image}
                     />
+                    <View style={styles.iconImageOverlay}>
+                        <Icon
+                            icon="map"
+                            colour={COLOUR.wp_green[700]}
+                        />
+                    </View>
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={TEXT.h4}>{mapPackGroup.name}</Text>
                     <Text style={TEXT.xs}>{mapPackGroup.description.slice(0,5)}{mapPackGroup.description.length > 50 ? '...' : ''}</Text>
-                    <Text style={[TEXT.sm, TEXT.medium]}>Outdoor Terrain  
+                    <Text style={[TEXT.xs, TEXT.medium]}>Outdoor Terrain  
                         {downloading ? 
                         <Text> • {Math.ceil(progress)}%</Text>
                         :downloaded && offlinePack?.pack?.completedResourceSize ?
@@ -196,7 +202,7 @@ const styles = StyleSheet.create({
         ...TEXT.medium
     },
     downloadContainer: {
-        marginTop: normalise(5)
+        marginTop: normalise(2)
     },
     downloadButton: {
         flexDirection: 'row',
@@ -207,6 +213,18 @@ const styles = StyleSheet.create({
         ...TEXT.xs,
         ...TEXT.medium,
         color: COLOUR.wp_orange[500],
+    },
+    iconImageOverlay: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        backgroundColor: COLOUR.wp_green[500] + OPACITY[50],
+        borderRadius: normalise(15),
+        marginTop: normalise(2),
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: normalise(1),
+        borderColor: COLOUR.wp_green[500]
     },
     image: {
         aspectRatio: 1,

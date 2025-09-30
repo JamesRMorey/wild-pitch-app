@@ -24,7 +24,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 	const initialPoint: Coordinate | undefined = route.params?.initialPoint;
 	const initialCenter: Coordinate | undefined = route.params?.initialCenter;
 	const activePOI: PointOfInterest | undefined = route.params?.activePOI;
-
+	
 	const { resetHeading, cameraRef } = useMapCameraControls();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { tick } = useHaptic();

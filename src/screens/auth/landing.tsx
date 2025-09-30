@@ -1,10 +1,9 @@
-import { ImageBackground, StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { ASSET, SETTING } from "../../consts";
-import Button from "../../components/buttons/button";
-import { useGlobalActions } from "../../contexts/global-context";
 import { normalise } from "../../functions/helpers";
 import * as Animatable from 'react-native-animatable';
-import { COLOUR, SHADOW, TEXT } from "../../styles";
+import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
+import Icon from "../../components/misc/icon";
 
 
 type PropsType = { navigation: any }
@@ -20,42 +19,62 @@ export default function LandingScreen({ navigation } : PropsType) {
     
     return (
         <View style={styles.container}>
-            {/* <Animatable.Image 
+            <Animatable.Image 
                 source={ASSET.LANDING_1} 
                 style={styles.background}
                 resizeMode="cover"
                 animation={"fadeIn"}
                 duration={2000}
-                delay={500}
-            /> */}
+                delay={300}
+            />
             <View style={styles.top}>
-                {/* <Animatable.View
-                    animation="fadeInUp"
+                <Animatable.View
+                    animation="fadeIn"
                     delay={700}
                 >
                     <Image
-                        source={ASSET.LOGO_WHITE}
+                        source={ASSET.LOGO_TEXT}
                         style={styles.image}
                     />
-                </Animatable.View> */}
+                </Animatable.View>
             </View>
             <View style={styles.bottom}>
                 <Animatable.View 
                     animation="fadeIn" 
                     delay={700}
                 >
-                    <Text style={styles.title}>Have A Wild Night</Text>
-                    <Text style={styles.description}>Discover new places and plan your next adventure with WildPitch Maps.</Text>
+                    <Text style={styles.title}>Have a wild night</Text>
+                    <Text style={styles.description}>Discover new places, download offline maps, and plan your next adventure with WildPitch Maps.</Text>
                     <View 
                         style={styles.buttons}
                     >
-                        <Button 
-                            title="Get started" 
+                        <TouchableOpacity
+                            style={styles.button}
+                            activeOpacity={0.8}
                             onPress={navigateToRegister}
-                        />
-                        <TouchableOpacity onPress={navigateToLogin} activeOpacity={0.7}>
-                            <Text style={styles.loginText}>Already have an account? <Text style={styles.loginLink}>Login</Text></Text>
+                        >
+                            <Text style={styles.buttonText}>Get started</Text>
+                            <View style={{ flexDirection: 'row', gap: normalise(7)}}>
+                                <Icon
+                                    icon="chevron-forward"
+                                    colour={COLOUR.white + OPACITY[40]}
+                                    size={normalise(18)}
+                                />
+                                <Icon
+                                    icon="chevron-forward"
+                                    colour={COLOUR.white + OPACITY[60]}
+                                    size={normalise(18)}
+                                />
+                                <Icon
+                                    icon="chevron-forward"
+                                    colour={COLOUR.white}
+                                    size={normalise(18)}
+                                />
+                            </View>
                         </TouchableOpacity>
+                        {/* <TouchableOpacity onPress={navigateToLogin} activeOpacity={0.7}>
+                            <Text style={styles.loginText}>Already have an account? <Text style={styles.loginLink}>Login</Text></Text>
+                        </TouchableOpacity> */}
                     </View>
                 </Animatable.View>
             </View>
@@ -66,7 +85,7 @@ export default function LandingScreen({ navigation } : PropsType) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOUR.wp_brown[200],
+        backgroundColor: COLOUR.wp_green[500],
         alignItems: 'center',
         justifyContent: 'space-between',
     },
@@ -80,16 +99,20 @@ const styles = StyleSheet.create({
         left: 0,
     },
     top: {
-        paddingTop: SETTING.TOP_PADDING + normalise(40),
+        paddingTop: SETTING.TOP_PADDING + normalise(30),
         width: '100%',
         alignItems: 'center',
         zIndex: 10,
     },
     bottom: {
         width: '100%',
-        padding: normalise(45),
+        padding: normalise(30),
         paddingBottom: normalise(40),
         zIndex: 10,
+        // backgroundColor: COLOUR.white,
+        borderTopLeftRadius: normalise(40),
+        borderTopRightRadius: normalise(40),
+        ...SHADOW.xl
     },
     buttons: {
         width: '100%',
@@ -108,22 +131,33 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     title: {
-        fontSize: normalise(40),
-        // color: COLOUR.white,
+        fontSize: normalise(36),
+        color: COLOUR.white,
         marginBottom: normalise(10),
-        textAlign: 'center',
+        // ...TEXT.medium,
     },
     description: {
         ...TEXT.md,
-        // color: COLOUR.white,
-        textAlign: 'center',
+        color: COLOUR.white,
         marginBottom: normalise(30),
-        ...SHADOW.lg,
-        paddingHorizontal: normalise(30)
     },
     image: {
-        width: '50%',
-        aspectRatio: 1,
+        width: '40%',
+        aspectRatio: 400/130,
         height: 'auto'
+    },
+    button: {
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexDirection: 'row',
+        backgroundColor: COLOUR.wp_green[500],
+        paddingVertical: normalise(25),
+        paddingHorizontal: normalise(35),
+        borderRadius: normalise(40),
+    },
+    buttonText: {
+        color: COLOUR.white,
+        fontWeight: 500,
+        ...TEXT.lg
     }
 });
