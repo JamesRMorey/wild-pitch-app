@@ -7,10 +7,12 @@ import { COLOUR, TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
 import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";
 import Icon from "../../components/misc/icon";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { object, string } from "yup";
 import { FormErrors } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { WildPitchApi } from "../../services/api/wild-pitch";
+import * as Keychain from 'react-native-keychain';
 
 const schema = object({
     email: string().required('Please enter your email').email('Please enter a valid email'),
@@ -23,10 +25,8 @@ export default function LoginScreen({ navigation } : PropsType) {
     const [data, setData] = useState<{ email: string, password: string }>({ email: '', password: '' });
     const [errors, setErrors] = useState<FormErrors>();
     const { setUser } = useGlobalActions();
-
-    const fakeLogin = () => {
-        setUser({ id: 1, name: 'James Morey', email: 'jamesrmorety@gmail.com' });
-    }
+    const [loading, setLoading] = useState<boolean>(false);
+    const wpApi = useMemo(() => new WildPitchApi(), []);
 
     const goBack = () => {
         navigation.goBack();
@@ -38,18 +38,22 @@ export default function LoginScreen({ navigation } : PropsType) {
 
     const login = async () => {
         try {
+            setLoading(true);
             setErrors(undefined);
             await schema.validate(data, { abortEarly: false });
-            const user = { id: '1', name: 'James Morey' };
+            const { token, user } = await wpApi.login(data);
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
-            fakeLogin();
+            await Keychain.setGenericPassword(user.email, token, {service: 'wp_api_bearer'});
+            setUser(user);
         }
         catch (err: any) {
+            console.log(err)
             const errs = parseValidationErrors(err);
             setErrors(errs);
         }
         finally {
+            setLoading(false)
         }
     }
 
@@ -106,6 +110,7 @@ export default function LoginScreen({ navigation } : PropsType) {
                         <Button
                             title="Login" 
                             onPress={login}
+                            loading={loading}
                         />
                     </View>
                     <TouchableOpacity onPress={navigateToRegister} style={{ paddingTop: normalise(20) }}>

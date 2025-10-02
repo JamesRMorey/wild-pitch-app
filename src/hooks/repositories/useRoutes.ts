@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { EventBus } from '../../services/event-bus';
 import { array, number, object, string } from "yup";
 import { RouteRepository } from '../../database/repositories/route-repository';
-import { OSMaps } from '../../services/os-maps';
+import { OSMaps } from '../../services/api/os-maps';
 
 const schema = object({
     name: string().required("Name is required"),

@@ -54,7 +54,7 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
                             key={index}
                         >
                             <Icon 
-                                icon={isFocused ? icon : `${icon}`}
+                                icon={isFocused ? icon : `${icon}-outline`}
                                 colour={isFocused ? COLOUR.wp_green[500] : COLOUR.wp_brown[700]}
                                 size={normalise(22)}
                             />

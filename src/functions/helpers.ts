@@ -193,14 +193,19 @@ export function getBearingBetweenPoints(lat1, lon1, lat2, lon2) {
 
 export function parseValidationErrors(error: ValidationError): { [key: string]: Array<string> } {
     const errors: { [key: string]: Array<string> } = {};
-    error.inner.forEach((err) => {
-        if (!err.path) return;
+    if (error.inner) {
+        error.inner.forEach((err) => {
+            if (!err.path) return;
 
-        if (!errors[err.path]) {
-            errors[err.path] = [];
-        }
-        errors[err.path]?.push(err.message);
-    });
+            if (!errors[err.path]) {
+                errors[err.path] = [];
+            }
+            errors[err.path]?.push(err.message);
+        });
+    }
+    else if (error.errors) {
+        return error.errors;
+    }
 
     return errors;
 }

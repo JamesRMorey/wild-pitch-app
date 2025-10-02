@@ -1,7 +1,7 @@
 import { Coordinate, Route, RouteSearchResult } from "../types";
 import { getDistanceBetweenPoints } from "../functions/helpers";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { OSMaps } from "./os-maps";
+import { OSMaps } from "./api/os-maps";
 
 
 export class RouteService {
@@ -103,12 +103,12 @@ export class RouteService {
     }
 
     static getRouteDistanceToPoint( index: number, routePoints: Array<Coordinate> ): number | null {
-        if (routePoints.length === 0 || index >= routePoints.length) return null;
+        if (routePoints.length === 0 || index > routePoints.length) return null;
         
         let totalDistance = 0;
-        for (let i=0; i < index; i++) {
+        for (let i=0; i <= index; i++) {
             const start = routePoints[i];
-            const end = routePoints[i + 1];
+            const end = routePoints[i + 1] ? routePoints[i + 1] : start;
             const d = getDistanceBetweenPoints(start, end);
             totalDistance += d;
         }

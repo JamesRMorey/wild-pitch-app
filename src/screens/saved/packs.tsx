@@ -74,6 +74,7 @@ export default function PacksScreen({}) {
         <View style={styles.container}>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
             >
                 {mapPackGroups.length > 0 ? 
                 <View>

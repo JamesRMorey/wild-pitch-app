@@ -1,7 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useMemo, useRef, useState } from "react";
-import MapStyleControls from "../../components/map/map-style-controls";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
 import { delay, normalise } from "../../functions/helpers";
@@ -22,7 +21,6 @@ import CompassButton from "../../components/buttons/compass-button";
 import SearchSheet from "../../sheets/search-sheet";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import { useMapSettings } from "../../hooks/useMapSettings";
-import { OSMaps } from "../../services/os-maps";
 import { useMapCameraControls } from "../../hooks/useMapCameraControls";
 import MultiButtonControl from "../../components/map/multi-button-control";
 import MapStyleSheet from "../../sheets/map-style-sheet";
@@ -40,7 +38,7 @@ type PropsType = { navigation: any }
 export default function MapScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
-	const { styleURL, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest, activeRoute } = useMapState();
+	const { styleURL, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest, activeRoute, showRoutes } = useMapState();
 	const { clearActivePackGroup, flyToLow, resetHeading, reCenter, setActiveRoute, fitToRoute } = useMapActions();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { heading, setHeading, followUserPosition, setFollowUserPosition } = useMapCameraControls();
@@ -55,6 +53,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	const routeProvider = useMemo(() => new RouteProvider(user), [user])
 
 	const addMarkerFromLongPress = async ( e: any ) => {
+		setFollowUserPosition(false);
 		const now = new Date();
 		const poi: PointOfInterest = {
 			name: `New Location - ${Format.dateToDateTime(now)}`,
@@ -66,6 +65,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const pointOfInterestPress = ( point: PointOfInterest ) => {
+		setFollowUserPosition(false);
 		tick();
 		setActivePOI(point);
 		flyToLow([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
@@ -126,6 +126,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const updateActiveRoute = ( route: Route, fit:boolean=true ) => {
+		setFollowUserPosition(false);
 		setActiveRoute(route);
 		reDrawRoute();
 
@@ -139,6 +140,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const clearActiveRoute = () => {
+		setFollowUserPosition(false);
 		setActiveRoute(undefined);
 	}
 
@@ -202,6 +204,7 @@ export default function MapScreen({ navigation } : PropsType) {
 					)
 				})}
 				{routes.map((route, i) => {
+					if (!showRoutes) return;
 					return (
 						<PointOfInterestMarker
 							key={i}

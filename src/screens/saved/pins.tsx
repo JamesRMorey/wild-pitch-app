@@ -71,6 +71,7 @@ export default function PinsScreen({  } : PropsType) {
         <View style={styles.container}>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
             >
                 {pointsOfInterest.length > 0 ?
                 <View>

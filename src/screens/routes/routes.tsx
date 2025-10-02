@@ -16,7 +16,7 @@ import { useRoutesActions, useRoutesState } from "../../contexts/routes-context"
 import { useMapSettings } from "../../hooks/useMapSettings";
 import { useRoutes } from "../../hooks/repositories/useRoutes";
 import ActiveRouteInformation from "../../components/routes/active-route-information";
-import { OSMaps } from "../../services/os-maps";
+import { OSMaps } from "../../services/api/os-maps";
 import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import RouteLine from "../../components/routes/route-line";
 import { RouteService } from "../../services/route-service";

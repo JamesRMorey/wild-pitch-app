@@ -79,6 +79,7 @@ export default function RoutesScreen({}) {
         <View style={styles.container}>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
             >
                 {routes.length > 0 ? 
                 <View>

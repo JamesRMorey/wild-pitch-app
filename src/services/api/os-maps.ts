@@ -1,5 +1,5 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { Coordinate, Place, Route, RouteSearchResult } from "../types";
+import { Coordinate, Place, Route, RouteSearchResult } from "../../types";
 
 
 export class OSMaps {

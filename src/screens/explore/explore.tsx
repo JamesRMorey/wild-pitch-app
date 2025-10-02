@@ -47,7 +47,7 @@ export default function ExploreScreen({ navigation } : PropsType) {
 					<Text style={[TEXT.p, { color: COLOUR.white, marginTop: normalise(10) }]}>Download offline routes & maps for FREE, so you don't get lost when signal runs out.</Text>
 				</ImageBackgroundCard>
 			</View>
-			<View style={[styles.section, { paddingLeft: 0 }]}>
+			<View style={[styles.section, { paddingHorizontal: 0 }]}>
 				<View>
 					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Plan your adventure</Text>
 					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>A good scout is always prepared</Text>

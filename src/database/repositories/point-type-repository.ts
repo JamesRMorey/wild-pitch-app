@@ -33,7 +33,7 @@ export class PointTypeRepository {
             ('Point of Interest', 'location', '#c2410c'),
             ('Meeting Point', 'people', '#eab308'),
             ('Camp Spot', 'bonfire', '#3b7a57'),
-            ('Parking', 'car', '#0264A0'),
+            ('Parking', 'car', '#6ebdeeff'),
             ('Food & Drink', 'restaurant', '#7b687d'),
             ('Cafe', 'cafe', '#A0522D'),
             ('Shop', 'storefront', '#4682B4'),

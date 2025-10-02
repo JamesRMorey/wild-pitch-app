@@ -1,10 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
 import { normalise } from "../../functions/helpers";
 import Icon from "../misc/icon";
+import Loader from "../map/loader";
 
-type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, active?: boolean, style?: 'primary' | 'secondary' | 'tertiary' | 'outline', icon?: string, flex?: boolean }
-export default function Button ({ title, onPress, disabled=false, active=false, style='primary', padding, icon, flex=false } : PropsType) {
+type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, active?: boolean, style?: 'primary' | 'secondary' | 'tertiary' | 'outline', icon?: string, flex?: boolean, loading?: boolean }
+export default function Button ({ title, onPress, disabled=false, active=false, style='primary', padding, icon, flex=false, loading=false } : PropsType) {
 
     return (
         <TouchableOpacity
@@ -31,6 +32,9 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
                 colour={style == 'outline' ? COLOUR.wp_brown[700] : COLOUR.white}
             />
             }
+            {loading && (
+                <Loader size={normalise(17)} colour={COLOUR.white}/>
+            )}
         </TouchableOpacity>
     )
 }

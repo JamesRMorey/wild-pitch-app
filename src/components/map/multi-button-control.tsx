@@ -3,7 +3,7 @@ import IconButton from "../buttons/icon-button"
 import { COLOUR, OPACITY, SHADOW } from "../../styles"
 import * as Animatable from 'react-native-animatable';
 
-type PropsType = { items: Array<{ icon: string, onPress: () => void }> }
+type PropsType = { items: Array<{ icon: string, onPress: () => void, disabled?: boolean }> }
 export default function MultiButtonControl({ items } : PropsType) {
     
     return (
@@ -15,6 +15,7 @@ export default function MultiButtonControl({ items } : PropsType) {
                             icon={item.icon}
                             onPress={item.onPress}
                             iconOnly={true}
+                            disabled={item.disabled ?? false}
                         />
                         {index < items.length - 1 && (
                             <View style={styles.break} />

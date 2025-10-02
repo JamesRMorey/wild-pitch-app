@@ -7,19 +7,21 @@ import { COLOUR, TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
 import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";
 import Icon from "../../components/misc/icon";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { object, string, ref } from "yup";
 import { FormErrors } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RadioInput from "../../components/inputs/radio-input";
+import { WildPitchApi } from "../../services/api/wild-pitch";
+import * as Keychain from 'react-native-keychain';
 
 const schema = object({
     name: string().required('Please enter your name'),
     email: string().required('Please enter your email').email('Please enter a valid email'),
     password: string().required('Please enter your password'),
-    confirmPassword: string()
+    password_confirm: string()
         .when('password', {
-            is: (password: string) => !!password, // Check if password is truthy
+            is: (password: string) => !!password,
             then: (schema) =>
                 schema
                 .required('Confirm password is required')
@@ -28,11 +30,11 @@ const schema = object({
         }),
 });
 
-type FormData = { name: string, email: string, password: string, confirmPassword: string, gender: string, date_of_birth: string };
+type FormData = { name: string, email: string, password: string, password_confirm: string, gender: string, date_of_birth: string };
 type PropsType = { navigation: any };
 export default function RegisterScreen({ navigation } : PropsType) {
 
-    const [data, setData] = useState<FormData>({ name: '', email: '', password: '', confirmPassword: '', gender: '', date_of_birth: '' });
+    const [data, setData] = useState<FormData>({ name: '', email: '', password: '', password_confirm: '', gender: '', date_of_birth: '' });
     const [errors, setErrors] = useState<FormErrors>();
     const { setUser } = useGlobalActions();
     const GENDER_OPTIONS = [
@@ -40,10 +42,8 @@ export default function RegisterScreen({ navigation } : PropsType) {
         { label: 'Female', value: 'female', icon: 'female-outline' },
         { label: 'Other', value: 'other', icon: 'person-outline' }
     ];
-
-    const fakeLogin = () => {
-        setUser({ id: '1', name: 'James Morey' });
-    }
+    const [loading, setLoading] = useState<boolean>(false);
+    const wpApi = useMemo(() => new WildPitchApi(), []);
 
     const goBack = () => {
         navigation.goBack();
@@ -51,18 +51,21 @@ export default function RegisterScreen({ navigation } : PropsType) {
 
     const login = async () => {
         try {
+            setLoading(true);
             setErrors(undefined);
             await schema.validate(data, { abortEarly: false });
-            const user = { id: '1', name: 'James Morey' };
+            const { user, token } = await wpApi.register(data); 
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
-            fakeLogin();
+            await Keychain.setGenericPassword(user.email, token, {service: 'wp_api_bearer'});
+            setUser(user);
         }
         catch (err: any) {
             const errs = parseValidationErrors(err);
             setErrors(errs);
         }
         finally {
+            setLoading(false)
         }
     }
 
@@ -131,9 +134,9 @@ export default function RegisterScreen({ navigation } : PropsType) {
                                 placeHolder="Password"
                                 secureTextEntry={true}
                                 icon="lock-closed-outline"
-                                error={errors?.confirmPassword?.[0]}
-                                onChangeText={(text)=>setData({ ...data, confirmPassword: text })}
-                                onFocus={()=>setErrors({ ...errors, confirmPassword: undefined })}
+                                error={errors?.password_confirm?.[0]}
+                                onChangeText={(text)=>setData({ ...data, password_confirm: text })}
+                                onFocus={()=>setErrors({ ...errors, password_confirm: undefined })}
                             />
                         </View>
                         <TouchableOpacity style={{ marginTop: normalise(15), marginBottom: normalise(30) }}>
@@ -142,6 +145,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                         <Button
                             title="Register" 
                             onPress={login}
+                            loading={loading}
                         />
                     </View>
                     <TouchableOpacity 

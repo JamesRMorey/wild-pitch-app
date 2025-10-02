@@ -17,7 +17,8 @@ type MapContextState = {
     showPointsOfInterest: boolean;
     pointsOfInterest: Array<PointOfInterest>;
     initialRegion: Coordinate | undefined;
-    activeRoute: Route|undefined
+    activeRoute: Route|undefined;
+    showRoutes: boolean
 };
 
 type MapContextActions = {
@@ -37,6 +38,7 @@ type MapContextActions = {
     resetHeading: () => void;
     fitToRoute: (route: Route) => void;
     setActiveRoute: (route?: Route) => void;
+    setShowRoutes: (show: boolean) => void;
 };
 
 const StateContext = createContext<MapContextState | undefined>(undefined);
@@ -49,6 +51,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const { initialRegion } = useMapSettings();
     const { pointsOfInterest } = usePointsOfInterest();
     const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
+    const [showRoutes, setShowRoutes] = useState<boolean>(true);
     const [activeRoute, setActiveRoute] = useState<Route>();
 
     const clearActivePackGroup = () => setActivePackGroup(undefined);
@@ -80,7 +83,8 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 pointsOfInterest,
                 showPointsOfInterest,
                 initialRegion,
-                activeRoute
+                activeRoute,
+                showRoutes
             }}
         >
             <ActionsContext.Provider
@@ -100,7 +104,8 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                     fitToBounds,
                     reCenter,
                     fitToRoute,
-                    setActiveRoute
+                    setActiveRoute,
+                    setShowRoutes
                 }}
             >
                 {children}

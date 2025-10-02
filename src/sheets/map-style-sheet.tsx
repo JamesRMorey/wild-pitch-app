@@ -11,8 +11,8 @@ import Switch from "../components/buttons/switch";
 
 export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }) {
 
-    const { styleURL, enable3DMode, showPointsOfInterest } = useMapState();
-    const { setStyleURL, setEnable3DMode, setShowPointsOfInterest } = useMapActions();
+    const { styleURL, enable3DMode, showPointsOfInterest, showRoutes } = useMapState();
+    const { setStyleURL, setEnable3DMode, setShowPointsOfInterest, setShowRoutes } = useMapActions();
 
     const STYLES: Array<MapStyle> = [
         {
@@ -78,7 +78,7 @@ export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }
                     <View 
                         style={styles.settingContainer}
                     >
-                        <Text>3D Mode</Text>
+                        <Text>3D mode</Text>
                         <Switch
                             active={enable3DMode}
                             onPress={() => setEnable3DMode(!enable3DMode)}
@@ -87,10 +87,19 @@ export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }
                     <View 
                         style={styles.settingContainer}
                     >
-                        <Text>Show Points of Interest</Text>
+                        <Text>Show map pins</Text>
                         <Switch
                             active={showPointsOfInterest}
                             onPress={() => setShowPointsOfInterest(!showPointsOfInterest)}
+                        />
+                    </View>
+                    <View 
+                        style={styles.settingContainer}
+                    >
+                        <Text>Show routes</Text>
+                        <Switch
+                            active={showRoutes}
+                            onPress={() => setShowRoutes(!showRoutes)}
                         />
                     </View>
                 </View>

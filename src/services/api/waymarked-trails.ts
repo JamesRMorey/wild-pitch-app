@@ -1,7 +1,7 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { Route, RouteSearchResult } from "../types";
-import { isInUK, mercatorToLngLat } from "../functions/helpers";
-import { RouteService } from "./route-service";
+import { Route, RouteSearchResult } from "../../types";
+import { isInUK, mercatorToLngLat } from "../../functions/helpers";
+import { RouteService } from "../route-service";
 
 
 export class WaymarkedTrails {

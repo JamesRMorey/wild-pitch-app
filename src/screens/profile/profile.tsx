@@ -22,6 +22,10 @@ export default function ProfileScreen() {
         Linking.openURL('https://www.instagram.com/wildpitch_camping/');
     }
 
+    const buyCoffee = () => {
+        Linking.openURL('https://buymeacoffee.com/wildpitch');
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
@@ -82,6 +86,7 @@ export default function ProfileScreen() {
                     <SectionItemCard
                         title="Buy me a coffee?"
                         icon="cafe-outline"
+                        onPress={buyCoffee}
                     />
                     <SectionItemCard
                         title="Shop Wild Pitch"

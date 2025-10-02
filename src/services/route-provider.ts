@@ -1,6 +1,6 @@
 import { Route, RouteSearchResult, User } from "../types";
-import { OSMaps } from "./os-maps";
-import { WaymarkedTrails } from "./waymarked-trails";
+import { OSMaps } from "./api/os-maps";
+import { WaymarkedTrails } from "./api/waymarked-trails";
 
 
 export class RouteProvider {

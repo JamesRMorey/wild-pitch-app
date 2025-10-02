@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from "react";
 import { normalise } from "../../functions/helpers";
-import { ASSET, SETTING, SHEET } from "../../consts";
+import { ASSET, SETTING } from "../../consts";
 import { COLOUR, SHADOW, TEXT } from "../../styles";
 import UserPosition from "../../components/map/user-position";
 import CompassButton from "../../components/buttons/compass-button";
@@ -100,8 +100,8 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 					)}
 					<MultiButtonControl
 						items={[
-							{ icon: 'expand-outline', onPress: () => centerOnRoute() },
-							{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]) },
+							{ icon: 'expand-outline', onPress: () => centerOnRoute(), disabled: followUserPosition },
+							{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
 							{ icon: followUserPosition ? 'navigate' : 'navigate-outline', onPress: () => setFollowUserPosition(!followUserPosition) },
 						]}
 					/>

@@ -15,7 +15,7 @@ type PropsType = { mapPackGroup: MapPackGroup, onPress?: ()=>void, onOtherPress?
 export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOtherPress } : PropsType ) {
 
     const [progress, setProgress] = useState<number>(0);
-    const [downloaded, setDownloaded] = useState<boolean>(false);
+    const [downloaded, setDownloaded] = useState<boolean>();
     const [errored, setErrored] = useState<boolean>(false);
     const [downloading, setDownloading] = useState<boolean>(false);
     const pack = mapPackGroup.packs[0];
@@ -138,7 +138,13 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                             <Text style={styles.downloadedText}>Downloaded</Text>
                         </View>
                         :
-                        <TouchableOpacity style={styles.downloadButton} onPress={download}>
+                        <TouchableOpacity 
+                            style={[
+                                styles.downloadButton,
+                                downloaded === undefined && { opacity: 0 }
+                            ]} 
+                            onPress={download}
+                        >
                             <Icon
                                 icon='cloud-download-outline'
                                 size={normalise(12)}
