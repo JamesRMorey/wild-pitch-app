@@ -46,7 +46,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                 </View>
                 <View style={styles.rightContainer}>
                     <View style={styles.textContainer}>
-                        <Text style={TEXT.h4}>{route.name}</Text>
+                        <Text style={TEXT.h4}>{route.name.replaceAll('\n', '')}</Text>
                         {route.notes && (
                             <Text style={TEXT.xs}>{route.notes.replaceAll('\n', '').slice(0,80)}{route.notes.length > 80 ? '...' : ''}</Text>
                         )}
@@ -69,7 +69,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain} m`}</Text>
+                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
                         </View>
                         )}
                         {route.elevation_loss !== undefined && (
@@ -79,7 +79,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss} m`}</Text>
+                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
                         </View>
                         )}
                         <Text style={[TEXT.xs, TEXT.medium]}>

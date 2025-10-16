@@ -7,7 +7,6 @@ import CustomTabView from '../../components/navigation/custom-tab-view';
 import { SETTING, SHEET } from '../../consts';
 import { COLOUR, TEXT } from '../../styles';
 import { normalise } from '../../functions/helpers';
-import IconButton from '../../components/buttons/icon-button';
 import OptionsSheet from '../../sheets/options-sheet';
 import { SheetManager } from 'react-native-actions-sheet';
 import RoutesScreen from './routes';

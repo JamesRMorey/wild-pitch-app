@@ -51,9 +51,11 @@ export default function RegisterScreen({ navigation } : PropsType) {
 
     const login = async () => {
         try {
+            await schema.validate(data, { abortEarly: false });
+
             setLoading(true);
             setErrors(undefined);
-            await schema.validate(data, { abortEarly: false });
+
             const { user, token } = await wpApi.register(data); 
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
@@ -73,7 +75,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
     return (
         <KeyboardAvoidingView style={styles.container}>
             <ImageBackground
-                source={ASSET.LANDING_1}
+                source={ASSET.BACKGROUND_SMALL_2}
             >
                 <View style={styles.top}>
                     <View>

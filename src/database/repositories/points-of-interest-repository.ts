@@ -7,9 +7,11 @@ export class PointOfInterestRepository {
 
     db;
     tableName;
+    userId;
 
-    constructor () {
+    constructor (userId: number) {
         const db = getDB();
+        this.userId = userId;
         this.db = db;
         this.tableName = 'point_of_interests';
         this.createTable();
@@ -20,6 +22,7 @@ export class PointOfInterestRepository {
         this.db.execute(`
             CREATE TABLE IF NOT EXISTS ${this.tableName} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 notes LONGTEXT DEFAULT NULL,
                 point_type_id INTEGER NOT NULL DEFAULT 1,
@@ -45,6 +48,7 @@ export class PointOfInterestRepository {
             SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.elevation, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
+            WHERE t.user_id = ${this.userId}
             LIMIT ${limit}
         `);
         
@@ -72,7 +76,7 @@ export class PointOfInterestRepository {
             SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.elevation, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
-            WHERE t.id = ${id}
+            WHERE t.id = ${id} AND t.user_id = ${this.userId}
         `);
         
         const row = record.rows?._array[0] ?? null
@@ -101,7 +105,7 @@ export class PointOfInterestRepository {
             SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.elevation, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour
             FROM ${this.tableName} t
             JOIN point_types pt ON pt.id = t.point_type_id
-            WHERE t.latitude = ${latitude} AND t.longitude = ${longitude}
+            WHERE t.latitude = ${latitude} AND t.longitude = ${longitude} AND t.user_id = ${this.userId}
         `);
         
         const row = record.rows?._array[0] ?? null
@@ -127,9 +131,9 @@ export class PointOfInterestRepository {
 
     create ( data: PointOfInterest ): PointOfInterest|void {
         const record = this.db.execute(`
-            INSERT INTO "${this.tableName}" (name, notes, point_type_id, latitude, longitude, elevation) VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO "${this.tableName}" (name, user_id, notes, point_type_id, latitude, longitude, elevation) VALUES (?, ?, ?, ?, ?, ?, ?)
             RETURNING *
-        `, [data.name, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL]);
+        `, [data.name, this.userId, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL]);
 
         const newPoint = record.rows?._array[0] ?? null
 
@@ -165,6 +169,7 @@ export class PointOfInterestRepository {
                 longitude = ?,
                 elevation = ?
             WHERE id = ?
+            AND user_id = ${this.userId}
             RETURNING *
         `, [data.name, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL, id]);
 
@@ -195,7 +200,7 @@ export class PointOfInterestRepository {
     delete ( id: number ): void {
         this.db.execute(`
             DELETE FROM ${this.tableName}
-            WHERE id = ?
+            WHERE id = ? AND user_id = ${this.userId}
         `, [id]);
     }
 }

@@ -9,9 +9,11 @@ export class MapPackGroupRepository {
 
     db;
     tableName;
+    userId;
 
-    constructor () {
+    constructor ( userId: number ) {
         const db = getDB();
+        this.userId = userId;
         this.db = db;
         this.tableName = 'map_pack_groups';
         this.createTable();
@@ -22,6 +24,7 @@ export class MapPackGroupRepository {
         this.db.execute(`
             CREATE TABLE IF NOT EXISTS ${this.tableName} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 key TEXT NOT NULL UNIQUE,
                 description LONGTEXT,
@@ -39,6 +42,7 @@ export class MapPackGroupRepository {
         const data = this.db.execute(`
             SELECT *
             FROM ${this.tableName}
+            WHERE user_id = ${this.userId}
             LIMIT ${limit}
         `);
 
@@ -70,7 +74,7 @@ export class MapPackGroupRepository {
         const record = this.db.execute(`
             SELECT *
             FROM ${this.tableName}
-            WHERE id = ${id}
+            WHERE id = ${id} AND user_id = ${this.userId}
         `);
         
         const row = record.rows?._array[0] ?? null
@@ -100,10 +104,11 @@ export class MapPackGroupRepository {
     }
 
     create ( data: MapPackGroup ): MapPackGroup|void {
+        console.log(this.userId, data)
         const record = this.db.execute(`
-            INSERT OR IGNORE INTO ${this.tableName} (name, key, description, min_zoom, max_zoom, latitude, longitude, bounds) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT OR IGNORE INTO ${this.tableName} (name, user_id, key, description, min_zoom, max_zoom, latitude, longitude, bounds) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             RETURNING *
-        `, [data.name, data.key, data.description ?? NITRO_SQLITE_NULL, data.minZoom, data.maxZoom,  data.center[1], data.center[0], JSON.stringify(data.bounds)]);
+        `, [data.name, this.userId, data.key, data.description ?? NITRO_SQLITE_NULL, data.minZoom, data.maxZoom,  data.center[1], data.center[0], JSON.stringify(data.bounds)]);
 
         const row = record.rows?._array[0] ?? null
         
@@ -140,6 +145,7 @@ export class MapPackGroupRepository {
                 latitude = ?, 
                 longitude = ?
             WHERE id = ?
+            AND user_id = ${this.userId}
             RETURNING *
         `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, id]);
 
@@ -169,7 +175,7 @@ export class MapPackGroupRepository {
     delete ( id: number ): void {
         this.db.execute(`
             DELETE FROM ${this.tableName}
-            WHERE id = ?
+            WHERE id = ? AND user_id = ${this.userId}
         `, [id]);
     }
 }

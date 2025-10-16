@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { PointOfInterestRepository } from '../../database/repositories/points-of-interest-repository';
 import { EventBus } from '../../services/event-bus';
 import { number, object, string } from "yup";
+import { useGlobalState } from '../../contexts/global-context';
 
 const schema = object({
     name: string().required("Name is required"),
@@ -14,11 +15,12 @@ const schema = object({
 
 export function usePointsOfInterest() {
 
+    const { user } = useGlobalState();
     const [pointsOfInterest, setPointsOfInterest] = useState<Array<PointOfInterest>>([]);
-    const repo = new PointOfInterestRepository();
+    const repo = new PointOfInterestRepository(user.id);
 
     const get = (): void => {
-        const points = repo.get() ?? [];
+        const points = repo.get(user.id) ?? [];
         setPointsOfInterest(points);
     }
 
@@ -26,7 +28,7 @@ export function usePointsOfInterest() {
         return new Promise(async (resolve, reject) => {
             try {
                 await schema.validate(data, { abortEarly: false });
-                const newPoint = repo.create(data,);
+                const newPoint = repo.create(data);
 
                 if (!newPoint) return resolve();
                 EventBus.emit.poiRefresh();
@@ -39,7 +41,7 @@ export function usePointsOfInterest() {
         });
     }
 
-    const update = async ( data: PointOfInterest ): Promise<PointOfInterest|void> => {
+    const update = async ( id: number, data: PointOfInterest ): Promise<PointOfInterest|void> => {
         return new Promise(async (resolve, reject) => {
             try {
                 if (!data.id) return reject();

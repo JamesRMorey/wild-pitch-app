@@ -8,7 +8,7 @@ type GlobalState = {
 };
 
 type GlobalActions = {
-    setUser: (user: GlobalState['user']) => void;
+    setUser: (user: User) => void;
     setLoading: (loading: boolean) => void;
     logout: () => Promise<void>;
 };

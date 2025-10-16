@@ -118,6 +118,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                     <TouchableOpacity
                         activeOpacity={0.3}
                         onPress={close}
+                        style={styles.cancelButton}
                     >
                         <Text>cancel</Text>
                     </TouchableOpacity>
@@ -158,7 +159,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                         )
                     })}
                 </ScrollView>
-                :results && results.length > 0 ?
+                :results && results.length > 0 && searchType == 'place' ?
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     style={styles.scrollView}
@@ -248,5 +249,8 @@ const styles = StyleSheet.create({
     active: {
         backgroundColor: COLOUR.white,
         ...SHADOW.sm
+    },
+    cancelButton: {
+        paddingVertical: normalise(10)
     }
 });

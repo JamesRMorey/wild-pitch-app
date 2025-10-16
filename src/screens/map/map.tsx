@@ -19,18 +19,18 @@ import { COLOUR } from "../../styles";
 import useHaptic from "../../hooks/useHaptic";
 import CompassButton from "../../components/buttons/compass-button";
 import SearchSheet from "../../sheets/search-sheet";
-import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import { useMapSettings } from "../../hooks/useMapSettings";
 import { useMapCameraControls } from "../../hooks/useMapCameraControls";
 import MultiButtonControl from "../../components/map/multi-button-control";
 import MapStyleSheet from "../../sheets/map-style-sheet";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { useRoutes } from "../../hooks/repositories/useRoutes";
 import RouteLine from "../../components/routes/route-line";
 import ActiveRouteInformation from "../../components/routes/active-route-information";
 import Loader from "../../components/map/loader";
 import { useGlobalState } from "../../contexts/global-context";
 import { RouteProvider } from "../../services/route-provider";
+import { useRoutesState } from "../../contexts/routes-context";
+import { usePointsOfInterestActions } from "../../contexts/pois-context";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -42,11 +42,11 @@ export default function MapScreen({ navigation } : PropsType) {
 	const { clearActivePackGroup, flyToLow, resetHeading, reCenter, setActiveRoute, fitToRoute } = useMapActions();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { heading, setHeading, followUserPosition, setFollowUserPosition } = useMapCameraControls();
-	const { routes } = useRoutes();
+	const { findByLatLng: findPointOfInterest } = usePointsOfInterestActions();
+	const { routes } = useRoutesState();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
-	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
 	const [mapCenter, setMapCenter] = useState<Position>();
 	const [lineKey, setLineKey] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -255,11 +255,6 @@ export default function MapScreen({ navigation } : PropsType) {
 				/>
 			</View>
 			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
-				{/* <IconButton
-					icon={'compass-outline'}
-					onPress={openSearch}
-					shadow={true}
-				/> */}
 				<IconButton
 					icon={'cloud-download-outline'}
 					onPress={navigateToAreaBuilder}
@@ -279,7 +274,7 @@ export default function MapScreen({ navigation } : PropsType) {
 					<MultiButtonControl
 						items={[
 							{ icon: 'layers-outline', onPress: () => openStyleSheet() },
-							{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]) },
+							{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
 							{ icon: followUserPosition ? 'navigate' : 'navigate-outline', onPress: () => setFollowUserPosition(!followUserPosition) },
 						]}
 					/>

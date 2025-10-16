@@ -8,7 +8,7 @@ import { MapPackService } from "../../services/map-pack-service";
 import { MapService } from "../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
 import Button from "../../components/buttons/button";
-import { useMapPackGroups } from "../../hooks/useMapPackGroups";
+import { useMapPackGroups } from "../../hooks/repositories/useMapPackGroups";
 import TextArea from "../../components/inputs/text-area";
 import TextInput from "../../components/inputs/text-input";
 import { object, string } from "yup";

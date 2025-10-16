@@ -4,6 +4,7 @@ import { EventBus } from '../../services/event-bus';
 import { array, number, object, string } from "yup";
 import { RouteRepository } from '../../database/repositories/route-repository';
 import { OSMaps } from '../../services/api/os-maps';
+import { useGlobalState } from '../../contexts/global-context';
 
 const schema = object({
     name: string().required("Name is required"),
@@ -18,8 +19,9 @@ const schema = object({
 
 export function useRoutes() {
 
+    const { user }  = useGlobalState();
     const [routes, setRoutes] = useState<Array<Route>>([]);
-    const repo = new RouteRepository();
+    const repo = new RouteRepository(user.id);
 
     const get = (): void => {
         const data = repo.get() ?? [];
@@ -43,7 +45,7 @@ export function useRoutes() {
         });
     }
 
-    const update = async ( data: PointOfInterest ): Promise<PointOfInterest|void> => {
+    const update = async ( id: number, data: Route ): Promise<Route> => {
         return new Promise(async (resolve, reject) => {
             try {
                 if (!data.id) return reject();

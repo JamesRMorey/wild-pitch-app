@@ -12,12 +12,10 @@ import { COLOUR } from "../../styles";
 import useHaptic from "../../hooks/useHaptic";
 import SearchSheet from "../../sheets/search-sheet";
 import Button from "../../components/buttons/button";
-import { useRoutesActions, useRoutesState } from "../../contexts/routes-context";
+import { useRoutesActions, useRoutesState } from "../../contexts/routes-map-context";
 import { useMapSettings } from "../../hooks/useMapSettings";
 import { useRoutes } from "../../hooks/repositories/useRoutes";
 import ActiveRouteInformation from "../../components/routes/active-route-information";
-import { OSMaps } from "../../services/api/os-maps";
-import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import RouteLine from "../../components/routes/route-line";
 import { RouteService } from "../../services/route-service";
 import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
@@ -25,6 +23,7 @@ import Loader from "../../components/map/loader";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import { RouteProvider } from "../../services/route-provider";
 import { useGlobalState } from "../../contexts/global-context";
+import { usePointsOfInterestActions } from "../../contexts/pois-context";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -35,7 +34,7 @@ export default function RoutesScreen({ navigation } : PropsType) {
 	const { styleURL, cameraRef, enable3DMode, activeRoute, activePOI } = useRoutesState();
 	const { flyTo, fitToRoute, fitToBounds, setActiveRoute, setActivePOI, reCenter } = useRoutesActions();
     const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
-	const { findByLatLng: findPointOfInterest } = usePointsOfInterest();
+	const { findByLatLng: findPointOfInterest } = usePointsOfInterestActions();
 	const { routes } = useRoutes();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);

@@ -9,9 +9,9 @@ import TextArea from "../../components/inputs/text-area";
 import { usePointTypes } from "../../hooks/repositories/usePointType";
 import { FormErrors } from "../../types";
 import PressInput from "../../components/inputs/press-input";
-import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
 import { useFocusEffect } from "@react-navigation/native";
 import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";
+import { usePointsOfInterestActions } from "../../contexts/pois-context";
 
 type PropsType = { navigation: any, route: any };
 export default function PointOfInterestEditScreen({ navigation, route } : PropsType) {
@@ -20,11 +20,11 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
     const [data, setData] = useState<PointOfInterest>(point);
     const [errors, setErrors] = useState<FormErrors>()
     const { pointTypes } = usePointTypes();
-    const { create, update } = usePointsOfInterest();
+    const { create, update } = usePointsOfInterestActions();
     
     const validate = async () => {
         try {
-            const updated = data.id ? await update(data) : await create(data);
+            const updated = data.id ? await update(data.id, data) : await create(data);
 
             if (onGoBack) {
                 onGoBack({ point: updated });

@@ -38,9 +38,11 @@ export default function LoginScreen({ navigation } : PropsType) {
 
     const login = async () => {
         try {
+            await schema.validate(data, { abortEarly: false });
+
             setLoading(true);
             setErrors(undefined);
-            await schema.validate(data, { abortEarly: false });
+
             const { token, user } = await wpApi.login(data);
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
@@ -62,7 +64,7 @@ export default function LoginScreen({ navigation } : PropsType) {
         <KeyboardAvoidingView flex={true}>
             <View style={styles.container}>
                 <ImageBackground
-                    source={ASSET.LANDING_1}
+                    source={ASSET.BACKGROUND_SMALL_1}
                 >
                     <View style={styles.top}>
                         <View>

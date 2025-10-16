@@ -1,9 +1,10 @@
-import { MapPackGroup } from '../types';
+import { MapPackGroup } from '../../types';
 import { useEffect, useState } from 'react';
-import { MapPackGroupRepository } from '../database/repositories/map-pack-group-repository';
+import { MapPackGroupRepository } from '../../database/repositories/map-pack-group-repository';
 import Mapbox from '@rnmapbox/maps';
 import { object, string } from "yup";
-import { EventBus } from '../services/event-bus';
+import { EventBus } from '../../services/event-bus';
+import { useGlobalState } from '../../contexts/global-context';
 
 const schema = object({
     name: string().required("Name is required"),
@@ -13,8 +14,9 @@ const schema = object({
 
 export function useMapPackGroups() {
 
+    const { user } = useGlobalState();
     const [mapPackGroups, setMapPackGroups] = useState<Array<MapPackGroup>>([]);
-    const repo = new MapPackGroupRepository();
+    const repo = new MapPackGroupRepository(user.id);
 
     const get = async (): Promise<void> => {
         const groups = await repo.get();

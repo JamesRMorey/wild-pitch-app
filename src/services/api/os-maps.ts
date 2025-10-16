@@ -1,5 +1,5 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
-import { Coordinate, Place, Route, RouteSearchResult } from "../../types";
+import { Coordinate, Route, RouteSearchResult } from "../../types";
 
 
 export class OSMaps {
@@ -65,6 +65,7 @@ export class OSMaps {
                 headers.append("accept", "*/*");
                 headers.append("accept-language", "en-US,en;q=0.9");
                 headers.append("priority", "u=1, i");
+                headers.append("referer", "https://explore.osmaps.com/?lat=54.43726&lon=-3.6821&zoom=8.4274&style=Standard&type=2d");
 
                 const options = {
                     method: 'GET',
@@ -72,11 +73,12 @@ export class OSMaps {
                     redirect: 'follow'
                 };
 
-                const response = await fetch(`https://explore.osmaps.com/_next/data/EqzcGASzlWJFVN-snyqE1/en/route/${id}/${slug}.json`, options);
+                const response = await fetch(`https://explore.osmaps.com/_next/data/toK3cnbqngyGsclWAZSMg/en/route/${id}/${slug}.json`, options);
                 const data = await response.json();
-                const routeData = data.pageProps.route.data;
                 
+                const routeData = data.pageProps.route.data;
                 const markersPositions = routeData.features.find((f: any) => f.geometry.type == "LineString")?.geometry.coordinates;
+
                 return resolve({
                     id: routeData.id,
                     name: routeData.metadata.name,

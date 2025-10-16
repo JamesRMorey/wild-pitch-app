@@ -8,18 +8,18 @@ const { MapboxOfflineManager } = NativeModules;
 
 export class MapPackService {
 
-    static downloadProgress (pack: any, group: MapPackGroup, status: any, onProgress: (pack: any, status: any) => void)
+    static downloadProgress (userId: number, pack: any, group: MapPackGroup, status: any, onProgress: (pack: any, status: any) => void)
     {
         if (status.percentage == 100) {
-            const repo = new MapPackGroupRepository();
+            const repo = new MapPackGroupRepository(userId);
             repo.create(group)
         } 
         onProgress(pack, status);
     }
     
-    static async download ( pack: MapPack, group: MapPackGroup, onProgress: (pack: any, status: any) => void, onError: (offlineRegion: any, err: any) => void) 
+    static async download ( pack: MapPack, userId: number, group: MapPackGroup, onProgress: (pack: any, status: any) => void, onError: (offlineRegion: any, err: any) => void) 
     {
-        Mapbox.offlineManager.createPack(pack, (pack, status) => this.downloadProgress(pack, group, status, onProgress), onError);
+        Mapbox.offlineManager.createPack(pack, (pack, status) => this.downloadProgress(userId, pack, group, status, onProgress), onError);
     }
 
     static async downloadRoute ( pack: MapPack, onProgress: (pack: any, status: any) => void, onError: (offlineRegion: any, err: any) => void) 

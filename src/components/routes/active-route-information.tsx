@@ -19,7 +19,7 @@ export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose
                 activeOpacity={0.8}
             >
                 <View style={styles.textContainer}>
-                    <Text style={TEXT.h4}>{route.name}</Text>
+                    <Text style={TEXT.h4}>{route.name.replaceAll('\n', '')}</Text>
                     {route.notes && (
                         <Text style={TEXT.xs}>{route.notes.replaceAll('\n', '').slice(0,80)}{route.notes.length > 80 ? '...' : ''}</Text>
                     )}

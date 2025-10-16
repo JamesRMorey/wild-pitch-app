@@ -8,8 +8,8 @@ import TextArea from "../../../components/inputs/text-area";
 import { FormErrors, Route } from "../../../types";
 import { useFocusEffect } from "@react-navigation/native";
 import KeyboardAvoidingView from "../../../components/misc/keyboard-avoiding-view";
-import { useRoutes } from "../../../hooks/repositories/useRoutes";
 import { RouteService } from "../../../services/route-service";
+import { useRoutesActions } from "../../../contexts/routes-context";
 
 type PropsType = { navigation: any, route: any };
 export default function RouteSaveScreen({ navigation, route } : PropsType) {
@@ -17,7 +17,7 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
     const { route: WPRoute, onGoBack } = route.params;
     const [data, setData] = useState<Route>(WPRoute);
     const [errors, setErrors] = useState<FormErrors>()
-    const { create } = useRoutes();
+    const { create } = useRoutesActions();
 
     
     const validate = async () => {

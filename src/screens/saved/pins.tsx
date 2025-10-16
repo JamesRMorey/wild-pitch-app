@@ -1,6 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { delay, normalise } from "../../functions/helpers"
-import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest"
 import PointOfInterestCard from "../../components/cards/point-of-interest-card";
 import { COLOUR, TEXT } from "../../styles";
 import { PointOfInterest } from "../../types";
@@ -8,15 +7,17 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import OptionsSheet from "../../sheets/options-sheet";
 import { SHEET } from "../../consts";
 import { SheetManager } from "react-native-actions-sheet";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { EventBus } from "../../services/event-bus";
 import NothingHere from "../../components/misc/nothing-here";
+import { usePointsOfInterestActions, usePointsOfInterestState } from "../../contexts/pois-context";
 
 type PropsType = { navigation: any }
 export default function PinsScreen({  } : PropsType) {
 
     const navigation: any = useNavigation();
-    const { pointsOfInterest, get: getPoints, remove: removePoint } = usePointsOfInterest();
+    const { pointsOfInterest } = usePointsOfInterestState();
+    const { remove: removePoint } = usePointsOfInterestActions();
     const [selectedPOI, setSelectedPOI] = useState<PointOfInterest>();
 
 
@@ -58,13 +59,6 @@ export default function PinsScreen({  } : PropsType) {
         { label: 'Edit', icon: 'pencil-outline', onPress: ()=>editSelectedPOI() },
         { label: 'Delete pin', icon: 'trash-outline', colour: COLOUR.red[500], onPress: ()=>deleteSelectedPOI() },
     ];
-
-
-    useFocusEffect(
-        useCallback(() => {
-            getPoints();
-        }, [])
-    )
 
 
     return (

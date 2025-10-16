@@ -14,7 +14,7 @@ export class RouteProvider {
         //     case ROUTE_PROVIDER.WAYMARKED_TRAILS:
         //         return await WaymarkedTrails.search(term);
         // }
-        this.provider = OSMaps;
+        this.provider = WaymarkedTrails;
     }
 
     async search( term: string ): Promise<Array<RouteSearchResult>|undefined> {

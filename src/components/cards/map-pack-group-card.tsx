@@ -10,10 +10,12 @@ import { EventBus } from "../../services/event-bus";
 import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack";
 import { Format } from "../../services/formatter";
 import { ASSET } from "../../consts";
+import { useGlobalState } from "../../contexts/global-context";
 
 type PropsType = { mapPackGroup: MapPackGroup, onPress?: ()=>void, onOtherPress?: ()=>void }
 export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOtherPress } : PropsType ) {
 
+    const { user } = useGlobalState();
     const [progress, setProgress] = useState<number>(0);
     const [downloaded, setDownloaded] = useState<boolean>();
     const [errored, setErrored] = useState<boolean>(false);
@@ -69,7 +71,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
             minZoom: mapPackGroup.minZoom, 
             maxZoom: mapPackGroup.maxZoom, 
             bounds: mapPackGroup.bounds 
-        }, mapPackGroup, onDownloadProgress, onDownloadError);
+        }, user.id, mapPackGroup, onDownloadProgress, onDownloadError);
 
         setDownloading(true);
     }

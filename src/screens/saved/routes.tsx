@@ -4,7 +4,6 @@ import { delay, normalise } from "../../functions/helpers"
 import { useNavigation } from "@react-navigation/native"
 import { useEffect, useState } from "react"
 import NothingHere from "../../components/misc/nothing-here"
-import { useRoutes } from "../../hooks/repositories/useRoutes"
 import RouteCard from "../../components/cards/route-card"
 import { EventBus } from "../../services/event-bus"
 import { Route } from "../../types"
@@ -12,12 +11,14 @@ import { SheetManager } from "react-native-actions-sheet"
 import { SHEET } from "../../consts"
 import OptionsSheet from "../../sheets/options-sheet"
 import { useMapActions } from "../../contexts/map-context"
+import { useRoutesActions, useRoutesState } from "../../contexts/routes-context"
 
 
 export default function RoutesScreen({}) {
 
     const navigation = useNavigation();
-    const { routes, remove: removeRoute } = useRoutes();
+    const { routes } = useRoutesState();
+    const { remove: removeRoute } = useRoutesActions();
     const { setActiveRoute, fitToRoute } = useMapActions();
     const [refresh, setRefresh] = useState<number>(0);
     const [selectedRoute, setSelectedRoute] = useState<Route>();

@@ -1,6 +1,6 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { normalise } from "../../../functions/helpers";
 import { SETTING } from "../../../consts";
 import { Coordinate, PointOfInterest } from "../../../types";
@@ -15,6 +15,7 @@ import { useMapCameraControls } from "../../../hooks/useMapCameraControls";
 import { useMapSettings } from "../../../hooks/useMapSettings";
 import IconButton from "../../../components/buttons/icon-button";
 import PointOfInterestMarker from "../../../components/map/map-marker";
+import { RouteService } from "../../../services/route-service";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
@@ -41,6 +42,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 			}
 		}]
 	});
+	const [distance, setDistance] = useState<number>(0);
 
 	const addMarker = async ( e: any ) => {
 		const marker = {
@@ -94,6 +96,13 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 		setMarkers(updatedMarkers);
 		updateLine(updatedMarkers);
 	}
+
+
+	useEffect(() => {
+		if (markers.length < 2) return;
+		const dist = RouteService.calculateDistance(markers);
+		setDistance(dist);
+	}, [markers])
 
 
     return (
@@ -192,6 +201,11 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					/>
 					<Text style={[TEXT.sm]}>Undo</Text>
 				</TouchableOpacity>
+				{distance > 0 && (
+					<View>
+						<Text>{distance > 1000 ? `${(distance/1000).toFixed(2)} km` : `${distance.toFixed(0)} meters`}</Text>
+					</View>
+				)}
 				<TouchableOpacity 
 					style={[styles.undo, { opacity: markers.length === 0 ? 0.5 : 1 }]}
 					onPress={saveRoute}

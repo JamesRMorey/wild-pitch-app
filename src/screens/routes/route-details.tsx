@@ -3,7 +3,6 @@ import { normalise, stripHtml } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
-import { useRoutes } from "../../hooks/repositories/useRoutes";
 import { useEffect, useState } from "react";
 import { MapPack, Route } from "../../types";
 import Button from "../../components/buttons/button";
@@ -14,13 +13,14 @@ import { RouteService } from "../../services/route-service";
 import RNFS from "react-native-fs";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 import Share from 'react-native-share';
+import { useRoutesActions } from "../../contexts/routes-context";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
 
     const { route } = navRoute.params;
-    const { create, findByLatLng } = useRoutes();
-    const [savedRoute, setSavedRoute] = useState<Route|undefined>(findByLatLng(route.latitude, route.longitude));
+    const { create, findByLatLng } = useRoutesActions();
+    const [savedRoute, setSavedRoute] = useState<Route|void>(findByLatLng(route.latitude, route.longitude));
     const pack: MapPack = {
         name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
         styleURL: Mapbox.StyleURL.Outdoors,
@@ -40,7 +40,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const shareRoute = async () => {
         try {
             await RNShare.share({
-                message: `Here\'s a location i've plotted on Wild Pitch Maps (${route.name}) - https://www.google.com/maps/search/?api=1&query=${route.latitude},${route.longitude}`,
+                message: `Here\'s a location i've plotted on Wild Pitch Maps (${route.name.replaceAll('\n', '')}) - https://www.google.com/maps/search/?api=1&query=${route.latitude},${route.longitude}`,
             });
         } 
         catch (error: any) {
@@ -129,7 +129,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{route.name}</Text>
+                    <Text style={styles.sectionTitle}>{route.name.replaceAll('\n', '')}</Text>
                     <View style={styles.infoContainer}>
                         {route.distance && (
                             <View style={styles.itemContainer}>

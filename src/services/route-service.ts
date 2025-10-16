@@ -54,7 +54,7 @@ export class RouteService {
         const header = `<?xml version="1.0" encoding="UTF-8"?>
             <gpx version="1.1" creator="MyApp" xmlns="http://www.topografix.com/GPX/1/1">
                 <trk>
-                <name>${route.name}</name>
+                <name>${route.name.replaceAll('\n', '')}</name>
                 <trkseg>`;
 
         const trkpts = route.markers

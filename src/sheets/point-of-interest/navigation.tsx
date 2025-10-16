@@ -7,13 +7,13 @@ import { Format } from "../../services/formatter";
 import { MapService } from "../../services/map-service";
 import useUserPosition from "../../hooks/useUserPosition";
 import Header from "../../components/sheets/header";
-import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
+import { usePointsOfInterestActions } from "../../contexts/pois-context";
 
 
 export default function PointOfInterestNavigation({ point, onBack } : { point: PointOfInterest, onBack: ()=>void }) {
 
     const { userPosition } = useUserPosition();
-    const { update } = usePointsOfInterest();
+    const { update } = usePointsOfInterestActions();
     const [distanceAway, setDistanceAway] = useState<number>();
     const [relativeBearing, setRelativeBearing] = useState<number>();
     const [elevation, setElevation] = useState<number>();

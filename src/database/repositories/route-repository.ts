@@ -1,25 +1,26 @@
 import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { Route } from '../../types';
-import { PointTypeRepository } from './point-type-repository';
 import { getDB } from '../db';
 
 export class RouteRepository {
 
     db;
     tableName;
+    userId;
 
-    constructor () {
+    constructor ( userId: number ) {
         const db = getDB();
+        this.userId = userId;
         this.db = db;
         this.tableName = 'routes';
         this.createTable();
     }
 
     createTable (): void {
-        new PointTypeRepository();
         this.db.execute(`
             CREATE TABLE IF NOT EXISTS ${this.tableName} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 notes LONGTEXT DEFAULT NULL,
                 markers JSON NOT NULL,
@@ -37,6 +38,7 @@ export class RouteRepository {
         const data = this.db.execute(`
             SELECT id, name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss, created_at
             FROM ${this.tableName} t
+            WHERE t.user_id = ${this.userId}
             LIMIT ${limit}
         `);
         return data.rows?._array ? 
@@ -57,10 +59,11 @@ export class RouteRepository {
 
     create ( data: Route ): Route|void {
         const record = this.db.execute(`
-            INSERT INTO "${this.tableName}" (name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "${this.tableName}" (name, user_id, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             RETURNING *
         `, [
             data.name, 
+            this.userId,
             data.notes || NITRO_SQLITE_NULL, 
             JSON.stringify(data.markers), 
             data.latitude, 
@@ -99,7 +102,8 @@ export class RouteRepository {
                 distance = ?,
                 elevation_gain = ?,
                 elevation_loss = ?
-            WHERE id = ?
+            WHERE id = ? 
+            AND user_id = ${this.userId}
             RETURNING *
         `, [
             data.name,
@@ -135,6 +139,7 @@ export class RouteRepository {
             SELECT id, name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss, created_at
             FROM ${this.tableName} t
             WHERE t.id = ?
+            AND t.user_id = ${this.userId}
             LIMIT 1
         `);
         
@@ -160,7 +165,7 @@ export class RouteRepository {
         const record = this.db.execute(`
             SELECT id, name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss, created_at
             FROM ${this.tableName} t
-            WHERE t.latitude = ${latitude} AND t.longitude = ${longitude}
+            WHERE t.latitude = ${latitude} AND t.longitude = ${longitude} AND t.user_id = ${this.userId}
             LIMIT 1
         `);
         
@@ -186,6 +191,7 @@ export class RouteRepository {
         this.db.execute(`
             DELETE FROM ${this.tableName}
             WHERE id = ?
+            AND user_id = ${this.userId}
         `, [id]);
     }
 }

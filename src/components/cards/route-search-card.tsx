@@ -21,7 +21,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                 />
             </View>
             <View style={styles.rightContainer}>
-                <View><Text style={TEXT.h4}>{route.name}</Text></View>
+                <View><Text style={TEXT.h4}>{route.name.replaceAll('\n', '')}</Text></View>
                 <View style={styles.infoContainer}>
                     {route.distance && (
                         <View style={styles.itemContainer}>
@@ -40,7 +40,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                             size={'small'}
                             colour={COLOUR.gray[700]}
                         />
-                        <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain} m`}</Text>
+                        <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
                     </View>
                     )}
                     {route.elevation_loss && (
@@ -50,7 +50,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                             size={'small'}
                             colour={COLOUR.gray[700]}
                         />
-                        <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss} m`}</Text>
+                        <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
                     </View>
                     )}
                 </View>

@@ -12,11 +12,13 @@ import { MapPackService } from "../../services/map-pack-service";
 import Icon from "../misc/icon";
 import useModals from "../../hooks/useModals";
 import ConfirmModal from "../../modals/confirm";
+import { useGlobalState } from "../../contexts/global-context";
 
 
 type PropsType = { pack: MapPack, group: MapPackGroup, size: number, onDelete?: Function }
 export default function MapPack({ pack, group, size, onDelete } : PropsType) {
 
+    const { user } = useGlobalState();
     const [progress, setProgress] = useState<number>(0);
     const [downloaded, setDownloaded] = useState<boolean>(false);
     const [errored, setErrored] = useState<boolean>(false);
@@ -49,7 +51,7 @@ export default function MapPack({ pack, group, size, onDelete } : PropsType) {
         setErrored(false);
         setDownloading(true);
         setProgress(0);
-        MapPackService.download(pack, group, onDownloadProgress, onDownloadError);
+        MapPackService.download(pack, user.id, group, onDownloadProgress, onDownloadError);
     }
 
     const checkOfflinePacks = async () => {

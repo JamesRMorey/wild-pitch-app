@@ -1,60 +1,47 @@
 import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
-import { Coordinate, MapPackGroup, PointOfInterest, Route } from '../types';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
+import { PointOfInterest, Route } from '../types';
 import { RouteService } from '../services/route-service';
-import { usePointsOfInterestState } from './pois-context';
 
-type MapContextState = {
+type RoutesContextState = {
     styleURL: Mapbox.StyleURL;
     center: Position;
-    activePackGroup?: MapPackGroup;
     cameraRef: RefObject<Mapbox.Camera>;
     enable3DMode: boolean;
     followUserLocation: boolean;
-    showPointsOfInterest: boolean;
-    pointsOfInterest: Array<PointOfInterest>;
-    initialRegion: Coordinate | undefined;
-    activeRoute: Route|undefined;
-    showRoutes: boolean
+    activeRoute?: Route;
+    activePOI?: PointOfInterest;
 };
 
-type MapContextActions = {
+type RoutesContextActions = {
     setStyleURL: (url: Mapbox.StyleURL) => void;
     setCenter: (coord: Position) => void;
-    setActivePackGroup: (pack: MapPackGroup) => void;
-    clearActivePackGroup: () => void;
     moveTo: (coord: Position) => void;
     zoomTo: (zoom: number) => void;
     flyTo: (coord: Position, zoom?: number, duration?: number,) => void;
     flyToLow: (coord: Position, zoom?: number, duration?: number,) => void;
-    fitToBounds: (ne: Position, sw: Position, padding?: number, duration?: number) => void;
-    reCenter: (position: Position) => void;
     setEnable3DMode: (enabled: boolean) => void;
-    setShowPointsOfInterest: (enabled: boolean) => void;
     setFollowUserLocation: (enabled: boolean) => void;
     resetHeading: () => void;
-    fitToRoute: (route: Route) => void;
+    fitToBounds: (ne: Position, sw: Position, padding?: number, duration?: number) => void;
     setActiveRoute: (route?: Route) => void;
-    setShowRoutes: (show: boolean) => void;
+    fitToRoute: (route: Route) => void;
+    setActivePOI: (poi?: PointOfInterest) => void;
+    reCenter: (position: Position) => void;
 };
 
-const StateContext = createContext<MapContextState | undefined>(undefined);
-const ActionsContext = createContext<MapContextActions | undefined>(undefined);
+const StateContext = createContext<RoutesContextState | undefined>(undefined);
+const ActionsContext = createContext<RoutesContextActions | undefined>(undefined);
 
-export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
-    const { center, setCenter, styleURL, setStyleURL, activePackGroup, setActivePackGroup, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
+    const { center, setCenter, styleURL, setStyleURL, enable3DMode, setEnable3DMode: toggle3dMode, followUserLocation, setFollowUserLocation } = useMapSettings();
     const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef, reCenter } = useMapCameraControls();
-    const { initialRegion } = useMapSettings();
-    const { pointsOfInterest } = usePointsOfInterestState();
-    const [showPointsOfInterest, setShowPointsOfInterest] = useState<boolean>(true);
-    const [showRoutes, setShowRoutes] = useState<boolean>(true);
     const [activeRoute, setActiveRoute] = useState<Route>();
-
-    const clearActivePackGroup = () => setActivePackGroup(undefined);
+	const [activePOI, setActivePOI] = useState<PointOfInterest>();
     
     const setEnable3DMode = ( enabled: boolean ) => {
         cameraRef.current?.setCamera({
@@ -76,36 +63,29 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             value={{
                 styleURL,
                 center,
-                activePackGroup,
                 cameraRef,
                 enable3DMode,
                 followUserLocation,
-                pointsOfInterest,
-                showPointsOfInterest,
-                initialRegion,
                 activeRoute,
-                showRoutes
+                activePOI
             }}
         >
             <ActionsContext.Provider
                 value={{
                     setStyleURL,
                     setCenter,
-                    setActivePackGroup,
-                    clearActivePackGroup,
                     moveTo,
                     zoomTo,
                     flyTo,
                     setEnable3DMode,
                     setFollowUserLocation,
                     resetHeading,
-                    setShowPointsOfInterest,
                     flyToLow,
                     fitToBounds,
-                    reCenter,
-                    fitToRoute,
                     setActiveRoute,
-                    setShowRoutes
+                    fitToRoute,
+                    setActivePOI,
+                    reCenter
                 }}
             >
                 {children}
@@ -114,14 +94,14 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
 };
 
-export const useMapState = (): MapContextState => {
+export const useRoutesState = (): RoutesContextState => {
     const context = useContext(StateContext);
-    if (!context) throw new Error('useMapState must be used within a MapProvider');
+    if (!context) throw new Error('useRoutesState must be used within a RoutesProvider');
     return context;
 };
 
-export const useMapActions = (): MapContextActions => {
+export const useRoutesActions = (): RoutesContextActions => {
     const context = useContext(ActionsContext);
-    if (!context) throw new Error('useMapActions must be used within a MapProvider');
+    if (!context) throw new Error('useRoutesActions must be used within a RoutesProvider');
     return context;
 };

@@ -8,9 +8,8 @@ import useModals from "../../hooks/useModals";
 import ConfirmModal from "../../modals/confirm";
 import { useNavigation } from "@react-navigation/native";
 import { SheetManager } from "react-native-actions-sheet";
-import { SETTING, SHEET } from "../../consts";
-import { usePointsOfInterest } from "../../hooks/repositories/usePointsOfInterest";
-import { useRoutesActions } from "../../contexts/routes-context";
+import { SHEET } from "../../consts";
+import { usePointsOfInterestActions } from "../../contexts/pois-context";
 
 type PropsType = { point: PointOfInterest, onChangeSection: (section: string)=>void, onUpdatePoint: (poi: PointOfInterest)=>void };
 export default function PointOfInterestDetails({ point, onChangeSection, onUpdatePoint } : PropsType) {
@@ -39,8 +38,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
     ];
     const { modals, close: closeModals, open: openModal } = useModals({ delete: false });
     const navigation = useNavigation();
-    const { remove: deletePoint } = usePointsOfInterest();
-    const { flyTo: setRouteMapCenter, setActivePOI: setRouteMapActivePOI, setActiveRoute } = useRoutesActions();
+    const { remove: deletePoint } = usePointsOfInterestActions();
 
 
     const getDirections = async () => {
@@ -77,13 +75,9 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
 
     const createRoute = async () => {
         await SheetManager.hide(SHEET.MAP_POI_SHEET);
-
-        setActiveRoute(undefined);
         navigation.navigate('route-builder', { initialPoint: point });
         
         await delay(200);
-        setRouteMapCenter([point.longitude, point.latitude], SETTING.ROUTE_CLOSE_ZOOM);
-        setRouteMapActivePOI(point);
     }
 
 
