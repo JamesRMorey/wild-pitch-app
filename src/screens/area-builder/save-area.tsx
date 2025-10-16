@@ -1,6 +1,5 @@
-import { View, StyleSheet, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { SETTING } from "../../consts";
-import { COLOUR, TEXT } from "../../styles";
 import { normalise, parseValidationErrors } from "../../functions/helpers";
 import { FormErrors, MapPackGroup } from "../../types";
 import { useState } from "react";
@@ -8,10 +7,10 @@ import { MapPackService } from "../../services/map-pack-service";
 import { MapService } from "../../services/map-service";
 import Mapbox from "@rnmapbox/maps";
 import Button from "../../components/buttons/button";
-import { useMapPackGroups } from "../../hooks/repositories/useMapPackGroups";
 import TextArea from "../../components/inputs/text-area";
 import TextInput from "../../components/inputs/text-input";
 import { object, string } from "yup";
+import { useMapPackGroupsActions } from "../../contexts/map-pack-group-context";
 
 const schema = object({
     name: string().required("Name is required"),
@@ -22,7 +21,7 @@ type PropsType = { navigation: any, route: any }
 export default function AreaBuilderSaveAreaScreen ({ navigation, route } : PropsType) {
 
     const { bounds, onBack } = route.params;
-    const { create } = useMapPackGroups();
+    const { create } = useMapPackGroupsActions();
     const [data, setData] = useState<any>({
         name: null,
         description: null

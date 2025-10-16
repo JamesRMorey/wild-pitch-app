@@ -13,6 +13,8 @@ import RoutesScreen from './routes';
 import Icon from '../../components/misc/icon';
 import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
+import { useMapPackGroupsActions } from '../../contexts/map-pack-group-context';
+import { useRoutesActions } from '../../contexts/routes-context';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
@@ -28,6 +30,7 @@ const ROUTES = [
 
 type PropsType = { navigation: any };
 export default function SavedTabsView({ navigation } : PropsType) {
+    
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
 
@@ -54,7 +57,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
         await SheetManager.hide(SHEET.SAVED_OPTIONS)
     }
 
-    const clearAllDownloadedMaps =() => {
+    const clearAllDownloadedMaps = () => {
         Mapbox.offlineManager.resetDatabase();
         EventBus.emit.packsRefresh();
         EventBus.emit.routesRefresh();

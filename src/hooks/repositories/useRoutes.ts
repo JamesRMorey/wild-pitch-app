@@ -28,14 +28,14 @@ export function useRoutes() {
         setRoutes(data);
     }
 
-    const create = async ( data: any ): Promise<Route> => {
+    const create = async ( data: any ): Promise<Route|void> => {
         return new Promise(async (resolve, reject) => {
             try {
                 await schema.validate(data, { abortEarly: false });
                 const newRoute = repo.create(data);
 
-                if (!newRoute) return reject();
-                EventBus.emit.routesRefresh();
+                if (!newRoute) return resolve();
+                get();
                 
                 return resolve(newRoute);
             }
@@ -45,16 +45,16 @@ export function useRoutes() {
         });
     }
 
-    const update = async ( id: number, data: Route ): Promise<Route> => {
+    const update = async ( id: number, data: Route ): Promise<Route|void> => {
         return new Promise(async (resolve, reject) => {
             try {
                 if (!data.id) return reject();
 
                 await schema.validate(data, { abortEarly: false });
-                const newPoint = repo.update(data.id, data);
+                const newPoint = repo.update(id, data);
 
                 if (!newPoint) return resolve();
-                EventBus.emit.routesRefresh();
+                get();
 
                 return resolve(newPoint);
             }
@@ -92,16 +92,11 @@ export function useRoutes() {
         if (!id) return;
         
         repo.delete(id);
-        EventBus.emit.routesRefresh();
+        get();
     }
 
     useEffect(() => {
-        const getListener = EventBus.listen.routesRefresh(() => get());
         get();
-
-        return () => {
-            getListener.remove();
-        }
     }, [])
 
     return { 

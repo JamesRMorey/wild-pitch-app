@@ -1,4 +1,4 @@
-import React, { createContext,useContext, useState } from 'react';
+import React, { createContext,useContext } from 'react';
 import { useRoutes } from '../hooks/repositories/useRoutes';
 import { Route } from '../types';
 
@@ -7,10 +7,11 @@ type RoutesContextState = {
 };
 
 type RoutesContextActions = {
-    create: (data: any)=>Promise<Route>,
-    update: (id: number, data: any)=>Promise<Route>,
+    create: (data: any)=>Promise<Route|void>,
+    update: (id: number, data: any)=>Promise<Route|void>,
     remove: (id: number)=>void,
     findByLatLng: (latitude: number, longitude: number)=>Route|void
+    find: (id: number)=>Route|void
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -18,7 +19,7 @@ const ActionsContext = createContext<RoutesContextActions | undefined>(undefined
 
 export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
-    const { routes, create, update, remove, findByLatLng } = useRoutes();
+    const { routes, create, update, remove, findByLatLng, find } = useRoutes();
     
 
     return (
@@ -32,7 +33,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     create,
                     update,
                     remove,
-                    findByLatLng
+                    findByLatLng,
+                    find
                 }}
             >
                 {children}

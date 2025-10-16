@@ -31,7 +31,7 @@ export function usePointsOfInterest() {
                 const newPoint = repo.create(data);
 
                 if (!newPoint) return resolve();
-                EventBus.emit.poiRefresh();
+                get();
 
                 return resolve(newPoint);
             }
@@ -50,7 +50,7 @@ export function usePointsOfInterest() {
                 const newPoint = repo.update(data.id, data);
 
                 if (!newPoint) return resolve();
-                EventBus.emit.poiRefresh();
+                get();
 
                 return resolve(newPoint);
             }
@@ -88,17 +88,11 @@ export function usePointsOfInterest() {
         if (!id) return;
         
         repo.delete(id);
-        EventBus.emit.poiRefresh();
     }
 
 
     useEffect(() => {
-        const getListener = EventBus.listen.poiRefresh(() => get());
         get();
-
-        return () => {
-            getListener.remove();
-        }
     }, [])
 
     return { 

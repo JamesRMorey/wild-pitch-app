@@ -17,15 +17,19 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
     const { route: WPRoute, onGoBack } = route.params;
     const [data, setData] = useState<Route>(WPRoute);
     const [errors, setErrors] = useState<FormErrors>()
-    const { create } = useRoutesActions();
+    const { create, update } = useRoutesActions();
 
     
     const validate = async () => {
         try {
-            const updated = await create({
+            const routeData = {
                 ...data,
                 distance: data.distance ?? RouteService.calculateDistance(data.markers),
-            });
+            }
+            const updated = data.id ?
+                await update(data.id, routeData)
+                :
+                await create(routeData);
 
             if (onGoBack) {
                 onGoBack({ point: updated });

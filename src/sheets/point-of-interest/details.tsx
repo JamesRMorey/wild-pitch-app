@@ -97,7 +97,10 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                     return (
                         <TouchableOpacity
                             key={i}
-                            style={styles.option}
+                            style={[
+                                styles.option, 
+                                (!point.id && i+1 == OPTIONS.length) && { borderBottomWidth: 0 }
+                            ]}
                             activeOpacity={0.5}
                             onPress={() => option.onPress()}
                         >
@@ -117,7 +120,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                 })}
                 {point.id && (
                     <TouchableOpacity
-                        style={styles.option} 
+                        style={[styles.option, { borderBottomWidth: 0 }]} 
                         activeOpacity={0.5}
                         onPress={() => openModal('delete')}
                     >

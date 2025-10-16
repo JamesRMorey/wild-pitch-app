@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { MapPackGroupRepository } from '../../database/repositories/map-pack-group-repository';
 import Mapbox from '@rnmapbox/maps';
 import { object, string } from "yup";
-import { EventBus } from '../../services/event-bus';
 import { useGlobalState } from '../../contexts/global-context';
 
 const schema = object({
@@ -28,11 +27,9 @@ export function useMapPackGroups() {
             try {
                 await schema.validate(data, { abortEarly: false });
                 const newGroup = repo.create(data);
-                console.log(newGroup);
-                if (!newGroup) return;
 
+                if (!newGroup) return;
                 get();
-                EventBus.emit.packsRefresh();
 
                 return resolve(newGroup);
             }
@@ -72,12 +69,7 @@ export function useMapPackGroups() {
 
 
     useEffect(() => {
-        const getListener = EventBus.listen.packsRefresh(() => get());
         get();
-
-        return () => {
-            getListener.remove();
-        }
     }, [])
 
 

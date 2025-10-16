@@ -141,8 +141,8 @@ export class RouteRepository {
             WHERE t.id = ?
             AND t.user_id = ${this.userId}
             LIMIT 1
-        `);
-        
+        `, [id]);
+
         const row = record.rows?._array[0] ?? null
 
         if (!row) return;

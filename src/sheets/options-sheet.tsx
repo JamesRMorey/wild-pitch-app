@@ -16,7 +16,10 @@ export default function OptionsSheet ({ id, options } : PropsType ) {
             {options.map((option, i) => {
                 return (
                     <TouchableOpacity
-                        style={styles.option} 
+                        style={[
+                            styles.option,
+                            i+1 == options.length && { borderBottomWidth: 0 }
+                        ]} 
                         activeOpacity={0.5}
                         onPress={option.onPress}
                         key={i}

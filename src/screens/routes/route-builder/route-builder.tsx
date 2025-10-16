@@ -3,7 +3,7 @@ import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from "react";
 import { normalise } from "../../../functions/helpers";
 import { SETTING } from "../../../consts";
-import { Coordinate, PointOfInterest } from "../../../types";
+import { Coordinate, PointOfInterest, Route } from "../../../types";
 import { COLOUR, TEXT } from "../../../styles";
 import useHaptic from "../../../hooks/useHaptic";
 import UserPosition from "../../../components/map/user-position";
@@ -22,16 +22,17 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdT
 type PropsType = { navigation: any, route: any }
 export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 
-	const initialPoint: Coordinate | undefined = route.params?.initialPoint;
-	const initialCenter: Coordinate | undefined = route.params?.initialCenter;
-	const activePOI: PointOfInterest | undefined = route.params?.activePOI;
+	const initialPoint: Coordinate|undefined = route.params?.initialPoint;
+	const initialCenter: Coordinate|undefined = route.params?.initialCenter;
+	const activePOI: PointOfInterest|undefined = route.params?.activePOI;
+	const initialRoute: Route|undefined = route?.params?.route;
 	
 	const { resetHeading, cameraRef } = useMapCameraControls();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
 	const [mapHeading, setMapHeading] = useState<number>(0);
-	const [markers, setMarkers] = useState<Array<Coordinate>>(initialPoint ? [initialPoint] : []);
+	const [markers, setMarkers] = useState<Array<Coordinate>>(initialRoute ? initialRoute.markers : initialPoint ? [initialPoint] : []);
 	const [line, setLine] = useState<any>({
 		type: 'FeatureCollection',
 		features: [{
@@ -78,8 +79,9 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 		if (markers.length === 0) return;
 		navigation.navigate('route-save', {
 			route: {
-				name: null, 
-				notes: null, 
+				id: initialRoute?.id ?? undefined,
+				name: initialRoute?.name ?? null, 
+				notes: initialRoute?.notes ?? null, 
 				markers: markers,
 				latitude: markers[0].latitude,
 				longitude: markers[0].longitude,
@@ -126,12 +128,10 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 							if (ref) cameraRef.current = ref;
 						}}
 						centerCoordinate={
-						initialPoint ?
-							[initialPoint.longitude, initialPoint.latitude]
-						:initialCenter ?
-							[initialCenter.longitude, initialCenter.latitude]
-						:initialRegion &&
-							[initialRegion.longitude, initialRegion.latitude]
+							initialRoute ? [initialRoute.longitude, initialRoute.latitude]
+							:initialPoint ? [initialPoint.longitude, initialPoint.latitude]
+							:initialCenter ? [initialCenter.longitude, initialCenter.latitude]
+							:initialRegion && [initialRegion.longitude, initialRegion.latitude]
 						}
 						zoomLevel={SETTING.ROUTE_CLOSE_ZOOM}
 						animationDuration={loaded ? 500 : 0}

@@ -3,7 +3,7 @@ import { normalise, stripHtml } from "../../functions/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { MapPack, Route } from "../../types";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
@@ -14,12 +14,13 @@ import RNFS from "react-native-fs";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 import Share from 'react-native-share';
 import { useRoutesActions } from "../../contexts/routes-context";
+import { useFocusEffect } from "@react-navigation/native";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
 
-    const { route } = navRoute.params;
-    const { create, findByLatLng } = useRoutesActions();
+    const [route, setRoute] = useState<Route>(navRoute.params.route);
+    const { create, findByLatLng, find } = useRoutesActions();
     const [savedRoute, setSavedRoute] = useState<Route|void>(findByLatLng(route.latitude, route.longitude));
     const pack: MapPack = {
         name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
@@ -28,7 +29,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
         bounds: RouteService.getBounds(route.markers)
     };
-    const { progress, errored, downloading, downloaded, checkDownloaded, setPack, download } = useMapPackDownload({ 
+    const { progress, errored, downloading, downloaded, checkDownloaded, downloadRoute } = useMapPackDownload({ 
         mapPack: pack, 
         onSuccess: () => saveRoute() 
     });
@@ -54,7 +55,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
 
     const saveRoute = async () => {
         try {
-            if (savedRoute) throw new Error('Route already saved');
+            if (savedRoute) return;
 
             const newRoute = await create(route);
             setSavedRoute(newRoute);
@@ -82,9 +83,24 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         });
     }
 
-    useEffect(() => {
+    const edit = () => {
+        saveRoute();
+        navigation.navigate('route-builder', { route: route })
+    }
+
+    const findRoute = () => {
+        const found = find(route.id);
+        if (!found) return;
+        
+        setRoute(found);
         checkDownloaded();
-    }, []);
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            findRoute();
+        }, [])
+    );
 
     return (
         <View style={styles.container}>
@@ -170,6 +186,12 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 )}
                 <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
                     <SectionItemCard
+                        title="Edit this route"
+                        icon="pencil-outline"
+                        onPress={edit}
+                        arrow={true}
+                    />
+                    <SectionItemCard
                         title="Export GPX"
                         icon="save-outline"
                         onPress={saveGPX}
@@ -188,7 +210,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 {errored ?
                 <Button
                     title="Retry"
-                    onPress={download}
+                    onPress={downloadRoute}
                     style='outline'
                     flex={true}
                 />
@@ -208,7 +230,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 :
                 <Button
                     title="Download"
-                    onPress={download}
+                    onPress={downloadRoute}
                     style='outline'
                     flex={true}
                 />

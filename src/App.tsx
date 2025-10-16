@@ -5,6 +5,7 @@ import AuthStack from '../src/navigation/auth-stack';
 import { useGlobalState } from './contexts/global-context';
 import { RoutesProvider } from './contexts/routes-context';
 import { PointsOfInterestProvider } from './contexts/pois-context';
+import { MapPackGroupsProvider } from './contexts/map-pack-group-context';
 
 function App() {
 
@@ -15,11 +16,13 @@ function App() {
         {user ?
             <PointsOfInterestProvider>
                 <RoutesProvider>
-                    <MapProvider>
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <MainTabs />
-                        </TouchableWithoutFeedback>
-                    </MapProvider>
+                    <MapPackGroupsProvider>
+                        <MapProvider>
+                            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                <MainTabs />
+                            </TouchableWithoutFeedback>
+                        </MapProvider>
+                    </MapPackGroupsProvider>
                 </RoutesProvider>
             </PointsOfInterestProvider>
             :

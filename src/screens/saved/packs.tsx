@@ -5,13 +5,13 @@ import { useNavigation } from "@react-navigation/native"
 import { SHEET } from "../../consts"
 import { useEffect, useState } from "react"
 import { MapPackGroup } from "../../types"
-import { useMapPackGroups } from "../../hooks/repositories/useMapPackGroups"
 import { SheetManager } from "react-native-actions-sheet"
 import MapPackGroupCard from "../../components/cards/map-pack-group-card"
 import OptionsSheet from "../../sheets/options-sheet"
 import NothingHere from "../../components/misc/nothing-here"
 import { useMapActions } from "../../contexts/map-context"
 import { MapPackService } from "../../services/map-pack-service"
+import { useMapPackGroupsActions, useMapPackGroupsState } from "../../contexts/map-pack-group-context"
 import { EventBus } from "../../services/event-bus"
 
 
@@ -19,7 +19,8 @@ export default function PacksScreen({}) {
 
     const navigation = useNavigation();
     const { fitToBounds, setActivePackGroup } = useMapActions();
-    const { mapPackGroups, get: getPackGroups, remove: removePackGroup } = useMapPackGroups();
+    const { mapPackGroups } = useMapPackGroupsState();
+    const { remove: removePackGroup } = useMapPackGroupsActions();
     const [activeMapPackGroup, setActiveMapPackGroup] = useState<MapPackGroup>();
     const [refresh, setRefresh] = useState<number>(0);
     
@@ -38,7 +39,6 @@ export default function PacksScreen({}) {
 
     const removeDownload = async ( packGroup: MapPackGroup ) => {
         await MapPackService.removeDownloads(packGroup);
-        await getPackGroups();
         triggerReRender()
     }
 

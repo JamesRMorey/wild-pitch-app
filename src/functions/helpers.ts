@@ -12,8 +12,9 @@ const {
 // based on iphone 11's scale
 const scale = (SCREEN_WIDTH / 414) > 1 ? (SCREEN_WIDTH / 414) : 1;
 
-export const normalise = (size) => {
+export const normalise = (size: number) => {
     try {
+        return size;
         const newSize = size * scale;
         const minRatio = 0.9;
         return Math.max(Math.round(PixelRatio.roundToNearestPixel(newSize), Math.round(PixelRatio.roundToNearestPixel(minRatio * size))));

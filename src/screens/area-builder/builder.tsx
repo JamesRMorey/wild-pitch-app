@@ -128,6 +128,7 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 					icon={'chevron-down'}
 					onPress={goBack}
 					shadow={true}
+						style={{ paddingTop: normalise(2) }}
 				/>
 			</View>
 			<View style={styles.controlsContainer}>

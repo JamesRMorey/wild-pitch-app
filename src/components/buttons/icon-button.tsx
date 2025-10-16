@@ -22,7 +22,7 @@ export default function IconButton({ icon, onPress, disabled=false, active=false
         >
             <Icon
                 icon={icon}
-                size={small ? 20 : 20}
+                size={20}
                 colour={active ? COLOUR.white : COLOUR.black}
             />
         </TouchableOpacity>

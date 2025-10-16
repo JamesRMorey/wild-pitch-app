@@ -111,7 +111,7 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 						icon="chevron-down"
 						onPress={() => navigation.goBack()}
 						shadow={true}
-						style={{ paddingRight: normalise(2) }}
+						style={{ paddingTop: normalise(2) }}
 					/>
 				</View>
 			</View>
