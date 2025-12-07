@@ -38,15 +38,14 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - MapboxCommon (23.11.4)
-  - MapboxCoreMaps (10.19.2):
-    - MapboxCommon (~> 23.11)
-  - MapboxMaps (10.19.4):
-    - MapboxCommon (= 23.11.4)
-    - MapboxCoreMaps (= 10.19.2)
-    - MapboxMobileEvents (= 2.0.0)
-    - Turf (= 2.8.0)
-  - MapboxMobileEvents (2.0.0)
+  - MapboxCommon (24.16.6):
+    - Turf (= 4.0.0)
+  - MapboxCoreMaps (11.16.6):
+    - MapboxCommon (= 24.16.6)
+  - MapboxMaps (11.16.6):
+    - MapboxCommon (= 24.16.6)
+    - MapboxCoreMaps (= 11.16.6)
+    - Turf (= 4.0.0)
   - NitroModules (0.27.2):
     - boost
     - DoubleConversion
@@ -2463,19 +2462,19 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - rnmapbox-maps (10.1.39):
-    - MapboxMaps (~> 10.19.0)
+  - rnmapbox-maps (10.2.9):
+    - MapboxMaps (~> 11.16.2)
     - React
     - React-Core
-    - rnmapbox-maps/DynamicLibrary (= 10.1.39)
+    - rnmapbox-maps/DynamicLibrary (= 10.2.9)
     - Turf
-  - rnmapbox-maps/DynamicLibrary (10.1.39):
+  - rnmapbox-maps/DynamicLibrary (10.2.9):
     - boost
     - DoubleConversion
     - fast_float
     - fmt
     - hermes-engine
-    - MapboxMaps (~> 10.19.0)
+    - MapboxMaps (~> 11.16.2)
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
@@ -2675,7 +2674,7 @@ PODS:
     - SocketRocket
     - Yoga
   - SocketRocket (0.7.1)
-  - Turf (2.8.0)
+  - Turf (4.0.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2779,7 +2778,6 @@ SPEC REPOS:
     - MapboxCommon
     - MapboxCoreMaps
     - MapboxMaps
-    - MapboxMobileEvents
     - NVActivityIndicatorView-ObjC
     - SocketRocket
     - Turf
@@ -2980,10 +2978,9 @@ SPEC CHECKSUMS:
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: bbc1152da7d2d40f9e59c28acc6576fcf5d28e2a
   LoaderKit: fa45848164d0fd531d2b05f074fa2d7459ad9558
-  MapboxCommon: cc47fafe3fe5408ca49240aa80fa64f27f275711
-  MapboxCoreMaps: 35685edba03e44468aed57c3dfd7f8795edafda8
-  MapboxMaps: f87023cf0d72b180b40ea0b6fb4b2d7db6b73b71
-  MapboxMobileEvents: d044b9edbe0ec7df60f6c2c9634fe9a7f449266b
+  MapboxCommon: 10cbf74edb23c9abcfe2424899d804f288a47334
+  MapboxCoreMaps: f19680d20681797067268284b2292349de861730
+  MapboxMaps: 04c7bf46d66265ad0f4b98484a251777a926c423
   NitroModules: bac8eb03f31ec4eb3480aaf1bcd7a9af965cdb33
   NVActivityIndicatorView-ObjC: a2394f53d84c32f71823743a2030e0378d40332f
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
@@ -3062,14 +3059,14 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 502fd35c8e1d326562536ff256e61e38d703eafb
   RNKeychain: f9022b0a123bb459ba2e6045f79203a7c7e54956
-  rnmapbox-maps: 95ffd3606906a812a5eae198d58377e08d2082de
+  rnmapbox-maps: 124a474317a446f28bb7e0e3f743d34632c0f16d
   RNNitroSQLite: 6804cbdd8363d24b5bb576c9e1088bb976aa7f12
   RNPermissions: 95c9378d2de4d18f8540a979dbe4895f31101a24
   RNReactNativeHapticFeedback: 7ab0232cc103ac7d928635410fa0df7b11c53ada
   RNScreens: 75074e642b69b086813a943bdf63da7085fb2166
   RNShare: 1da66ef784f6137274a4f1f012a1626a6fbcf361
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Turf: aa2ede4298009639d10db36aba1a7ebaad072a5e
+  Turf: c9eb11a65d96af58cac523460fd40fec5061b081
   Yoga: 1c52fbd270869e556504def7e94fffbf67f53f7b
 
 PODFILE CHECKSUM: 8cf44df9bf2d9bd05d20be19563532bcc136ec9b

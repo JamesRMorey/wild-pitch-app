@@ -89,7 +89,7 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 						onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
 					/>
 				</Mapbox.MapView>
-				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(112) }]}>
+				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(15) }]}>
 					{heading > 0 && (
 						<CompassButton
 							onPress={resetHeading}
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
 		backgroundColor: COLOUR.wp_brown[100]
 	},
 	map: {
-		flex: 1
+		flex: 1,
 	},
 	controlsContainer: {
 		position: 'absolute',
@@ -178,13 +178,9 @@ const styles = StyleSheet.create({
         paddingVertical: normalise(20),
         paddingHorizontal: normalise(20),
 		alignItems: 'center',
-		borderRadius: normalise(30),
 		gap: normalise(10),
 		...SHADOW.xl,
 		paddingBottom: normalise(30),
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
 	},
 	undo: {
 		flexDirection: 'row',
