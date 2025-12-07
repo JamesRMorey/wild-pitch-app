@@ -4,7 +4,7 @@ import { MapPackGroup } from "../types";
 import { SHEET } from "../consts";
 import { COLOUR, TEXT } from "../styles";
 import MapPack from "../components/map-packs/map-pack";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 import IconButton from "../components/buttons/icon-button";
 import { useMapActions } from "../contexts/map-context";
 import { useNavigation } from "@react-navigation/native";

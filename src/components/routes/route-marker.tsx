@@ -2,7 +2,7 @@ import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import Mapbox from "@rnmapbox/maps";
 import { COLOUR, SHADOW } from "../../styles";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import useHaptic from "../../hooks/useHaptic";
 import { SETTING } from "../../consts";
 

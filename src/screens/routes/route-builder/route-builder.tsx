@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from "react";
-import { normalise } from "../../../functions/helpers";
+import { normalise } from "../../../utils/helpers";
 import { SETTING } from "../../../consts";
 import { Coordinate, PointOfInterest, Route } from "../../../types";
 import { COLOUR, TEXT } from "../../../styles";
@@ -101,7 +101,10 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 
 
 	useEffect(() => {
-		if (markers.length < 2) return;
+		if (markers.length < 2) {
+			setDistance(0);
+			return;
+		};
 		const dist = RouteService.calculateDistance(markers);
 		setDistance(dist);
 	}, [markers])
@@ -202,12 +205,12 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					<Text style={[TEXT.sm]}>Undo</Text>
 				</TouchableOpacity>
 				{distance > 0 && (
-					<View>
+					<View style={{ flex: 1, alignItems: 'center' }}>
 						<Text>{distance > 1000 ? `${(distance/1000).toFixed(2)} km` : `${distance.toFixed(0)} meters`}</Text>
 					</View>
 				)}
 				<TouchableOpacity 
-					style={[styles.undo, { opacity: markers.length === 0 ? 0.5 : 1 }]}
+					style={[styles.save, { opacity: markers.length === 0 ? 0.5 : 1,  }]}
 					onPress={saveRoute}
 					disabled={markers.length === 0}
 				>
@@ -249,6 +252,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: normalise(10),
+		width: '25%'
+   	},
+	save: {
+		alignItems: 'flex-end',
+		gap: normalise(10),
+		width: '25%'
    	},
    	saveText: {
 		...TEXT.md,

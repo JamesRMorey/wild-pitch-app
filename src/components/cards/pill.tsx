@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, Text } from "react-native";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { COLOUR, OPACITY } from "../../styles";
 
 type PropsType = { text: string, onPress?: ()=>void, style?: any, colour: string, }

@@ -1,6 +1,6 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import { Route, RouteSearchResult } from "../../types";
-import { isInUK, mercatorToLngLat } from "../../functions/helpers";
+import { isInUK, mercatorToLngLat } from "../../utils/helpers";
 import { RouteService } from "../route-service";
 
 

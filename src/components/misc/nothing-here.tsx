@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import { normalise } from "../../functions/helpers"
+import { normalise } from "../../utils/helpers"
 import { TEXT } from "../../styles"
 import { ASSET } from "../../consts"
 import Button from "../buttons/button"

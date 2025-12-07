@@ -8,8 +8,8 @@ export default function AppWrapper() {
 
 	useEffect(() => {
 		setTimeout(() => {
-			BootSplash.hide()
-		}, 500)
+			BootSplash.hide({ fade: true })
+		}, 3000)
 	}, [])
 
 	return (

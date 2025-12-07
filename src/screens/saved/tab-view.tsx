@@ -6,15 +6,13 @@ import PinsScreen from './pins';
 import CustomTabView from '../../components/navigation/custom-tab-view';
 import { SETTING, SHEET } from '../../consts';
 import { COLOUR, TEXT } from '../../styles';
-import { normalise } from '../../functions/helpers';
+import { normalise } from '../../utils/helpers';
 import OptionsSheet from '../../sheets/options-sheet';
 import { SheetManager } from 'react-native-actions-sheet';
 import RoutesScreen from './routes';
 import Icon from '../../components/misc/icon';
 import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
-import { useMapPackGroupsActions } from '../../contexts/map-pack-group-context';
-import { useRoutesActions } from '../../contexts/routes-context';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
@@ -80,9 +78,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
                     onPress={openOptionsMenu}
                     style={styles.addButton}
                 >
-                    <Icon
-                        icon={'add'}
-                    />
+                    <Icon icon={'add'} />
                 </TouchableOpacity>
             </View>
             <TabView

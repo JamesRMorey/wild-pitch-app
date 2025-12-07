@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, ImageBackground, ImageBackgroundProps, View } from "react-native";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { COLOUR, OPACITY } from "../../styles";
 
 type PropsType = { children: any, background: ImageBackgroundProps, onPress?: ()=>void, style?: any }

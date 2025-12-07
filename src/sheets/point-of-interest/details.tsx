@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, Linking, Share } from "react-native"
 import { COLOUR, OPACITY, TEXT } from "../../styles"
-import { delay, normalise } from "../../functions/helpers";
+import { delay, normalise } from "../../utils/helpers";
 import { PointOfInterest } from "../../types";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";

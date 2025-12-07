@@ -1,5 +1,5 @@
 import { Animated, View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { normalise } from '../../functions/helpers';
+import { normalise } from '../../utils/helpers';
 import { COLOUR, TEXT } from '../../styles';
 
 export default function CustomTabView({ navigationState, position, jumpTo }) {

@@ -48,6 +48,7 @@
 	<array>
 		<string>Ionicons.ttf</string>
 		<string>SimpleLineIcons.ttf</string>
+		<string>Lucide.ttf</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>

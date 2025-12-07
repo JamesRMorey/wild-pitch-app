@@ -1,7 +1,7 @@
 import { Modal, StyleSheet, TouchableOpacity } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import { SETTING } from "../consts";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 
 type PropsType = { children: React.ReactNode, visible?: boolean, onClose: ()=>void, disabled?: boolean }
 

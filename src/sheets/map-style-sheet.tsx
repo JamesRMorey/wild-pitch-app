@@ -1,12 +1,13 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { TouchableOpacity, View, Image, StyleSheet, Text } from "react-native";
-import { MapSetting, MapStyle } from "../types";
+import { MapStyle } from "../types";
 import { ASSET, SHEET } from "../consts";
 import Mapbox from "@rnmapbox/maps";
 import { COLOUR, OPACITY, TEXT } from "../styles";
 import { useMapActions, useMapState } from "../contexts/map-context";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 import Switch from "../components/buttons/switch";
+import CanAccess from "../components/permissions/can-access";
 
 
 export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }) {
@@ -75,18 +76,16 @@ export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }
                     })}
                 </View>
                 <View style={styles.settingsContainer}>
-                    <View 
-                        style={styles.settingContainer}
-                    >
-                        <Text>3D mode</Text>
-                        <Switch
-                            active={enable3DMode}
-                            onPress={() => setEnable3DMode(!enable3DMode)}
-                        />
-                    </View>
-                    <View 
-                        style={styles.settingContainer}
-                    >
+                    <CanAccess permission="admin">
+                        <View style={styles.settingContainer}>
+                            <Text>3D mode</Text>
+                            <Switch
+                                active={enable3DMode}
+                                onPress={() => setEnable3DMode(!enable3DMode)}
+                            />
+                        </View>
+                    </CanAccess>
+                    <View style={styles.settingContainer}>
                         <Text>Show map pins</Text>
                         <Switch
                             active={showPointsOfInterest}

@@ -2,7 +2,7 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
 import { useGlobalState } from "../../contexts/global-context";
 import { ASSET, SETTING, SHEET } from "../../consts";
-import { delay, normalise } from "../../functions/helpers";
+import { delay, normalise } from "../../utils/helpers";
 import { useMemo } from "react";
 import LearnCard from "../../components/cards/learn-card";
 import ImageBackgroundCard from "../../components/cards/image-background-card";
@@ -48,7 +48,7 @@ export default function ExploreScreen({ navigation } : PropsType) {
 				</ImageBackgroundCard>
 			</View>
 			<View style={[styles.section, { paddingHorizontal: 0 }]}>
-				<View>
+				<View style={styles.sectionTitleContainer}>
 					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Plan your adventure</Text>
 					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>A good scout is always prepared</Text>
 				</View>
@@ -69,11 +69,12 @@ export default function ExploreScreen({ navigation } : PropsType) {
 				</ScrollView>
 			</View>
 			<View style={[styles.section, { paddingLeft: 0 }]}>
-				<View>
-					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Help</Text>
-					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>Learn how to use key areas of the app</Text>
+				<View style={styles.sectionTitleContainer}>
+					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Coming Soon</Text>
+					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>We're building a collection or routes and wild camping spots from the WP community. Help us by creating public routes and camping points in the app map.</Text>
+					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>All your routes and pins are private at the moment, but you'll have the option to share these with others soon :)</Text>
 				</View>
-				<ScrollView contentContainerStyle={styles.sectionScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+				{/* <ScrollView contentContainerStyle={styles.sectionScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
 					{LEARN_PILLS.map((pill, i) => {
 						return (
 							<PillCard
@@ -84,7 +85,7 @@ export default function ExploreScreen({ navigation } : PropsType) {
 							/>
 						)
 					})}
-				</ScrollView>
+				</ScrollView> */}
 			</View>
 		</ScrollView>            
     )
@@ -117,5 +118,8 @@ const styles = StyleSheet.create({
 		width: '40%',
 		height: 'auto',
 		aspectRatio: 400/130
+	},
+	sectionTitleContainer: {
+		gap: normalise(5)
 	}
 });

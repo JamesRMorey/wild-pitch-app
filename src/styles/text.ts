@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 
 
 export const text = StyleSheet.create({

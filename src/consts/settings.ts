@@ -1,5 +1,5 @@
 import { hasNotch, hasDynamicIsland } from "react-native-device-info";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 import { COLOUR } from "../styles";
 
 const deviceHasNotch = hasNotch();

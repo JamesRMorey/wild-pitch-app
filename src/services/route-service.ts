@@ -1,5 +1,5 @@
 import { Coordinate, Route, RouteSearchResult } from "../types";
-import { getDistanceBetweenPoints } from "../functions/helpers";
+import { getDistanceBetweenPoints } from "../utils/helpers";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import { OSMaps } from "./api/os-maps";
 

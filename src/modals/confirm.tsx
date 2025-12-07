@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import Modal from "./modal";
 import { TEXT } from "../styles";
 import Button from "../components/buttons/button";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 
 type PropsType = { onClose: ()=>void, onConfirm: ()=>void, text?: string, title?: string }
 

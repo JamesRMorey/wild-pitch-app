@@ -1,7 +1,7 @@
 import LoaderKitView from "react-native-loader-kit";
 import { COLOUR, OPACITY } from "../../styles";
 import * as Animatable from 'react-native-animatable';
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 
 type PropsType = { size?: number, colour?: string }
 export default function Loader({ size=normalise(40), colour=COLOUR.black + OPACITY[50] } : PropsType) {

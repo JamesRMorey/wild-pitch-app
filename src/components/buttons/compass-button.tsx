@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLOUR, SHADOW, TEXT } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { ASSET } from "../../consts";
 import * as Animateable from 'react-native-animatable';
 

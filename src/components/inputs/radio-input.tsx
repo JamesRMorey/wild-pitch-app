@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { COLOUR, TEXT } from '../../styles';
-import { normalise } from '../../functions/helpers';
+import { normalise } from '../../utils/helpers';
 import Icon from '../misc/icon';
 
 

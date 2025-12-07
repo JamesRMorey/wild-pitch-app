@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Modal from "./modal";
 import { COLOUR, TEXT } from "../styles";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 import { usePointTypes } from "../hooks/repositories/usePointType";
 import Icon from "../components/misc/icon";
 import { PointType } from "../types";

@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View, Text, Share, Linking, Image } from "react-native"
-import { normalise } from "../../functions/helpers"
+import { normalise } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { ASSET, SETTING } from "../../consts";
 import SectionItemCard from "../../components/cards/section-item-card";
@@ -87,12 +87,13 @@ export default function ProfileScreen() {
                         title="Buy me a coffee?"
                         icon="cafe-outline"
                         onPress={buyCoffee}
+                        last={true}
                     />
-                    <SectionItemCard
+                    {/* <SectionItemCard
                         title="Shop Wild Pitch"
                         icon="storefront-outline"
                         last={true}
-                    />
+                    /> */}
                 </View>
                 <View style={[styles.section, { paddingTop: 0 }]}>
                     <SectionItemCard

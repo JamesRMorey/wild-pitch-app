@@ -2,7 +2,7 @@ import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { TouchableOpacity, View, StyleSheet, Text, ScrollView } from "react-native";
 import { SHEET } from "../consts";
 import { COLOUR, SHADOW, TEXT } from "../styles";
-import { getPointType, normalise } from "../functions/helpers";
+import { getPointType, normalise } from "../utils/helpers";
 import TextInput from "../components/inputs/text-input";
 import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import { PlaceSearch } from "../services/place-search";

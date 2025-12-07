@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "text-white.png",
+      "filename" : "LOGO-TEXT-AND-IAMAGE.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "text-white 1.png",
+      "filename" : "LOGO-TEXT-AND-IAMAGE 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "text-white 2.png",
+      "filename" : "LOGO-TEXT-AND-IAMAGE 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

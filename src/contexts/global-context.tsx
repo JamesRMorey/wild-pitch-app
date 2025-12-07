@@ -17,7 +17,7 @@ const StateContext = createContext<GlobalState | undefined>(undefined);
 const ActionsContext = createContext<GlobalActions | undefined>(undefined);
 
 export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<GlobalState['user']>();
+    const [user, setUser] = useState<User>();
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const getUser = async () => {

@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { delay, normalise, parseValidationErrors } from "../../../functions/helpers";
+import { delay, normalise, parseValidationErrors } from "../../../utils/helpers";
 import { TEXT } from "../../../styles";
 import TextInput from "../../../components/inputs/text-input";
 import { useCallback, useState } from "react";

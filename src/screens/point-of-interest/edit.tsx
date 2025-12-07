@@ -1,6 +1,6 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { PointOfInterest, PointType } from "../../types";
-import { normalise, parseValidationErrors } from "../../functions/helpers";
+import { normalise, parseValidationErrors } from "../../utils/helpers";
 import { TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
 import { useCallback, useState } from "react";
@@ -91,6 +91,7 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
                         onFocus={() => setErrors(({ ...errors, notes: [] }))}
                     />
                 </View>
+                <Text style={TEXT.p}>This point is private and stored on your phone, but we will give you the option to share it with others soon :)</Text>
                 <View style={styles.buttons}>
                     <Button
                         onPress={() => validate()}

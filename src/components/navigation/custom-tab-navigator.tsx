@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { COLOUR, TEXT } from '../../styles';
-import { normalise } from '../../functions/helpers';
+import { normalise } from '../../utils/helpers';
 import Icon from '../misc/icon';
 
 export default function CustomTabNavigator({ state, descriptors, navigation }) {

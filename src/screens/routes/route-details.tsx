@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Share as RNShare, Linking } from "react-native"
-import { normalise, stripHtml } from "../../functions/helpers"
+import { normalise, stripHtml } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
@@ -204,6 +204,9 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         arrow={true}
                         last={true}
                     />
+                </View>
+                <View style={[styles.section]}>
+                    <Text style={TEXT.p}>This route is private and stored on your phone, but we will give you the option to share it with others soon :)</Text>
                 </View>
             </ScrollView>
             <View style={styles.buttons}>

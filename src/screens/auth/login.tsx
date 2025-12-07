@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from "react
 import { ASSET, SETTING } from "../../consts";
 import Button from "../../components/buttons/button";
 import { useGlobalActions } from "../../contexts/global-context";
-import { normalise, parseValidationErrors } from "../../functions/helpers";
+import { normalise, parseValidationErrors } from "../../utils/helpers";
 import { COLOUR, TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
 import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";

@@ -1,4 +1,4 @@
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
 import { MapPackGroup } from "../../types"
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";

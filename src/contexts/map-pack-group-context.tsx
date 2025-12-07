@@ -1,6 +1,9 @@
-import React, { createContext,useContext } from 'react';
-import { useMapPackGroups } from '../hooks/repositories/useMapPackGroups';
+import React, { createContext,useContext, useEffect, useState } from 'react';
 import { MapPackGroup } from '../types';
+import Mapbox from '@rnmapbox/maps';
+import { useGlobalState } from './global-context';
+import { MapPackGroupRepository } from '../database/repositories/map-pack-group-repository';
+import { mapPackSchema as schema } from '../utils/schema';
 
 type MapPackGroupsContextState = {
     mapPackGroups: Array<MapPackGroup>
@@ -18,7 +21,63 @@ const ActionsContext = createContext<MapPackGroupsContextActions | undefined>(un
 
 export const MapPackGroupsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
-    const { mapPackGroups, get, create, remove, find } = useMapPackGroups();
+    const { user } = useGlobalState();
+    const [mapPackGroups, setMapPackGroups] = useState<Array<MapPackGroup>>([]);
+    const repo = new MapPackGroupRepository(user.id);
+
+    const get = async (): Promise<void> => {
+        const groups = await repo.get();
+        setMapPackGroups(groups);
+    }
+
+    const create = ( data: MapPackGroup ): Promise<MapPackGroup|void> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await schema.validate(data, { abortEarly: false });
+                const newGroup = repo.create(data);
+
+                if (!newGroup) return;
+                get();
+
+                return resolve(newGroup);
+            }
+            catch(err) {
+                return reject(err);
+            }
+        })
+    }
+
+    const find = ( id: number ): MapPackGroup|void => {
+        const mapPackGroup = repo.find(id);
+
+        return mapPackGroup;
+    }
+
+    // const update = ( data: PointOfInterest ): PointOfInterest|void => {
+    //     if (!data.id) return;
+    //     const newPoint = repo.update(data.id, data);
+
+    //     if (!newPoint) return;
+
+    //     get();
+    //     return newPoint;
+    // }
+
+    const remove = async ( id: number ) => {
+        if (!id) return;
+        
+        const packGroup = find(id);
+        if (!packGroup) return;
+
+        await Promise.all(packGroup.packs.map(p => Mapbox.offlineManager.deletePack(p.name)));
+
+        repo.delete(id);
+        get();
+    }
+
+    useEffect(() => {
+        get();
+    }, [])
     
 
     return (

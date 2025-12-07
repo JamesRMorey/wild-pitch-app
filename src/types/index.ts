@@ -35,7 +35,9 @@ export type MapPackGroup = {
     packs: Array<{
         name: string,
         styleURL: Mapbox.StyleURL
-    }>
+    }>,
+    created_at?: string,
+    updated_at?: string,
 }
 
 export type MapSetting = {
@@ -54,6 +56,7 @@ export type PointOfInterestSheetSection = 'details'|'edit'|'save'|undefined
 
 export type PointOfInterest = {
     created_at?: string,
+    updated_at?: string,
     elevation?: number,
     latitude: number,
     longitude: number,
@@ -96,6 +99,7 @@ export type Route = {
     elevation_gain?: number,
     elevation_loss?: number,
     created_at?: string,
+    updated_at?: string,
 }
 
 export type RouteSearchResult = {
@@ -106,8 +110,7 @@ export type RouteSearchResult = {
     longitude: number,
     distance?: number,
     elevation_gain?: number,
-    elevation_loss?: number,
-    created_at?: string,
+    elevation_loss?: number
 }
 
 export type Bounds = {

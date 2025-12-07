@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { COLOUR } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 
 
 export default function Switch({ active, onPress } : { active: boolean, onPress: Function }) {

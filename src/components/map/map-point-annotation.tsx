@@ -1,7 +1,7 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import Mapbox from "@rnmapbox/maps";
 import { COLOUR } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import Icon from "../misc/icon";
 
 

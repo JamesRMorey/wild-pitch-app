@@ -3,7 +3,7 @@ import Mapbox from '@rnmapbox/maps';
 import { useEffect, useMemo, useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
-import { delay, normalise } from "../../functions/helpers";
+import { delay, normalise } from "../../utils/helpers";
 import { useMapActions, useMapState } from "../../contexts/map-context";
 import MapArea from "../../components/map/map-area";
 import ActiveItemControls from "../../components/map/active-item-controls";

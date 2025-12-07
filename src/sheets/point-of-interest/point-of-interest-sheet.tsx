@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { PointOfInterest } from "../../types";
 import { SHEET } from "../../consts";
 import { COLOUR } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { useEffect, useState } from "react";
 import PointOfInterestNavigation from "./navigation";
 import PointOfInterestDetails from "./details";

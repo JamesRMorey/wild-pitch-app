@@ -3,7 +3,7 @@ import Mapbox from '@rnmapbox/maps';
 import { useEffect, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import MapArea from "../../components/map/map-area";
 import { SETTING } from "../../consts";
 import { MapMarker as MapMarkerType, PositionArray } from "../../types";

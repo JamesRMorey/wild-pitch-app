@@ -2,7 +2,7 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import ModalPopup from "./modal-popup";
 import { COLOUR, SHADOW } from "../styles";
 import { SETTING } from "../consts";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 
 type PropsType = { children: React.ReactNode, onClose: ()=>void, dismiss?: boolean }
 

@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { COLOUR, TEXT } from "../../styles"
-import { delay, normalise } from "../../functions/helpers"
+import { delay, normalise } from "../../utils/helpers"
 import { useNavigation } from "@react-navigation/native"
 import { useEffect, useState } from "react"
 import NothingHere from "../../components/misc/nothing-here"
@@ -37,7 +37,7 @@ export default function RoutesScreen({}) {
         await closeRouteOptions();
         if (!selectedRoute) return;
 
-        navigation.navigate('map', { screen: 'routes-map' });
+        navigation.navigate('map');
         
         await delay(200);
         setActiveRoute(selectedRoute);

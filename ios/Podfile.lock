@@ -1867,6 +1867,7 @@ PODS:
     - SocketRocket
     - Yoga
   - react-native-vector-icons-ionicons (12.2.0)
+  - react-native-vector-icons-lucide (12.4.0)
   - react-native-vector-icons-simple-line-icons (12.2.0)
   - React-NativeModulesApple (0.80.2):
     - boost
@@ -2725,6 +2726,7 @@ DEPENDENCIES:
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-vector-icons-ionicons (from `../node_modules/@react-native-vector-icons/ionicons`)"
+  - "react-native-vector-icons-lucide (from `../node_modules/@react-native-vector-icons/lucide`)"
   - "react-native-vector-icons-simple-line-icons (from `../node_modules/@react-native-vector-icons/simple-line-icons`)"
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -2876,6 +2878,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-vector-icons-ionicons:
     :path: "../node_modules/@react-native-vector-icons/ionicons"
+  react-native-vector-icons-lucide:
+    :path: "../node_modules/@react-native-vector-icons/lucide"
   react-native-vector-icons-simple-line-icons:
     :path: "../node_modules/@react-native-vector-icons/simple-line-icons"
   React-NativeModulesApple:
@@ -3019,6 +3023,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 45d9ceba0da0a157252979dcfcf0973d5a1e3896
   react-native-safe-area-context: 339885703b6dd1be2bce42d9c0b0350c21180032
   react-native-vector-icons-ionicons: 3a23bfb6ac5e5c44d822f37107afa50718f3cf31
+  react-native-vector-icons-lucide: 86e93d2468e533f5f0594371b9108972b3d92762
   react-native-vector-icons-simple-line-icons: 5fc2aaf95deaa9c24c9991b3732ef855744063fb
   React-NativeModulesApple: b22e6abb44d78270dfdfc7d85efe29e35e0333a7
   React-oscompat: 56d6de59f9ae95cd006a1c40be2cde83bc06a4e1

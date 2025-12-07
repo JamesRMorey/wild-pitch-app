@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Colour } from "../../types";
 import { COLOUR, TEXT } from "../../styles";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { SETTING } from "../../consts";
 import Icon from "../misc/icon";
 

@@ -1,7 +1,7 @@
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLOUR, OPACITY, TEXT } from "../styles";
-import { normalise } from "../functions/helpers";
+import { normalise } from "../utils/helpers";
 import Icon from "../components/misc/icon";
 
 type PropsType = { id: string, options: Array<{ label: string, icon: string, colour?: string, showArrow?: boolean, onPress: ()=>void }> }

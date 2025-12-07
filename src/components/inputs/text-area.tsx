@@ -1,6 +1,6 @@
 import { TextInput as RNTextInput, StyleSheet, Text, View } from 'react-native'
 import { COLOUR, TEXT } from '../../styles';
-import { normalise } from '../../functions/helpers';
+import { normalise } from '../../utils/helpers';
 
 
 type PropsType = { placeHolder?: string, label?: string, value?: string, onChangeText: (text: string)=>void, onFocus?: () => void, error?: string };

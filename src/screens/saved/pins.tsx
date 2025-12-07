@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
-import { delay, normalise } from "../../functions/helpers"
+import { delay, normalise } from "../../utils/helpers"
 import PointOfInterestCard from "../../components/cards/point-of-interest-card";
 import { COLOUR, TEXT } from "../../styles";
 import { PointOfInterest } from "../../types";

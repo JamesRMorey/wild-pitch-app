@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from "react";
-import { normalise } from "../../functions/helpers";
+import { normalise } from "../../utils/helpers";
 import { ASSET, SETTING } from "../../consts";
 import { COLOUR, SHADOW, TEXT } from "../../styles";
 import UserPosition from "../../components/map/user-position";

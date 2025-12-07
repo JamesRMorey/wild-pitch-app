@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { PointOfInterest } from "../../types";
-import { getDistanceBetweenPoints, normalise } from "../../functions/helpers";
+import { getDistanceBetweenPoints, normalise } from "../../utils/helpers";
 import { TEXT } from "../../styles";
 import { useEffect, useState } from "react";
 import { Format } from "../../services/formatter";

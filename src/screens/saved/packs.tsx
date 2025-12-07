@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { COLOUR, TEXT } from "../../styles"
-import { normalise } from "../../functions/helpers"
+import { normalise } from "../../utils/helpers"
 import { useNavigation } from "@react-navigation/native"
 import { SHEET } from "../../consts"
 import { useEffect, useState } from "react"
@@ -94,7 +94,7 @@ export default function PacksScreen({}) {
                 </View>
                 :
                 <NothingHere
-                    title="No offline maps downloaded"
+                    title="No map areas"
                     text="Press the button below to download an offline map area"
                     onPress={navigateToBuilder}
                     buttonText="Download map area"

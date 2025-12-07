@@ -1,6 +1,6 @@
 import { View, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { SETTING } from "../../consts";
-import { normalise, parseValidationErrors } from "../../functions/helpers";
+import { normalise, parseValidationErrors } from "../../utils/helpers";
 import { FormErrors, MapPackGroup } from "../../types";
 import { useState } from "react";
 import { MapPackService } from "../../services/map-pack-service";

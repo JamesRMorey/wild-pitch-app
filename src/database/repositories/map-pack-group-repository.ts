@@ -33,7 +33,9 @@ export class MapPackGroupRepository {
                 latitude DECIMAL(8,6) NOT NULL,
                 longitude DECIMAL(8,6) NOT NULL,
                 bounds LONGTEXT NOT NULL,
-                created_at NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+                created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         `);        
     }
