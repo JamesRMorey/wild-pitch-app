@@ -32,7 +32,7 @@ import { RouteProvider } from "../../services/route-provider";
 import { useRoutesState } from "../../contexts/routes-context";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
 
-Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
+Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
 type PropsType = { navigation: any }
 export default function MapScreen({ navigation } : PropsType) {
@@ -165,7 +165,11 @@ export default function MapScreen({ navigation } : PropsType) {
                 styleURL={styleURL}
 				onLongPress={(e) => addMarkerFromLongPress(e)}
 				pitchEnabled={enable3DMode}
-				attributionEnabled={false}
+				attributionEnabled={true}
+				attributionPosition={{ 
+					bottom: 6, 
+					left: 90 
+				}}
 				ref={mapRef}
 				onMapIdle={(event) => {
 					const heading = event.properties?.heading;

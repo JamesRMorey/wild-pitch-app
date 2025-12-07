@@ -44,6 +44,7 @@ export class RouteRepository {
             WHERE t.user_id = ${this.userId}
             LIMIT ${limit}
         `);
+        
         return data.rows?._array ? 
             data.rows._array.map(row => ({
                 id: row.id,

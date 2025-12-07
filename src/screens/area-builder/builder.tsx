@@ -12,7 +12,7 @@ import useHaptic from "../../hooks/useHaptic";
 import { useMapSettings } from "../../hooks/useMapSettings";
 import { useMapCameraControls } from "../../hooks/useMapCameraControls";
 
-Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
+Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
 type PropsType = { navigation: any, route: any }
 export default function AreaBuilderScreen({ navigation, route } : PropsType) {
@@ -88,7 +88,11 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
                 style={styles.map}
                 styleURL={Mapbox.StyleURL.Outdoors}
 				onPress={addMarkerFromLongPress}
-				attributionEnabled={false}
+				attributionEnabled={true}
+				attributionPosition={{ 
+					bottom: 6, 
+					left: 90 
+				}}
             >
                 {(initialCenter || initialRegion) && (
 					<Mapbox.Camera

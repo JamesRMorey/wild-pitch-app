@@ -17,7 +17,7 @@ import IconButton from "../../../components/buttons/icon-button";
 import PointOfInterestMarker from "../../../components/map/map-marker";
 import { RouteService } from "../../../services/route-service";
 
-Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
+Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
 type PropsType = { navigation: any, route: any }
 export default function RouteBuilderScreen({ navigation, route } : PropsType) {
@@ -117,7 +117,11 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					style={styles.map}
 					styleURL={Mapbox.StyleURL.Outdoors}
 					pitchEnabled={false}
-					attributionEnabled={false}
+					attributionEnabled={true}
+					attributionPosition={{ 
+						bottom: 6, 
+						left: 90 
+					}}
 					ref={mapRef}
 					onPress={(e) => addMarker(e)}
 					onMapIdle={(event) => {
@@ -200,7 +204,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					disabled={markers.length === 0}
 				>
 					<Icon
-						icon={'return-up-back'}
+						icon={'undo-2'}
 					/>
 					<Text style={[TEXT.sm]}>Undo</Text>
 				</TouchableOpacity>

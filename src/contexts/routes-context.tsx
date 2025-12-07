@@ -3,6 +3,7 @@ import { routeSchema as schema } from '../utils/schema';
 import { Route } from '../types';
 import { RouteRepository } from '../database/repositories/route-repository';
 import { useGlobalState } from './global-context';
+import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
 
 type RoutesContextState = {
     routes: Array<Route>
@@ -24,6 +25,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const { user }  = useGlobalState();
     const [routes, setRoutes] = useState<Array<Route>>([]);
     const repo = new RouteRepository(user.id);
+    const poiRepo = new PointOfInterestRepository(user.id);
 
     const get = (): void => {
         const data = repo.get() ?? [];
@@ -37,6 +39,12 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 const newRoute = repo.create(data);
 
                 if (!newRoute) return resolve();
+
+                const poiToDelete = poiRepo.findByLatLng(newRoute.latitude, newRoute.longitude);
+                if (poiToDelete?.id) {
+                    poiRepo.delete(poiToDelete.id);
+                }
+
                 get();
                 
                 return resolve(newRoute);

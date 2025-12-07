@@ -71,7 +71,7 @@ export default function ExploreScreen({ navigation } : PropsType) {
 			<View style={[styles.section, { paddingLeft: 0 }]}>
 				<View style={styles.sectionTitleContainer}>
 					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Coming Soon</Text>
-					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>We're building a collection or routes and wild camping spots from the WP community. Help us by creating public routes and camping points in the app map.</Text>
+					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>We're building a collection of routes and wild camping spots from the WP community. Help us by creating public routes and camping points in the map.</Text>
 					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>All your routes and pins are private at the moment, but you'll have the option to share these with others soon :)</Text>
 				</View>
 				{/* <ScrollView contentContainerStyle={styles.sectionScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
