@@ -55,9 +55,9 @@ export default function PacksScreen({}) {
     }
     
     const OPTIONS = [
-        { label: 'View area', icon: 'map-outline', onPress: () => showArea(activeMapPackGroup) },
-        { label: 'Remove download', icon: 'cloud-download-outline', onPress: () => removeDownload(activeMapPackGroup) },
-        { label: 'Delete area', icon: 'trash-outline', colour: COLOUR.red[500], onPress: () => deletePackGroup(activeMapPackGroup) },
+        { label: 'View area', icon: 'map', onPress: () => showArea(activeMapPackGroup) },
+        { label: 'Remove download', icon: 'cloud-download', onPress: () => removeDownload(activeMapPackGroup) },
+        { label: 'Delete area', icon: 'trash', colour: COLOUR.red[500], onPress: () => deletePackGroup(activeMapPackGroup) },
     ];
 
 

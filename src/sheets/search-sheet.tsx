@@ -108,7 +108,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                 <View style={styles.headerContainer}>
                     <View style={styles.searchBar}>
                         <TextInput
-                            icon="search-outline"
+                            icon="search"
                             placeHolder={searchType == 'route' ? 'Search for routes...' : 'Search for places...'}
                             onChangeText={(text) => setSearchTerm(text)}
                             value={searchTerm}

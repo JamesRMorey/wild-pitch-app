@@ -32,9 +32,9 @@ export default function PointTypeSelectorModal ({ onClose, onSelect, value }: Pr
                                 ]}
                             >
                                 {value && value == pointType.id && (
-                                    <View style={styles.checkmark}>
+                                    <View style={styles.check}>
                                         <Icon
-                                            icon={'checkmark-outline'}
+                                            icon={'check'}
                                             colour={COLOUR.white}
                                             size={normalise(17)}
                                         />
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
         borderRadius: normalise(50),
         padding: normalise(15),
     },
-    checkmark: {
+    check: {
         position: 'absolute',
         top: -normalise(0),
         right: -normalise(10),

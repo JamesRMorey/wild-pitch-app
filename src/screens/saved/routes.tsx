@@ -62,9 +62,9 @@ export default function RoutesScreen({}) {
 
 
     const SHEET_OPTIONS = [
-        { label: 'Inspect', icon: 'eye-outline', onPress: ()=>inspectRoute() },
-        { label: 'View details', icon: 'walk-outline', onPress: ()=>viewRouteDetails() },
-        { label: 'Delete route', icon: 'trash-outline', colour: COLOUR.red[500], onPress: ()=>deleteRoute() },
+        { label: 'Inspect', icon: 'eye', onPress: ()=>inspectRoute() },
+        { label: 'View details', icon: 'route', onPress: ()=>viewRouteDetails() },
+        { label: 'Delete route', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>deleteRoute() },
     ];
 
     useEffect(() => {

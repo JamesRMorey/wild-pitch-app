@@ -30,7 +30,7 @@ export default function PressInput ({ placeHolder, value, label, onPress, onFocu
                 :placeHolder ?
                     <Text style={styles.placeHolder}>{placeHolder}</Text>
                 :null}
-                <Icon icon="chevron-forward-outline" size={normalise(20)} colour={COLOUR.black} />
+                <Icon icon="chevron-right" size={normalise(20)} colour={COLOUR.black} />
             </TouchableOpacity>
             {error && (
                 <Text style={styles.errorText}>{error}</Text>

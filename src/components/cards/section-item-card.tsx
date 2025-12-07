@@ -26,7 +26,7 @@ export default function SectionItemCard ({ title, icon, last=false, arrow=false,
                 </View>
                 {arrow && (
                     <Icon
-                        icon='chevron-forward'
+                        icon='chevron-right'
                         colour={COLOUR.gray[700]}
                         size={normalise(18)}
                     />

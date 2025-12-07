@@ -50,16 +50,16 @@ export default function ProfileScreen() {
                     <Text style={styles.sectionTitle}>Community</Text>
                     <SectionItemCard
                         title="Follow our adventures"
-                        icon="logo-instagram"
+                        icon="instagram"
                         onPress={follow}
                     />
                     {/* <SectionItemCard
                         title="About Wild Pitch"
-                        icon="telescope-outline"
+                        icon="telescope"
                     /> */}
                     <SectionItemCard
                         title="Invite friends"
-                        icon="link-outline"
+                        icon="link"
                         onPress={shareWithFriends}
                         last={true}
                     />
@@ -73,32 +73,32 @@ export default function ProfileScreen() {
                     />
                     <SectionItemCard
                         title="Visit our website"
-                        icon="globe-outline"
+                        icon="globe"
                     />
                 </View> */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Support us</Text>
                     <SectionItemCard
                         title="Provide feedback on the app"
-                        icon="chatbox-ellipses-outline"
+                        icon="message-circle-more"
                         onPress={follow}
                     />
                     <SectionItemCard
                         title="Buy me a coffee?"
-                        icon="cafe-outline"
+                        icon="coffee"
                         onPress={buyCoffee}
                         last={true}
                     />
                     {/* <SectionItemCard
                         title="Shop Wild Pitch"
-                        icon="storefront-outline"
+                        icon="storefront"
                         last={true}
                     /> */}
                 </View>
                 <View style={[styles.section, { paddingTop: 0 }]}>
                     <SectionItemCard
                         title="Logout"
-                        icon="exit-outline"
+                        icon="log-out"
                         onPress={logout}
                         last={true}
                     />

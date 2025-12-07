@@ -55,9 +55,9 @@ export default function PinsScreen({  } : PropsType) {
     }
 
     const SHEET_OPTIONS = [
-        { label: 'View', icon: 'eye-outline', onPress: ()=>viewSelectedPOI() },
-        { label: 'Edit', icon: 'pencil-outline', onPress: ()=>editSelectedPOI() },
-        { label: 'Delete pin', icon: 'trash-outline', colour: COLOUR.red[500], onPress: ()=>deleteSelectedPOI() },
+        { label: 'View', icon: 'eye', onPress: ()=>viewSelectedPOI() },
+        { label: 'Edit', icon: 'pencil', onPress: ()=>editSelectedPOI() },
+        { label: 'Delete pin', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>deleteSelectedPOI() },
     ];
 
 

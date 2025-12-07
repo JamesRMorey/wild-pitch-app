@@ -16,22 +16,22 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
 
     const OPTIONS = [
         {
-            icon: 'location-outline',
+            icon: 'map-pin',
             title: 'See pin details',
             onPress: () => onChangeSection('navigation')
         },
         {
-            icon: 'navigate-outline',
+            icon: 'navigation-2',
             title: 'Get directions',
             onPress: () => getDirections()
         },
         {
-            icon: 'walk-outline',
+            icon: 'route',
             title: 'Create a route',
             onPress: () => createRoute()
         },
         {
-            icon: 'share-social-outline',
+            icon: 'share',
             title: 'Share location',
             onPress: () => shareLocation()
         }
@@ -112,7 +112,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                                 <Text style={TEXT.md}>{option.title}</Text>
                             </View>
                             <Icon
-                                icon={'chevron-forward-outline'}
+                                icon={'chevron-right'}
                                 size={normalise(18)}
                             />
                         </TouchableOpacity>
@@ -126,7 +126,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                     >
                         <View style={styles.optionNameContainer}>
                             <Icon
-                                icon={'trash-outline'}
+                                icon={'trash'}
                                 colour={COLOUR.red[500]}
                                 size="small"
                             />

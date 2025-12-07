@@ -110,7 +110,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     onPress={goBack}
                 >
                     <Icon
-                        icon='chevron-back'
+                        icon='chevron-left'
                         size={normalise(18)}
                         colour={COLOUR.gray[700]}
                     />
@@ -122,7 +122,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         style={styles.bookmarkButton}
                     >
                         <Icon
-                            icon={`${savedRoute ? 'bookmark' : 'bookmark-outline'}`}
+                            icon={`${savedRoute ? 'bookmark' : 'bookmark'}`}
                             size={normalise(18)}
                             colour={COLOUR.gray[700]}
                         />
@@ -132,7 +132,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         style={styles.shareButton}
                     >
                         <Icon
-                            icon='share-social-outline'
+                            icon='share'
                             size={normalise(18)}
                             colour={COLOUR.gray[700]}
                         />
@@ -150,7 +150,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         {route.distance && (
                             <View style={styles.itemContainer}>
                                 <Icon
-                                    icon='walk'
+                                    icon='footprints'
                                     size={'small'}
                                     colour={COLOUR.gray[700]}
                                 />
@@ -187,19 +187,19 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
                     <SectionItemCard
                         title="Edit this route"
-                        icon="pencil-outline"
+                        icon="pencil"
                         onPress={edit}
                         arrow={true}
                     />
                     <SectionItemCard
                         title="Export GPX"
-                        icon="save-outline"
+                        icon="save"
                         onPress={saveGPX}
                         arrow={true}
                     />
                     <SectionItemCard
                         title="Directions to start"
-                        icon="globe-outline"
+                        icon="globe"
                         onPress={directionsToStart}
                         arrow={true}
                         last={true}
@@ -228,7 +228,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     title="Downloaded"
                     style='outline'
                     flex={true}
-                    icon="checkmark"
+                    icon="check"
                 />
                 :
                 <Button

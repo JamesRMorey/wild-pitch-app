@@ -44,7 +44,7 @@ export default function LandingScreen({ navigation } : PropsType) {
                     delay={700}
                 >
                     <Text style={styles.title}>Have a wild night</Text>
-                    <Text style={styles.description}>Discover new places, download offline maps, and plan your next adventure with WildPitch Maps.</Text>
+                    <Text style={styles.description}>Discover new places, download offline maps, and plan your next adventure with WildPitch maps.</Text>
                     <View 
                         style={styles.buttons}
                     >
@@ -56,17 +56,17 @@ export default function LandingScreen({ navigation } : PropsType) {
                             <Text style={styles.buttonText}>Get started</Text>
                             <View style={{ flexDirection: 'row', gap: normalise(7)}}>
                                 <Icon
-                                    icon="chevron-forward"
+                                    icon="chevron-right"
                                     colour={COLOUR.white + OPACITY[40]}
                                     size={normalise(18)}
                                 />
                                 <Icon
-                                    icon="chevron-forward"
+                                    icon="chevron-right"
                                     colour={COLOUR.white + OPACITY[60]}
                                     size={normalise(18)}
                                 />
                                 <Icon
-                                    icon="chevron-forward"
+                                    icon="chevron-right"
                                     colour={COLOUR.white}
                                     size={normalise(18)}
                                 />

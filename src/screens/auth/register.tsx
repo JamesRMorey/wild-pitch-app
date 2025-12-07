@@ -38,9 +38,9 @@ export default function RegisterScreen({ navigation } : PropsType) {
     const [errors, setErrors] = useState<FormErrors>();
     const { setUser } = useGlobalActions();
     const GENDER_OPTIONS = [
-        { label: 'Male', value: 'male', icon: 'male-outline' },
-        { label: 'Female', value: 'female', icon: 'female-outline' },
-        { label: 'Other', value: 'other', icon: 'person-outline' }
+        { label: 'Male', value: 'male', icon: 'mars' },
+        { label: 'Female', value: 'female', icon: 'venus' },
+        { label: 'Other', value: 'other', icon: 'user' }
     ];
     const [loading, setLoading] = useState<boolean>(false);
     const wpApi = useMemo(() => new WildPitchApi(), []);
@@ -84,7 +84,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                             style={styles.backButton}
                         >
                             <Icon
-                                icon="arrow-back-outline"
+                                icon="arrow-left"
                                 size={normalise(25)}
                                 colour={COLOUR.white}
                             />
@@ -103,7 +103,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                             <TextInput
                                 label="Name"
                                 placeHolder="Name"
-                                icon="person-outline"
+                                icon="user"
                                 error={errors?.name?.[0]}
                                 onChangeText={(text)=>setData({ ...data, name: text })}
                                 onFocus={()=>setErrors({ ...errors, name: undefined })}
@@ -111,7 +111,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                             <TextInput
                                 label="Email"
                                 placeHolder="Email"
-                                icon="mail-outline"
+                                icon="mail"
                                 error={errors?.email?.[0]}
                                 onChangeText={(text)=>setData({ ...data, email: text })}
                                 onFocus={()=>setErrors({ ...errors, email: undefined })}
@@ -126,7 +126,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                                 label="Password"
                                 placeHolder="Password"
                                 secureTextEntry={true}
-                                icon="lock-closed-outline"
+                                icon="lock"
                                 error={errors?.password?.[0]}
                                 onChangeText={(text)=>setData({ ...data, password: text })}
                                 onFocus={()=>setErrors({ ...errors, password: undefined })}
@@ -135,7 +135,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
                                 label="Confirm Password"
                                 placeHolder="Password"
                                 secureTextEntry={true}
-                                icon="lock-closed-outline"
+                                icon="lock"
                                 error={errors?.password_confirm?.[0]}
                                 onChangeText={(text)=>setData({ ...data, password_confirm: text })}
                                 onFocus={()=>setErrors({ ...errors, password_confirm: undefined })}

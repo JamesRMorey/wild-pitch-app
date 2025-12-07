@@ -134,7 +134,7 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
 			<View style={styles.controlsContainer}>
 				<View style={styles.controls}>
 					<IconButton
-						icon={'cloud-download-outline'}
+						icon={'cloud-download'}
 						onPress={() => saveArea()}
 						disabled={!areaBounds || areaBounds.length != 2}
 						shadow={true}

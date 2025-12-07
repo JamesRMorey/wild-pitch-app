@@ -27,9 +27,9 @@ export default function HorizontalSelect ({ value, label, options, onSelect, err
                         >
                             <View style={styles.optionIcon}>
                                 {value == option.value && (
-                                    <View style={styles.checkmark}>
+                                    <View style={styles.check}>
                                         <Icon
-                                            icon={'checkmark-outline'}
+                                            icon={'check'}
                                             colour={COLOUR.white}
                                             size={normalise(17)}
                                         />
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         ...TEXT.sm,
         textAlign: 'center'
     },
-    checkmark: {
+    check: {
         position: 'absolute',
         top: -normalise(0),
         right: -normalise(10),

@@ -35,7 +35,7 @@ export default function OptionsSheet ({ id, options } : PropsType ) {
                         {(option.showArrow ?? true) && (
                             <View>
                                 <Icon
-                                    icon={'chevron-forward-outline'}
+                                    icon={'chevron-right'}
                                     colour={COLOUR.black}
                                 />
                             </View>

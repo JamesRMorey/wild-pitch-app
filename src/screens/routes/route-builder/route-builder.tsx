@@ -186,7 +186,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 				</View>
 				<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
 					<IconButton
-						icon={'chevron-back-outline'}
+						icon={'chevron-left'}
 						onPress={() => navigation.goBack()}
 						shadow={true}
 						style={{paddingRight: normalise(2)}}
@@ -200,7 +200,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					disabled={markers.length === 0}
 				>
 					<Icon
-						icon={'return-up-back-outline'}
+						icon={'return-up-back'}
 					/>
 					<Text style={[TEXT.sm]}>Undo</Text>
 				</TouchableOpacity>

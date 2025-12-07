@@ -40,7 +40,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
             <View style={styles.leftContainer}>
                 <View style={styles.iconContainer}>
                     <Icon
-                        icon='walk'
+                        icon='route'
                         colour={COLOUR.blue[700]}
                     />
                 </View>
@@ -55,7 +55,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                         {route.distance && (
                             <View style={styles.itemContainer}>
                                 <Icon
-                                    icon='walk'
+                                    icon='footprints'
                                     size={'small'}
                                     colour={COLOUR.gray[700]}
                                 />
@@ -95,7 +95,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                         {errored ?
                         <TouchableOpacity style={styles.downloadButton} onPress={()=>downloadRoute()}>
                             <Icon
-                                icon='cloud-download-outline'
+                                icon='cloud-download'
                                 size={normalise(12)}
                                 colour={COLOUR.red[500]}
                             />
@@ -111,7 +111,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                         :downloaded ?
                         <View style={styles.downloadedContainer}>
                             <Icon
-                                icon='checkmark-circle-outline'
+                                icon='check'
                                 size={normalise(12)}
                                 colour={COLOUR.green[500]}
                             />
@@ -120,7 +120,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                         :
                         <TouchableOpacity style={styles.downloadButton} onPress={() => downloadRoute(false)}>
                             <Icon
-                                icon='cloud-download-outline'
+                                icon='cloud-download'
                                 size={normalise(12)}
                                 colour={COLOUR.wp_orange[500]}
                             />
@@ -137,7 +137,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                 style={styles.ellipseButton}
             >
                 <Icon
-                    icon='ellipsis-horizontal-outline'
+                    icon='ellipsis'
                     size={'small'}
                 />
             </TouchableOpacity>

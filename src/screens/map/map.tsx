@@ -209,7 +209,7 @@ export default function MapScreen({ navigation } : PropsType) {
 						<PointOfInterestMarker
 							key={i}
 							coordinate={[route.longitude, route.latitude]}
-							icon={'walk'}
+							icon={'route'}
 							colour={COLOUR.blue[500]}
 							onPress={() => handleRoutePress(route)}
 						/>
@@ -249,14 +249,14 @@ export default function MapScreen({ navigation } : PropsType) {
 			)}
 			<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
 				<IconButton
-					icon={'search-outline'}
+					icon={'search'}
 					onPress={openSearch}
 					shadow={true}
 				/>
 			</View>
 			<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
 				<IconButton
-					icon={'cloud-download-outline'}
+					icon={'cloud-download'}
 					onPress={navigateToAreaBuilder}
 					shadow={true}
 				/>
@@ -273,9 +273,9 @@ export default function MapScreen({ navigation } : PropsType) {
 				{!activeRoute && (
 					<MultiButtonControl
 						items={[
-							{ icon: 'layers-outline', onPress: () => openStyleSheet() },
-							{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
-							{ icon: followUserPosition ? 'navigate' : 'navigate-outline', onPress: () => setFollowUserPosition(!followUserPosition) },
+							{ icon: 'layers', onPress: () => openStyleSheet() },
+							{ icon: 'crosshair', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
+							{ icon: followUserPosition ? 'navigation-2-off' : 'navigation-2', onPress: () => setFollowUserPosition(!followUserPosition) },
 						]}
 					/>
 				)}

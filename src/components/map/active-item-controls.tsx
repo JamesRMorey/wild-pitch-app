@@ -14,7 +14,7 @@ export default function ActiveItemControls({ name, onPress } : { name: string, o
         >
             <Text style={styles.text}>{name.slice(0,40)}{name.length > 40 && '...'}</Text>
             <Icon
-                icon="close"
+                icon="x"
                 size={normalise(22)}
                 colour={COLOUR.black}
             />

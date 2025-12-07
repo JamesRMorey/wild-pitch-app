@@ -117,7 +117,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                         {errored ?
                         <TouchableOpacity style={styles.downloadButton} onPress={download}>
                             <Icon
-                                icon='cloud-download-outline'
+                                icon='cloud-download'
                                 size={normalise(12)}
                                 colour={COLOUR.red[500]}
                             />
@@ -133,7 +133,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                         :downloaded ?
                         <View style={styles.downloadedContainer}>
                             <Icon
-                                icon='checkmark-circle-outline'
+                                icon='check'
                                 size={normalise(12)}
                                 colour={COLOUR.green[500]}
                             />
@@ -148,7 +148,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                             onPress={download}
                         >
                             <Icon
-                                icon='cloud-download-outline'
+                                icon='cloud-download'
                                 size={normalise(12)}
                                 colour={COLOUR.wp_orange[500]}
                             />
@@ -165,7 +165,7 @@ export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOthe
                     style={styles.ellipseButton}
                 >
                     <Icon
-                        icon='ellipsis-horizontal-outline'
+                        icon='ellipsis'
                         size={'small'}
                     />
                 </TouchableOpacity>

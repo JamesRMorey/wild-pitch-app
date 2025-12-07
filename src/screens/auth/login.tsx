@@ -73,7 +73,7 @@ export default function LoginScreen({ navigation } : PropsType) {
                                 style={styles.backButton}
                             >
                                 <Icon
-                                    icon="arrow-back-outline"
+                                    icon="arrow-left"
                                     size={normalise(25)}
                                     colour={COLOUR.white}
                                 />
@@ -91,7 +91,7 @@ export default function LoginScreen({ navigation } : PropsType) {
                             <TextInput
                                 label="Email"
                                 placeHolder="Email"
-                                icon="mail-outline"
+                                icon="mail"
                                 error={errors?.email?.[0]}
                                 onChangeText={(text)=>setData({ ...data, email: text })}
                                 onFocus={()=>setErrors({ ...errors, email: undefined })}
@@ -100,7 +100,7 @@ export default function LoginScreen({ navigation } : PropsType) {
                                 label="Password"
                                 placeHolder="Password"
                                 secureTextEntry={true}
-                                icon="lock-closed-outline"
+                                icon="lock"
                                 error={errors?.password?.[0]}
                                 onChangeText={(text)=>setData({ ...data, password: text })}
                                 onFocus={()=>setErrors({ ...errors, password: undefined })}

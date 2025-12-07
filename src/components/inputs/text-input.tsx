@@ -39,11 +39,11 @@ export default function TextInput ({ placeHolder, icon, value, label, secureText
                 />
                 {onClear ? 
                 <TouchableOpacity style={styles.close} onPress={onClear}>
-                    <Icon icon={'close-outline'} size={normalise(20)} colour={COLOUR.gray[600]} />
+                    <Icon icon={'x'} size={normalise(20)} colour={COLOUR.gray[600]} />
                 </TouchableOpacity>
                 :secureTextEntry ?
                 <TouchableOpacity style={styles.close} onPress={()=>setShowSecureText(!showSecureText)}>
-                    <Icon icon={showSecureText ? 'eye-off-outline' : 'eye-outline'} size={normalise(20)} colour={COLOUR.gray[600]} />
+                    <Icon icon={showSecureText ? 'eye-off' : 'eye'} size={normalise(20)} colour={COLOUR.gray[600]} />
                 </TouchableOpacity>
                 :null}
             </View>

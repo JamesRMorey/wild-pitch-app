@@ -16,7 +16,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
         >
             <View style={styles.iconContainer}>
                 <Icon
-                    icon='walk'
+                    icon='route'
                     colour={COLOUR.blue[700]}
                 />
             </View>
@@ -26,7 +26,7 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                     {route.distance && (
                         <View style={styles.itemContainer}>
                             <Icon
-                                icon='walk'
+                                icon='route'
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />

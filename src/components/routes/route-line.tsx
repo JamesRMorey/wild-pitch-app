@@ -35,7 +35,7 @@ export default function RouteLine({ start, end, markers, lineKey } : PropsType) 
                 <>
                     <PointOfInterestMarker
                         coordinate={[start.longitude, start.latitude]}
-                        icon={'location'}
+                        icon={'map-pin'}
                         colour={COLOUR.blue[500]}
                         disabled={true}
                     />

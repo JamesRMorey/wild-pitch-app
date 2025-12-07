@@ -100,9 +100,9 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 					)}
 					<MultiButtonControl
 						items={[
-							{ icon: 'expand-outline', onPress: () => centerOnRoute(), disabled: followUserPosition },
-							{ icon: 'location-outline', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
-							{ icon: followUserPosition ? 'navigate' : 'navigate-outline', onPress: () => setFollowUserPosition(!followUserPosition) },
+							{ icon: 'expand', onPress: () => centerOnRoute(), disabled: followUserPosition },
+							{ icon: 'map-pin', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
+							{ icon: followUserPosition ? 'navigation-2-off' : 'navigation-2', onPress: () => setFollowUserPosition(!followUserPosition) },
 						]}
 					/>
 				</View>
@@ -121,7 +121,7 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 						<Text style={styles.infoText}>Est Distance Walked</Text>
 						<View style={styles.info}>
 							<Icon
-								icon="walk-outline"
+								icon="footprints"
 								size={normalise(18)}
 							/>
 							<Text style={TEXT.md}>{distanceAlongRoute?.distance ? (distanceAlongRoute.distance/1000).toFixed(2) : 0}/{(route.distance/1000).toFixed(2)} km</Text>
@@ -138,14 +138,14 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 					<Button
 						title="Resume"
 						flex={true}
-						icon="play-outline"
+						icon="play"
 						onPress={() => setPaused(false)}
 					/>
 					:
 					<Button
 						title="Pause"
 						flex={true}
-						icon="pause-outline"
+						icon="pause"
 						style="outline"
 						onPress={() => setPaused(true)}
 					/>}
@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		flexDirection: 'row',
 		alignItems: 'center',
+		gap: normalise(5)
 	},
 	infoText: {
 		...TEXT.sm,

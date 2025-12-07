@@ -63,10 +63,10 @@ export default function SavedTabsView({ navigation } : PropsType) {
     }
 
     const OPTIONS = [
-        { label: 'Download map', icon: 'map-outline', onPress: navigateToBuilder },
-        { label: 'Add pin', icon: 'location-outline', onPress: createPin },
-        { label: 'Create route', icon: 'walk-outline', onPress: createRoute },
-        { label: 'Clear all downloaded maps', icon: 'trash-outline', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },
+        { label: 'Download map', icon: 'map', onPress: navigateToBuilder },
+        { label: 'Add pin', icon: 'map-pin', onPress: createPin },
+        { label: 'Create route', icon: 'route', onPress: createRoute },
+        { label: 'Clear all downloaded maps', icon: 'trash', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },
     ];
     
 
@@ -78,7 +78,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
                     onPress={openOptionsMenu}
                     style={styles.addButton}
                 >
-                    <Icon icon={'add'} />
+                    <Icon icon={'plus'} />
                 </TouchableOpacity>
             </View>
             <TabView

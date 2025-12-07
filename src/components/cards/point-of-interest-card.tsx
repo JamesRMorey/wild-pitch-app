@@ -38,7 +38,7 @@ export default function PointOfInterestCard ({ point, onPress, onOtherPress } : 
                     style={styles.ellipseButton}
                 >
                     <Icon
-                        icon='ellipsis-horizontal-outline'
+                        icon='ellipsis'
                         size={'small'}
                     />
                 </TouchableOpacity>

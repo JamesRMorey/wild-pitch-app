@@ -10,7 +10,7 @@ export default function Header({ title, onBack } : { title: string, onBack?: ()=
         <View style={styles.container}>
             {onBack &&
             <IconButton
-                icon={'chevron-back-outline'}
+                icon={'chevron-left'}
                 onPress={() => onBack()}
                 iconOnly={true}
                 small={true}

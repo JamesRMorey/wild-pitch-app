@@ -27,7 +27,7 @@ export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose
                         {route.distance && (
                             <View style={styles.itemContainer}>
                                 <Icon
-                                    icon='walk'
+                                    icon='footprints'
                                     size={'small'}
                                     colour={COLOUR.gray[700]}
                                 />
@@ -64,7 +64,7 @@ export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose
                     style={styles.closeButton}
                 >
                     <Icon
-                        icon='close'
+                        icon="x"
                         size={normalise(16)}
                     />
                 </TouchableOpacity>

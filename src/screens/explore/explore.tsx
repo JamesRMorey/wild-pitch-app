@@ -14,7 +14,7 @@ export default function ExploreScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
 	const FEATURES_CARDS = useMemo(() => [
-		{ title: 'Plan a route', text: 'Plan & plot your own routes.', buttonText: 'Get started', icon: 'walk', colour: COLOUR.blue, onPress: ()=>navigation.navigate('map') },
+		{ title: 'Plan a route', text: 'Plan & plot your own routes.', buttonText: 'Get started', icon: 'route', colour: COLOUR.blue, onPress: ()=>navigation.navigate('map') },
 		{ title: 'Download a map', text: 'Don\'t get lost when signal runs out.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_purple, onPress: ()=>navigation.navigate('map') },
 		{ title: 'Save a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.wp_yellow, onPress: ()=>exploreRoutes() },
 		{ title: 'Explore the map', text: 'Add places & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },

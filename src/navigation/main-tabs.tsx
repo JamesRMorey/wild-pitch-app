@@ -13,10 +13,10 @@ export default function MainTabs({}) {
 
     return (
         <Tab.Navigator tabBar={props => <CustomTabNavigator {...props} />} initialRouteName='map' >
-            <Tab.Screen name="home" component={ExploreScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'search', displayName: 'Explore'}}/>
+            <Tab.Screen name="home" component={ExploreScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'tent-tree', displayName: 'Explore'}}/>
             <Tab.Screen name="map" component={MapStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'map', displayName: 'Map'}}/>
             <Tab.Screen name="saved" component={SavedStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder', displayName: 'Saved'}}/>
-            <Tab.Screen name="account" component={ProfileScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'person', displayName: 'Profile'}}/>
+            <Tab.Screen name="account" component={ProfileScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'user', displayName: 'Profile'}}/>
         </Tab.Navigator>
     )
 }
