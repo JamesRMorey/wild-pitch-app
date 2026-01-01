@@ -59,8 +59,13 @@ export default function RegisterScreen({ navigation } : PropsType) {
             const { user, token } = await wpApi.register(data); 
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
-            await Keychain.setGenericPassword(user.email, token, {service: 'wp_api_bearer'});
+            await Keychain.setGenericPassword(user.email, token, {service: 'wild_pitch'});
             setUser(user);
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'main' }],
+            });
         }
         catch (err: any) {
             const errs = parseValidationErrors(err);

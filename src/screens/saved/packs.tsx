@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { COLOUR, TEXT } from "../../styles"
 import { normalise } from "../../utils/helpers"
 import { useNavigation } from "@react-navigation/native"
@@ -43,8 +43,15 @@ export default function PacksScreen({}) {
     }
 
     const deletePackGroup = (packGroup: MapPackGroup) => {
-        removePackGroup(packGroup.id);
-        SheetManager.hide(SHEET.MAP_PACK_GROUP_OPTIONS);
+        try {
+            if (packGroup.id) removePackGroup(packGroup.id);
+        }
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            SheetManager.hide(SHEET.MAP_PACK_GROUP_OPTIONS);
+        }
     }
 
     const showArea = async ( packGroup: MapPackGroup ) => {
@@ -57,8 +64,20 @@ export default function PacksScreen({}) {
     const OPTIONS = [
         { label: 'View area', icon: 'map', onPress: () => showArea(activeMapPackGroup) },
         { label: 'Remove download', icon: 'cloud-download', onPress: () => removeDownload(activeMapPackGroup) },
-        { label: 'Delete area', icon: 'trash', colour: COLOUR.red[500], onPress: () => deletePackGroup(activeMapPackGroup) },
+        { label: 'Delete area', icon: 'trash', colour: COLOUR.red[500], onPress: () => openConfirmDeletePrompt() },
     ];
+
+    const openConfirmDeletePrompt = () => {
+        if (!activeMapPackGroup) return;
+        Alert.alert(
+            'Delete this route?', 
+            'Are you sure you want to delete this route permanently?',
+            [
+                { text: 'Delete', onPress: () => deletePackGroup(activeMapPackGroup)},
+                { text: 'Keep', onPress: () => {}},
+            ],
+        )
+    }
 
 
     useEffect(() => {

@@ -59,5 +59,8 @@ export const text = StyleSheet.create({
     },
     thin: {
         fontWeight: 300
+    },
+    center: {
+        textAlign: 'center'
     }
 })

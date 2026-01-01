@@ -1,15 +1,17 @@
-import { ScrollView, StyleSheet, View, Text, Share, Linking, Image } from "react-native"
-import { normalise } from "../../utils/helpers"
+import { ScrollView, StyleSheet, View, Text, Share, Linking, Image, Alert } from "react-native"
+import { delay, normalise } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { ASSET, SETTING } from "../../consts";
 import SectionItemCard from "../../components/cards/section-item-card";
 import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
+import { WildPitchApi } from "../../services/api/wild-pitch";
 
-
-export default function ProfileScreen() {
+type PropsType = { navigation: any };
+export default function ProfileScreen({ navigation } : PropsType) {
 
     const { user } = useGlobalState();
     const { logout } = useGlobalActions();
+    const wpApi = new WildPitchApi();
 
     const shareWithFriends = () => {
         Share.share({
@@ -26,6 +28,36 @@ export default function ProfileScreen() {
         Linking.openURL('https://buymeacoffee.com/wildpitch');
     }
 
+    const confirmDeleteAccount = async() => {
+        try {
+            await wpApi.deleteAccount();
+        }
+        catch (error) {
+            console.log(error)
+        }
+        finally {
+            handleLogout();
+        }
+    }
+    
+    const deleteAccount = () => {
+        Alert.alert(
+            'Delete your account?', 
+            'Are you sure you want to delete your account? This is irreversible.',
+            [
+                { text: 'Delete', onPress: confirmDeleteAccount},
+                { text: 'Keep', onPress: () => {}},
+            ],
+        )
+    }
+
+    const handleLogout = async () => {
+        await navigation.navigate('map');
+        await delay(200);
+        logout();
+    }
+
+    if (!user) return;
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
@@ -82,24 +114,31 @@ export default function ProfileScreen() {
                         title="Provide feedback on the app"
                         icon="message-circle-more"
                         onPress={follow}
+                        last={true}
                     />
-                    <SectionItemCard
+                    {/* <SectionItemCard
                         title="Buy me a coffee?"
                         icon="coffee"
                         onPress={buyCoffee}
                         last={true}
-                    />
+                    /> */}
                     {/* <SectionItemCard
                         title="Shop Wild Pitch"
                         icon="storefront"
                         last={true}
                     /> */}
                 </View>
-                <View style={[styles.section, { paddingTop: 0 }]}>
+                <View style={[styles.section]}>
+                    <Text style={styles.sectionTitle}>Account</Text>
+                    <SectionItemCard
+                        title="Delete your account"
+                        icon="user-x"
+                        onPress={deleteAccount}
+                    />
                     <SectionItemCard
                         title="Logout"
                         icon="log-out"
-                        onPress={logout}
+                        onPress={handleLogout}
                         last={true}
                     />
                 </View>

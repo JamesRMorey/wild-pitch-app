@@ -8,11 +8,17 @@ export default function CanAccess({ children, permission } : PropsType) {
     const [granted, setGranted] = useState<boolean>(canAccess());
 
     function canAccess (): boolean {
+        if (!user) return false;
         return user.role == permission;
     }
 
     useEffect(() => {
-        if (user) setGranted(user.role === permission);
+        if (user) {
+            setGranted(user.role === permission);
+        }
+        else {
+            setGranted(false)
+        }
     }, [user, permission]);
     
     if (!granted) return;

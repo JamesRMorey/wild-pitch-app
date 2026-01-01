@@ -22,10 +22,11 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
     
     const { user } = useGlobalState();
     const [pointsOfInterest, setPointsOfInterest] = useState<Array<PointOfInterest>>([]);
-    const repo = new PointOfInterestRepository(user.id);
+    const repo = new PointOfInterestRepository(user?.id);
 
     const get = (): void => {
-        const points = repo.get(user.id) ?? [];
+        if (!user) return;
+        const points = repo.get() ?? [];
         setPointsOfInterest(points);
     }
 
@@ -91,8 +92,8 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
 
     const remove = ( id: number ) => {
         if (!id) return;
-        
         repo.delete(id);
+        get();
     }
 
     useEffect(() => {

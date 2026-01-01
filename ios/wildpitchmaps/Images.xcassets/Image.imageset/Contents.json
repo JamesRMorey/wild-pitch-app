@@ -1,12 +1,10 @@
 {
   "images" : [
     {
-      "filename" : "LOGO-TEXT-AND-IAMAGE.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "LOGO-TEXT-AND-IAMAGE 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

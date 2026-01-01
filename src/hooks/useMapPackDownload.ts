@@ -4,6 +4,8 @@ import { EventBus } from '../services/event-bus';
 import { MapPack } from '../types';
 import OfflinePack from '@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack';
 import { SETTING } from '../consts';
+import { MapService } from '../services/map-service';
+import { Alert } from 'react-native';
 
 type PropsType = { mapPack: MapPack, onSuccess?: () => void, onFail?: () => void };
 export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
@@ -49,7 +51,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
         setProgress(Math.ceil(p.pack.percentage));
     }
 
-    const onDownloadError = (offlineRegion: any, err: any) => {
+    const onDownloadError = () => {
         setErrored(true);
         setDownloading(false);
         setProgress(0);
@@ -60,6 +62,14 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
     const downloadRoute = (refreshOnSuccess: boolean=true) => {
         setErrored(false);
         setProgress(0);
+
+        const area = MapService.calculateArea(pack.bounds);
+
+        if (area > SETTING.MAX_MAP_AREA) {
+            Alert.alert("Download Failed", 'The map area is too large.')
+            onDownloadError();
+            return;
+        }
 
         MapPackService.downloadRoute({
             name: pack.name, 

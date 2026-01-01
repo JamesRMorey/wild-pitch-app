@@ -11,36 +11,14 @@ export class MapPackGroupRepository {
     tableName;
     userId;
 
-    constructor ( userId: number ) {
+    constructor ( userId: number|undefined ) {
         const db = getDB();
         this.userId = userId;
         this.db = db;
         this.tableName = 'map_pack_groups';
-        this.createTable();
     }
 
-    createTable (): void {
-        new PointTypeRepository();
-        this.db.execute(`
-            CREATE TABLE IF NOT EXISTS ${this.tableName} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                name TEXT NOT NULL,
-                key TEXT NOT NULL UNIQUE,
-                description LONGTEXT,
-                min_zoom INT NOT NULL DEFAULT 9,
-                max_zoom INT NOT NULL DEFAULT 14,
-                latitude DECIMAL(8,6) NOT NULL,
-                longitude DECIMAL(8,6) NOT NULL,
-                bounds LONGTEXT NOT NULL,
-
-                created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        `);        
-    }
-
-    async get ( limit: number=100 ): Promise<Array<MapPackGroup>>  {
+    get ( limit: number=100 ): Array<MapPackGroup>  {
         const data = this.db.execute(`
             SELECT *
             FROM ${this.tableName}

@@ -13,6 +13,7 @@ import RoutesScreen from './routes';
 import Icon from '../../components/misc/icon';
 import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
+import { useGlobalState } from '../../contexts/global-context';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
@@ -29,6 +30,7 @@ const ROUTES = [
 type PropsType = { navigation: any };
 export default function SavedTabsView({ navigation } : PropsType) {
     
+    const { user } = useGlobalState();
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
 
@@ -69,7 +71,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
         { label: 'Clear all downloaded maps', icon: 'trash', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },
     ];
     
-
+    if (!user) return;
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>

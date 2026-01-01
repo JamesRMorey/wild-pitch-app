@@ -9,43 +9,13 @@ export class PointOfInterestRepository {
     tableName;
     userId;
 
-    constructor (userId: number) {
+    constructor ( userId: number|undefined ) {
         const db = getDB();
         this.userId = userId;
         this.db = db;
         this.tableName = 'point_of_interests';
-        this.createTable();
     }
-
-    createTable (): void {
-        new PointTypeRepository();
-        this.db.execute(`
-            CREATE TABLE IF NOT EXISTS ${this.tableName} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                name TEXT NOT NULL,
-                notes LONGTEXT DEFAULT NULL,
-                point_type_id INTEGER NOT NULL DEFAULT 1,
-                latitude DECIMAL(8,6) NOT NULL,
-                longitude DECIMAL(8,6) NOT NULL,
-                elevation DECIMAL(8,2) DEFAULT NULL,
-                status TEXT NOT NULL DEFAULT 'PRIVATE',
-                
-                created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-                FOREIGN KEY (point_type_id) REFERENCES point_types(id)
-            )
-        `);
-
-        // Check if 'elevation' column exists
-        // const columns = this.db.execute(`PRAGMA table_info(${this.tableName})`);
-        // const hasElevation = columns.rows?._array?.some((col: any) => col.name === 'elevation');
-        // if (!hasElevation) {
-        //     this.db.execute(`ALTER TABLE ${this.tableName} ADD COLUMN elevation REAL DEFAULT NULL`);
-        // }
-    }
-
+    
     get ( limit: number=100 ): Array<PointOfInterest>  {
         const data = this.db.execute(`
             SELECT t.id, t.name, t.notes, t.point_type_id, t.latitude, t.longitude, t.elevation, t.created_at, pt.icon as pt_icon, pt.name as pt_name, pt.colour as pt_colour

@@ -1,9 +1,8 @@
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import { ASSET, SETTING } from "../../consts";
 import { normalise } from "../../utils/helpers";
-import * as Animatable from 'react-native-animatable';
-import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
-import Icon from "../../components/misc/icon";
+import { COLOUR, TEXT } from "../../styles";
+import Button from "../../components/buttons/button";
 
 
 type PropsType = { navigation: any }
@@ -18,65 +17,37 @@ export default function LandingScreen({ navigation } : PropsType) {
     }
     
     return (
-        <View style={styles.container}>
-            <Animatable.Image 
+        <View 
+            style={styles.container}
+        >
+            <Image 
                 source={ASSET.LANDING_1} 
                 style={styles.background}
                 resizeMode="cover"
-                animation={"fadeIn"}
-                duration={2000}
-                delay={300}
             />
             <View style={styles.top}>
-                <Animatable.View
-                    animation="fadeIn"
-                    delay={700}
-                >
-                    <Image
-                        source={ASSET.LOGO_TEXT}
-                        style={styles.image}
+                <Image
+                    source={ASSET.LOGO_TEXT}
+                    style={styles.image}
+                />
+            </View>
+            <View style={styles.center}>
+                <Text style={styles.title}>Sign up or Log in to access more from Wild Pitch</Text>
+                <View style={styles.buttons}>
+                    <Button
+                        style="white"
+                        onPress={navigateToRegister}
+                        title="Register"
                     />
-                </Animatable.View>
+                    <Button
+                        style="primary"
+                        onPress={navigateToLogin}
+                        title="Log in"
+                    />
+                </View>
             </View>
             <View style={styles.bottom}>
-                <Animatable.View 
-                    animation="fadeIn" 
-                    delay={700}
-                >
-                    <Text style={styles.title}>Have a wild night</Text>
-                    <Text style={styles.description}>Discover new places, download offline maps, and plan your next adventure with WildPitch maps.</Text>
-                    <View 
-                        style={styles.buttons}
-                    >
-                        <TouchableOpacity
-                            style={styles.button}
-                            activeOpacity={0.8}
-                            onPress={navigateToRegister}
-                        >
-                            <Text style={styles.buttonText}>Get started</Text>
-                            <View style={{ flexDirection: 'row', gap: normalise(7)}}>
-                                <Icon
-                                    icon="chevron-right"
-                                    colour={COLOUR.white + OPACITY[40]}
-                                    size={normalise(18)}
-                                />
-                                <Icon
-                                    icon="chevron-right"
-                                    colour={COLOUR.white + OPACITY[60]}
-                                    size={normalise(18)}
-                                />
-                                <Icon
-                                    icon="chevron-right"
-                                    colour={COLOUR.white}
-                                    size={normalise(18)}
-                                />
-                            </View>
-                        </TouchableOpacity>
-                        {/* <TouchableOpacity onPress={navigateToLogin} activeOpacity={0.7}>
-                            <Text style={styles.loginText}>Already have an account? <Text style={styles.loginLink}>Login</Text></Text>
-                        </TouchableOpacity> */}
-                    </View>
-                </Animatable.View>
+                <Text style={styles.privacyText}>Create routes, find new camping spots and download offline maps all for FREE with Wild Pitch.</Text>
             </View>
         </View>
     )
@@ -85,7 +56,7 @@ export default function LandingScreen({ navigation } : PropsType) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOUR.wp_green[500],
+        backgroundColor: COLOUR.white,
         alignItems: 'center',
         justifyContent: 'space-between',
     },
@@ -104,42 +75,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         zIndex: 10,
     },
+    center: {
+        width: '100%',
+        paddingHorizontal: normalise(70),
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+    },
     bottom: {
         width: '100%',
-        padding: normalise(30),
+        paddingHorizontal: normalise(30),
         paddingBottom: normalise(40),
-        zIndex: 10,
-        // backgroundColor: COLOUR.white,
-        borderTopLeftRadius: normalise(40),
-        borderTopRightRadius: normalise(40),
-        ...SHADOW.xl
     },
     buttons: {
         width: '100%',
         justifyContent: 'center',
         gap: normalise(20),
-    },
-    loginLink: {
-        ...TEXT.h4,
-        // color: COLOUR.white,
-        ...TEXT.medium,
-        textAlign: 'center',
-    },
-    loginText: {
-        ...TEXT.md,
-        // color: COLOUR.white,
-        textAlign: 'center',
+        marginTop: normalise(30)
     },
     title: {
-        fontSize: normalise(36),
+        ...TEXT.lg,
+        ...TEXT.center,
         color: COLOUR.white,
         marginBottom: normalise(10),
-        // ...TEXT.medium,
-    },
-    description: {
-        ...TEXT.md,
-        color: COLOUR.white,
-        marginBottom: normalise(30),
+        ...TEXT.medium,
     },
     image: {
         width: '40%',
@@ -150,7 +109,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
-        backgroundColor: COLOUR.wp_green[500],
+        backgroundColor: COLOUR.white[500],
         paddingVertical: normalise(25),
         paddingHorizontal: normalise(35),
         borderRadius: normalise(40),
@@ -159,5 +118,10 @@ const styles = StyleSheet.create({
         color: COLOUR.white,
         fontWeight: 500,
         ...TEXT.lg
+    },
+    privacyText: {
+        ...TEXT.sm,
+        color: COLOUR.white,
+        ...TEXT.center
     }
 });

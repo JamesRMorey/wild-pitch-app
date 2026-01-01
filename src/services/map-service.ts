@@ -19,6 +19,26 @@ export class MapService {
         }
     }
 
+    static calculateArea = ( bounds: PositionArray) => {
+        const R = 6378137; // meters
+
+        const [lng1, lat1] = bounds[0];
+        const [lng2, lat2] = bounds[1];
+
+        const toRad = (deg: number) => (deg * Math.PI) / 180;
+
+        const lat1Rad = toRad(lat1);
+        const lat2Rad = toRad(lat2);
+        const lngDiffRad = Math.abs(toRad(lng2 - lng1));
+
+        const area =
+            R * R *
+            Math.abs(Math.sin(lat1Rad) - Math.sin(lat2Rad)) *
+            lngDiffRad;
+        console.log(area)
+        return area; // m²
+    }
+
     static squareAreaGeoJson (bounds: PositionArray) {
         
         const tr = bounds[0];

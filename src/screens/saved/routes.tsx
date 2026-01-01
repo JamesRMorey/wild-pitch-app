@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { COLOUR, TEXT } from "../../styles"
 import { delay, normalise } from "../../utils/helpers"
 import { useNavigation } from "@react-navigation/native"
@@ -55,17 +55,35 @@ export default function RoutesScreen({}) {
     }
 
     const deleteRoute = async () => {
-        if (!selectedRoute?.id) return;
-        removeRoute(selectedRoute.id);
-        closeRouteOptions();
+        try {
+            if (selectedRoute?.id) removeRoute(selectedRoute.id);
+        }
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            closeRouteOptions();
+        }
     }
 
 
     const SHEET_OPTIONS = [
         { label: 'Inspect', icon: 'eye', onPress: ()=>inspectRoute() },
         { label: 'View details', icon: 'route', onPress: ()=>viewRouteDetails() },
-        { label: 'Delete route', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>deleteRoute() },
+        { label: 'Delete route', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>openConfirmDeletePrompt() },
     ];
+
+    const openConfirmDeletePrompt = () => {
+        Alert.alert(
+            'Delete this route?', 
+            'Are you sure you want to delete this route permanently?',
+            [
+                { text: 'Delete', onPress: () => deleteRoute()},
+                { text: 'Keep', onPress: () => {}},
+            ],
+        )
+    }
+
 
     useEffect(() => {
         const refreshListener = EventBus.listen.routesRefresh(triggerReRender);
@@ -100,7 +118,7 @@ export default function RoutesScreen({}) {
                 :
                 <NothingHere
                     title="No routes saved"
-                    text="Head to the routes tab to find and creates routes"
+                    text="Head to the map to find and creates routes"
                     // onPress={navigateToBuilder}
                     // buttonText="Create new route"
                 />

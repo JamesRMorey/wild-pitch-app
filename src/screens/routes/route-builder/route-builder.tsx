@@ -26,7 +26,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 	const initialCenter: Coordinate|undefined = route.params?.initialCenter;
 	const activePOI: PointOfInterest|undefined = route.params?.activePOI;
 	const initialRoute: Route|undefined = route?.params?.route;
-	
+
 	const { resetHeading, cameraRef } = useMapCameraControls();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
 	const { tick } = useHaptic();
@@ -141,7 +141,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 							:initialRegion && [initialRegion.longitude, initialRegion.latitude]
 						}
 						zoomLevel={SETTING.ROUTE_CLOSE_ZOOM}
-						animationDuration={loaded ? 500 : 0}
+						animationDuration={0}
 					/>
 					)}
 					{markers.map((marker, index) => {

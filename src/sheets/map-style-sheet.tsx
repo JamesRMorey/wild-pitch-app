@@ -93,7 +93,7 @@ export default function MapStyleSheet ({ id=SHEET.MAP_STYLES } : { id?: string }
                         />
                     </View>
                     <View 
-                        style={styles.settingContainer}
+                        style={[styles.settingContainer, { borderBottomWidth: 0 }]}
                     >
                         <Text>Show routes</Text>
                         <Switch

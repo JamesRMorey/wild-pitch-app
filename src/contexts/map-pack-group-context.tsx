@@ -23,9 +23,10 @@ export const MapPackGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
     
     const { user } = useGlobalState();
     const [mapPackGroups, setMapPackGroups] = useState<Array<MapPackGroup>>([]);
-    const repo = new MapPackGroupRepository(user.id);
+    const repo = new MapPackGroupRepository(user?.id);
 
     const get = async (): Promise<void> => {
+        if (!user) return;
         const groups = await repo.get();
         setMapPackGroups(groups);
     }

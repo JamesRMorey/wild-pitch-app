@@ -25,7 +25,7 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
     const validate = async () => {
         try {
             const updated = data.id ? await update(data.id, data) : await create(data);
-
+            console.log(updated);
             if (onGoBack) {
                 onGoBack({ point: updated });
             }

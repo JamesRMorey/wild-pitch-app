@@ -31,11 +31,14 @@ export default function ExploreScreen({ navigation } : PropsType) {
 		SheetManager.show(SHEET.MAP_SEARCH)
 	}
 
-
     return (
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
 			<View style={styles.titleContainer}>
+				{user ?
 				<Text style={TEXT.h1}>Welcome back {user.name.split(' ')[0] ?? null}</Text>
+				:
+				<Text style={TEXT.h1}>Welcome to Wild Pitch</Text>
+				}
 				<ImageBackgroundCard
 					background={ASSET.LANDING_1}
 					style={{ marginTop: normalise(15) }}

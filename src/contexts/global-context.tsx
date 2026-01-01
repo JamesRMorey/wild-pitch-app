@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User } from '../types';
+import { useNavigation } from '@react-navigation/native';
 
 type GlobalState = {
     user: User,
@@ -11,6 +12,7 @@ type GlobalActions = {
     setUser: (user: User) => void;
     setLoading: (loading: boolean) => void;
     logout: () => Promise<void>;
+    verifyLogin: () => boolean;
 };
 
 const StateContext = createContext<GlobalState | undefined>(undefined);
@@ -19,6 +21,7 @@ const ActionsContext = createContext<GlobalActions | undefined>(undefined);
 export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User>();
     const [isLoading, setLoading] = useState<boolean>(false);
+    const navigation = useNavigation();
 
     const getUser = async () => {
         const u = await AsyncStorage.getItem('user');
@@ -28,6 +31,16 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const logout = async () => {
         await AsyncStorage.removeItem('user');
         setUser(undefined);
+    }
+
+    const verifyLogin = (): boolean => {
+        const loggedIn = user ? true : false;
+
+        if (!loggedIn) {
+            navigation.navigate('auth');
+        }
+
+        return loggedIn
     }
 
     
@@ -46,7 +59,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 value={{ 
                     setUser, 
                     setLoading, 
-                    logout 
+                    logout,
+                    verifyLogin
                 }}
             >
                 {children}

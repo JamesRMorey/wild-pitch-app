@@ -1,4 +1,4 @@
-import { View, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { SETTING } from "../../consts";
 import { normalise, parseValidationErrors } from "../../utils/helpers";
 import { FormErrors, MapPackGroup } from "../../types";
@@ -46,6 +46,13 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
                         styleURL: Mapbox.StyleURL.Outdoors
                     }
                 ]
+            }
+
+            const area = MapService.calculateArea(group.bounds);
+            
+            if (area > SETTING.MAX_MAP_AREA) {
+                Alert.alert("Too Large", 'The map area is too large. Please create a smaller area.')
+                return;
             }
 
             create(group);

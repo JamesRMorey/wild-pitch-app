@@ -24,10 +24,11 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     const { user }  = useGlobalState();
     const [routes, setRoutes] = useState<Array<Route>>([]);
-    const repo = new RouteRepository(user.id);
-    const poiRepo = new PointOfInterestRepository(user.id);
+    const repo = new RouteRepository(user?.id);
+    const poiRepo = new PointOfInterestRepository(user?.id);
 
     const get = (): void => {
+        if (!user) return;
         const data = repo.get() ?? [];
         setRoutes(data);
     }

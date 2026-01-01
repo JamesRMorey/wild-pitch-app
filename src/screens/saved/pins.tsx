@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native"
 import { delay, normalise } from "../../utils/helpers"
 import PointOfInterestCard from "../../components/cards/point-of-interest-card";
 import { COLOUR, TEXT } from "../../styles";
@@ -50,15 +50,33 @@ export default function PinsScreen({  } : PropsType) {
     }
 
     const deleteSelectedPOI = async () => {
-        if (selectedPOI?.id) removePoint(selectedPOI.id);
-        await SheetManager.hide(SHEET.PINS_EDIT_OPTIONS);
+        try {
+            if (selectedPOI?.id) removePoint(selectedPOI.id);
+        }
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            await SheetManager.hide(SHEET.PINS_EDIT_OPTIONS);
+        }
     }
 
     const SHEET_OPTIONS = [
         { label: 'View', icon: 'eye', onPress: ()=>viewSelectedPOI() },
         { label: 'Edit', icon: 'pencil', onPress: ()=>editSelectedPOI() },
-        { label: 'Delete pin', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>deleteSelectedPOI() },
+        { label: 'Delete pin', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>openConfirmDeletePrompt() },
     ];
+
+    const openConfirmDeletePrompt = () => {
+        Alert.alert(
+            'Delete this point?', 
+            'Are you sure you want to delete this point permanently?',
+            [
+                { text: 'Delete', onPress: () => deleteSelectedPOI()},
+                { text: 'Keep', onPress: () => {}},
+            ],
+        )
+    }
 
 
     return (
@@ -86,7 +104,7 @@ export default function PinsScreen({  } : PropsType) {
                 :
                 <NothingHere
                     title="No pins saved"
-                    text="Head to the map and add some pins to your map"
+                    text="Head to the map and add some pins"
                     onPress={() => onPoiPress()}
                 />
                 }

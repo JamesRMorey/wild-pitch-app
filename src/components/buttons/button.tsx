@@ -4,8 +4,8 @@ import { normalise } from "../../utils/helpers";
 import Icon from "../misc/icon";
 import Loader from "../map/loader";
 
-type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, active?: boolean, style?: 'primary' | 'secondary' | 'tertiary' | 'outline', icon?: string, flex?: boolean, loading?: boolean }
-export default function Button ({ title, onPress, disabled=false, active=false, style='primary', padding, icon, flex=false, loading=false } : PropsType) {
+type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, style?: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'white', icon?: string, flex?: boolean, loading?: boolean }
+export default function Button ({ title, onPress, disabled=false, style='primary', padding, icon, flex=false, loading=false } : PropsType) {
 
     return (
         <TouchableOpacity
@@ -15,6 +15,7 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
                 style == 'secondary' && { borderColor: COLOUR.wp_orange[500], backgroundColor: COLOUR.wp_orange[500] },
                 style == 'tertiary' && { borderColor: COLOUR.wp_brown[500], backgroundColor: COLOUR.wp_brown[500] },
                 style == 'outline' && { borderColor: COLOUR.wp_brown[700], backgroundColor: COLOUR.transparent },
+                style == 'white' && { borderColor: COLOUR.white, backgroundColor: COLOUR.white },
                 flex && { flex: 1 },
                 padding ? { paddingVertical: padding } : null
             ]}
@@ -23,7 +24,8 @@ export default function Button ({ title, onPress, disabled=false, active=false, 
         >
             <Text style={[
                 styles.text,
-                style == 'outline' && { color: COLOUR.wp_brown[700] }
+                style == 'outline' && { color: COLOUR.wp_brown[700] },
+                style == 'white' && { color: COLOUR.black }
             ]}>{title}</Text>
             {icon && 
             <Icon

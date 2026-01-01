@@ -1,15 +1,14 @@
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Share } from "react-native"
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Share, Alert } from "react-native"
 import { COLOUR, OPACITY, TEXT } from "../../styles"
 import { delay, normalise } from "../../utils/helpers";
 import { PointOfInterest } from "../../types";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
-import useModals from "../../hooks/useModals";
-import ConfirmModal from "../../modals/confirm";
 import { useNavigation } from "@react-navigation/native";
 import { SheetManager } from "react-native-actions-sheet";
 import { SHEET } from "../../consts";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
+import { useGlobalActions } from "../../contexts/global-context";
 
 type PropsType = { point: PointOfInterest, onChangeSection: (section: string)=>void, onUpdatePoint: (poi: PointOfInterest)=>void };
 export default function PointOfInterestDetails({ point, onChangeSection, onUpdatePoint } : PropsType) {
@@ -36,9 +35,9 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
             onPress: () => shareLocation()
         }
     ];
-    const { modals, close: closeModals, open: openModal } = useModals({ delete: false });
     const navigation = useNavigation();
     const { remove: deletePoint } = usePointsOfInterestActions();
+    const { verifyLogin } = useGlobalActions();
 
 
     const getDirections = async () => {
@@ -59,6 +58,9 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
     const editPoint = async () => {
         await SheetManager.hide(SHEET.MAP_POI_SHEET);
         await delay(100);
+
+        if (!verifyLogin()) return;
+
         // @ts-ignore
         navigation.navigate('map-point-of-interest', { 
             screen: 'point-of-interest-edit', 
@@ -75,9 +77,30 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
 
     const createRoute = async () => {
         await SheetManager.hide(SHEET.MAP_POI_SHEET);
-        navigation.navigate('route-builder', { initialPoint: point });
+        await delay(100);
+
+        if (!verifyLogin()) return;
         
-        await delay(200);
+        navigation.navigate('route-builder', { initialPoint: point });
+        await delay(100);
+    }
+
+    const confirmDeletePoint = () => {
+        if (point.id) {
+            deletePoint(point.id);
+        }
+        SheetManager.hide(SHEET.MAP_POI_SHEET);
+    }
+
+    const openConfirmDeletePrompt = () => {
+        Alert.alert(
+            'Delete this point?', 
+            'Are you sure you want to delete this point permanently?',
+            [
+                { text: 'Delete', onPress: () => confirmDeletePoint()},
+                { text: 'Keep', onPress: () => {}},
+            ],
+        )
     }
 
 
@@ -122,7 +145,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                     <TouchableOpacity
                         style={[styles.option, { borderBottomWidth: 0 }]} 
                         activeOpacity={0.5}
-                        onPress={() => openModal('delete')}
+                        onPress={() => openConfirmDeletePrompt()}
                     >
                         <View style={styles.optionNameContainer}>
                             <Icon
@@ -138,22 +161,9 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
                     <Button
                         title={point.id ? 'Edit pin' : 'Save pin'}
                         onPress={editPoint}
-                        style='large'
                     />
                 </View>
             </View>
-            {modals.delete && (
-                <ConfirmModal
-                    onClose={closeModals}
-                    onConfirm={() => {
-                        deletePoint(point.id);
-                        closeModals();
-                        SheetManager.hide(SHEET.MAP_POI_SHEET);
-                    }}
-                    text="Are you sure you want to delete this point permanently?"
-                    title="Delete Point"
-                />
-            )}
         </View>
     )
 }

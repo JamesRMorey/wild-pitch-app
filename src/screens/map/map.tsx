@@ -27,7 +27,7 @@ import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import RouteLine from "../../components/routes/route-line";
 import ActiveRouteInformation from "../../components/routes/active-route-information";
 import Loader from "../../components/map/loader";
-import { useGlobalState } from "../../contexts/global-context";
+import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
 import { RouteProvider } from "../../services/route-provider";
 import { useRoutesState } from "../../contexts/routes-context";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
@@ -38,6 +38,7 @@ type PropsType = { navigation: any }
 export default function MapScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
+	const { verifyLogin } = useGlobalActions();
 	const { styleURL, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest, activeRoute, showRoutes } = useMapState();
 	const { clearActivePackGroup, flyToLow, resetHeading, reCenter, setActiveRoute, fitToRoute } = useMapActions();
 	const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
@@ -103,9 +104,10 @@ export default function MapScreen({ navigation } : PropsType) {
 	const handleRouteSearchPress = async ( route: RouteSearchResult, fit:boolean=true ) => {
 		try {
 			setLoading(true);
-			SheetManager.hide(SHEET.MAP_SEARCH);
+			await SheetManager.hide(SHEET.MAP_SEARCH);
 			const data = await routeProvider.fetchRoute(route.id, route.slug);
-			
+			if (!data) return;
+
 			updateActiveRoute(data, fit);
 		}
 		catch(err) {
@@ -117,6 +119,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const navigateToAreaBuilder = () => {
+		if (!verifyLogin()) return;
 		navigation.navigate('area-builder', { initialCenter: mapCenter });
 	}
 
@@ -145,6 +148,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	}
 
 	const navigateToRoute = ( route: Route ) => {
+		if (!verifyLogin()) return;
 		navigation.navigate('route-details', { route: route });
 	}
 

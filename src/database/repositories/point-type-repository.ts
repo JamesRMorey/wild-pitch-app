@@ -12,20 +12,7 @@ export class PointTypeRepository {
         const db = getDB();
         this.db = db;
         this.tableName = 'point_types';
-        this.createTable();
         this.seed();
-    }
-
-    createTable (): void {
-        this.db.execute(`
-            CREATE TABLE IF NOT EXISTS point_types (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                name TEXT NOT NULL UNIQUE,
-                icon TEXT NOT NULL,
-                colour TEXT NOT NULL
-            )
-        `);    
     }
 
     seed (): void {
@@ -41,7 +28,6 @@ export class PointTypeRepository {
             ('Mountain', 'mountain', '#7B3F00'),
             ('Lake', 'waves', '#1E90FF'),
             ('Forest', 'trees', '#228B22'),
-            ('Waterfall', 'waves-arrow-down', '#00CED1'),
             ('Viewpoint', 'binoculars', '#FFD700'),
             ('Other', 'heart', '#acc286')
 

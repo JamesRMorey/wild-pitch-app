@@ -17,6 +17,7 @@ export const settings = {
     ROUTE_CLOSE_ZOOM: 16,
     ROUTE_DEFAULT_ZOOM: 12,
     ROUTE_LINE_COLOUR: COLOUR.blue[500],
+    MAX_MAP_AREA: 50000000, //m2
 
     TOP_PADDING: ( deviceHasNotch || deviceHasDynamicIsland || unknownDevice ) ? normalise(50) : normalise(15),
 }

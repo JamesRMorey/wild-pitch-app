@@ -3,7 +3,7 @@ import { normalise, stripHtml } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MapPack, Route } from "../../types";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
@@ -29,7 +29,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
         bounds: RouteService.getBounds(route.markers)
     };
-    const { progress, errored, downloading, downloaded, checkDownloaded, downloadRoute } = useMapPackDownload({ 
+    const { progress, errored, downloading, downloaded, checkDownloaded, downloadRoute, setPack } = useMapPackDownload({ 
         mapPack: pack, 
         onSuccess: () => saveRoute() 
     });
@@ -84,13 +84,23 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const edit = () => {
-        saveRoute();
-        navigation.navigate('route-builder', { route: route })
+        navigation.navigate('route-builder', { 
+            route: route,
+            initialCenter: { latitude: route.latitude, longitude: route.longitude } 
+        })
     }
 
     const findRoute = () => {
         const found = find(route.id);
         if (!found) return;
+
+        setPack({
+            name: MapPackService.getPackName(found.name, Mapbox.StyleURL.Outdoors),
+            styleURL: Mapbox.StyleURL.Outdoors,
+            minZoom: SETTING.MAP_PACK_MIN_ZOOM,
+            maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
+            bounds: RouteService.getBounds(found.markers)
+        })
         
         setRoute(found);
         checkDownloaded();
@@ -122,7 +132,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         style={styles.bookmarkButton}
                     >
                         <Icon
-                            icon={`${savedRoute ? 'bookmark' : 'bookmark'}`}
+                            icon={`${savedRoute ? 'bookmark-check' : 'bookmark'}`}
                             size={normalise(18)}
                             colour={COLOUR.gray[700]}
                         />

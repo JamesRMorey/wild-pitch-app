@@ -2,8 +2,11 @@ import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { COLOUR, TEXT } from '../../styles';
 import { normalise } from '../../utils/helpers';
 import Icon from '../misc/icon';
+import { useGlobalActions } from '../../contexts/global-context';
 
 export default function CustomTabNavigator({ state, descriptors, navigation }) {
+
+    const { verifyLogin } = useGlobalActions();
 
     return (
         <View style={styles.bottomNavContainer}>
@@ -19,10 +22,15 @@ export default function CustomTabNavigator({ state, descriptors, navigation }) {
 
                     const icon = options.tabBarIcon;
                     const name = options.displayName;
+                    const requiresLogin = options.requiresLogin ?? false;
 
                     const isFocused = state.index === index;
 
                     const onPress = () => {
+                        if (requiresLogin) {
+                            if (!verifyLogin()) return;
+                        }
+                        
                         const event = navigation.emit({
                             type: 'tabPress',
                             target: route.key,

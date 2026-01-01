@@ -1,0 +1,18 @@
+export default `
+CREATE TABLE IF NOT EXISTS routes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    notes LONGTEXT DEFAULT NULL,
+    markers JSON NOT NULL,
+    latitude DECIMAL(8,6) NOT NULL,
+    longitude DECIMAL(8,6) NOT NULL,
+    distance DECIMAL(10,2) DEFAULT NULL,
+    status TEXT NOT NULL DEFAULT 'PRIVATE',
+    elevation_gain INTEGER DEFAULT NULL,
+    elevation_loss INTEGER DEFAULT NULL,
+    
+    created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+`

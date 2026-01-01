@@ -8,34 +8,13 @@ export class RouteRepository {
     tableName;
     userId;
 
-    constructor ( userId: number ) {
+    constructor ( userId: number|undefined ) {
         const db = getDB();
         this.userId = userId;
         this.db = db;
         this.tableName = 'routes';
-        this.createTable();
     }
 
-    createTable (): void {
-        this.db.execute(`
-            CREATE TABLE IF NOT EXISTS ${this.tableName} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                name TEXT NOT NULL,
-                notes LONGTEXT DEFAULT NULL,
-                markers JSON NOT NULL,
-                latitude DECIMAL(8,6) NOT NULL,
-                longitude DECIMAL(8,6) NOT NULL,
-                distance DECIMAL(10,2) DEFAULT NULL,
-                status TEXT NOT NULL DEFAULT 'PRIVATE',
-                elevation_gain INTEGER DEFAULT NULL,
-                elevation_loss INTEGER DEFAULT NULL,
-                
-                created_at NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-    }
 
     get ( limit: number=100 ): Array<Route>  {
         const data = this.db.execute(`

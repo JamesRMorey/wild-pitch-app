@@ -22,7 +22,10 @@ const schema = object({
 type PropsType = { navigation: any };
 export default function LoginScreen({ navigation } : PropsType) {
 
-    const [data, setData] = useState<{ email: string, password: string }>({ email: '', password: '' });
+    const [data, setData] = useState<{ email: string, password: string }>({
+        email: '', 
+        password: '' 
+    });
     const [errors, setErrors] = useState<FormErrors>();
     const { setUser } = useGlobalActions();
     const [loading, setLoading] = useState<boolean>(false);
@@ -46,8 +49,13 @@ export default function LoginScreen({ navigation } : PropsType) {
             const { token, user } = await wpApi.login(data);
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
-            await Keychain.setGenericPassword(user.email, token, {service: 'wp_api_bearer'});
+            await Keychain.setGenericPassword(user.email, token, {service: 'wild_pitch'});
             setUser(user);
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'main' }],
+            });
         }
         catch (err: any) {
             console.log(err)
@@ -92,6 +100,7 @@ export default function LoginScreen({ navigation } : PropsType) {
                                 label="Email"
                                 placeHolder="Email"
                                 icon="mail"
+                                value={data.email}
                                 error={errors?.email?.[0]}
                                 onChangeText={(text)=>setData({ ...data, email: text })}
                                 onFocus={()=>setErrors({ ...errors, email: undefined })}
@@ -101,6 +110,7 @@ export default function LoginScreen({ navigation } : PropsType) {
                                 placeHolder="Password"
                                 secureTextEntry={true}
                                 icon="lock"
+                                value={data.password}
                                 error={errors?.password?.[0]}
                                 onChangeText={(text)=>setData({ ...data, password: text })}
                                 onFocus={()=>setErrors({ ...errors, password: undefined })}
