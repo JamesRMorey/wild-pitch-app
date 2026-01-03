@@ -12,6 +12,7 @@ import { SHEET } from "../../consts"
 import OptionsSheet from "../../sheets/options-sheet"
 import { useMapActions } from "../../contexts/map-context"
 import { useRoutesActions, useRoutesState } from "../../contexts/routes-context"
+import { RouteService } from "../../services/route-service"
 
 
 export default function RoutesScreen({}) {
@@ -22,7 +23,6 @@ export default function RoutesScreen({}) {
     const { setActiveRoute, fitToRoute } = useMapActions();
     const [refresh, setRefresh] = useState<number>(0);
     const [selectedRoute, setSelectedRoute] = useState<Route>();
-    
     
     const triggerReRender = () => {
         setRefresh(prev => prev + 1);
@@ -44,10 +44,9 @@ export default function RoutesScreen({}) {
         fitToRoute(selectedRoute);
     }
 
-    const viewRouteDetails = async () => {
+    const viewRouteDetails = async ( route: Route ) => {
         await closeRouteOptions();
-        if (!selectedRoute) return;
-        navigation.navigate('route-details', { route: selectedRoute });
+        navigation.navigate('route-details', { route: route });
     }
 
     const closeRouteOptions = async () => {
@@ -66,10 +65,21 @@ export default function RoutesScreen({}) {
         }
     }
 
+    const exportGPX = async () => {
+        if (!selectedRoute) return;
+        RouteService.export(selectedRoute)
+    } 
+
+    const shareGPX = async () => {
+        if (!selectedRoute) return;
+        RouteService.share(selectedRoute)
+    }
+
 
     const SHEET_OPTIONS = [
         { label: 'Inspect', icon: 'eye', onPress: ()=>inspectRoute() },
-        { label: 'View details', icon: 'route', onPress: ()=>viewRouteDetails() },
+        { label: 'Send GPX to a friend', icon: 'user-star', onPress: ()=>shareGPX() },
+        { label: 'Export GPX', icon: 'save', onPress: ()=>exportGPX() },
         { label: 'Delete route', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>openConfirmDeletePrompt() },
     ];
 
@@ -110,6 +120,7 @@ export default function RoutesScreen({}) {
                                     route={route}
                                     key={`route-card-${i}-${route.id}-${refresh}`}
                                     onOtherPress={() => openRouteOptions(route)}
+                                    onPress={() => viewRouteDetails(route)}
                                 />
                             )
                         })}

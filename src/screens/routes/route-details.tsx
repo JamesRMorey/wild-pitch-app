@@ -1,20 +1,20 @@
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Share as RNShare, Linking } from "react-native"
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Linking } from "react-native"
 import { normalise, stripHtml } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { MapPack, Route } from "../../types";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
 import Mapbox from "@rnmapbox/maps";
 import { MapPackService } from "../../services/map-pack-service";
 import { RouteService } from "../../services/route-service";
-import RNFS from "react-native-fs";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 import Share from 'react-native-share';
 import { useRoutesActions } from "../../contexts/routes-context";
 import { useFocusEffect } from "@react-navigation/native";
+import { GPX } from "../../services/gpx";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
@@ -39,13 +39,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const shareRoute = async () => {
-        try {
-            await RNShare.share({
-                message: `Here\'s a location i've plotted on Wild Pitch Maps (${route.name.replaceAll('\n', '')}) - https://www.google.com/maps/search/?api=1&query=${route.latitude},${route.longitude}`,
-            });
-        } 
-        catch (error: any) {
-        }
+        RouteService.share(route);
     }
 
     const directionsToStart = async () => {
@@ -70,17 +64,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const saveGPX = async () => {
-        const gpx = RouteService.generateGPX(route);
-        const fileName = RouteService.getFileName(route.name) + '.gpx';
-
-        const path = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-        await RNFS.writeFile(path, gpx, 'utf8');
-
-        await Share.open({
-            title: "Export GPX",
-            url: "file://" + path,
-            type: "application/gpx+xml",
-        });
+        RouteService.export(route);
     }
 
     const edit = () => {
@@ -211,6 +195,15 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         title="Directions to start"
                         icon="globe"
                         onPress={directionsToStart}
+                        arrow={true}
+                        last={true}
+                    />
+                </View>
+                <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
+                    <SectionItemCard
+                        title="Send GPX to a friend"
+                        icon="user-star"
+                        onPress={shareRoute}
                         arrow={true}
                         last={true}
                     />

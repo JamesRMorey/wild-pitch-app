@@ -4,6 +4,9 @@ import { Route } from '../types';
 import { RouteRepository } from '../database/repositories/route-repository';
 import { useGlobalState } from './global-context';
 import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
+import { RouteService } from '../services/route-service';
+import { GPX } from '../services/gpx';
+import { Alert } from 'react-native';
 
 type RoutesContextState = {
     routes: Array<Route>
@@ -15,6 +18,7 @@ type RoutesContextActions = {
     remove: (id: number)=>void,
     findByLatLng: (latitude: number, longitude: number)=>Route|void
     find: (id: number)=>Route|void
+    importFile: ()=>Promise<Route|void>
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -34,45 +38,43 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     const create = async ( data: any ): Promise<Route|void> => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await schema.validate(data, { abortEarly: false });
-                const newRoute = repo.create(data);
+        try {
+            await schema.validate(data, { abortEarly: false });
+            const newRoute = repo.create(data);
 
-                if (!newRoute) return resolve();
+            if (!newRoute) return;
 
-                const poiToDelete = poiRepo.findByLatLng(newRoute.latitude, newRoute.longitude);
-                if (poiToDelete?.id) {
-                    poiRepo.delete(poiToDelete.id);
-                }
-
-                get();
-                
-                return resolve(newRoute);
+            const poiToDelete = poiRepo.findByLatLng(newRoute.latitude, newRoute.longitude);
+            if (poiToDelete?.id) {
+                poiRepo.delete(poiToDelete.id);
             }
-            catch (error) {
-                return reject(error);
-            }
-        });
+
+            get();
+            
+            return newRoute;
+        }
+        catch (error: any) {
+            console.error(error);
+            return error;
+        }
     }
 
     const update = async ( id: number, data: Route ): Promise<Route|void> => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                if (!data.id) return reject();
+        try {
+            if (!data.id) return
 
-                await schema.validate(data, { abortEarly: false });
-                const newPoint = repo.update(id, data);
+            await schema.validate(data, { abortEarly: false });
+            const newPoint = repo.update(id, data);
 
-                if (!newPoint) return resolve();
-                get();
+            if (!newPoint) return;
+            get();
 
-                return resolve(newPoint);
-            }
-            catch (error) {
-                return reject(error);
-            }
-        });
+            return newPoint;
+        }
+        catch (error: any) {
+            console.error(error);
+            return error;
+        }
     }
 
     const find = ( id: number ): Route|void => {
@@ -82,8 +84,9 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
             return point;
         }
-        catch (err) {
-            return;
+        catch (error: any) {
+            console.error(error);
+            return error;
         }
     }
 
@@ -94,8 +97,9 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
             return route;
         }
-        catch (err) {
-            return;
+        catch (error: any) {
+            console.error(error);
+            return error;
         }
     }
 
@@ -104,6 +108,22 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         
         repo.delete(id);
         get();
+    }
+
+    const importFile = async (): Promise<Route|void> => {
+        const gpxString = await GPX.import();
+        if (!gpxString) {
+            Alert.alert('Error', 'Looks like the import wasn\'t in the right format');
+            return;
+        }
+
+        const routeData = RouteService.parseGPX(gpxString);
+        if (!routeData) {
+            Alert.alert('Error', 'Looks like the import wasn\'t in the right format');
+            return;
+        }
+        
+        return await create(routeData);
     }
 
     useEffect(() => {
@@ -123,7 +143,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     update,
                     remove,
                     findByLatLng,
-                    find
+                    find,
+                    importFile
                 }}
             >
                 {children}

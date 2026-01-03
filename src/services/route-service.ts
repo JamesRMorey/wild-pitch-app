@@ -2,7 +2,10 @@ import { Coordinate, Route, RouteSearchResult } from "../types";
 import { getDistanceBetweenPoints } from "../utils/helpers";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import { OSMaps } from "./api/os-maps";
-
+import { XMLParser } from "fast-xml-parser";
+import Share from 'react-native-share';
+import { GPX } from "./gpx";
+import { Format } from "./formatter";
 
 export class RouteService {
 
@@ -50,16 +53,18 @@ export class RouteService {
         );
     }
 
-    static generateGPX( route: Route ): string {
+    static generateGPX ( route: Route ): string {
         const header = `<?xml version="1.0" encoding="UTF-8"?>
-            <gpx version="1.1" creator="MyApp" xmlns="http://www.topografix.com/GPX/1/1">
+            <gpx version="1.1" creator="WildPitch" xmlns="http://www.topografix.com/GPX/1/1">
                 <trk>
                 <name>${route.name.replaceAll('\n', '')}</name>
+                <notes>${route.notes?.replaceAll('\n', '')}</notes>
+                <elevation_gain>${route.elevation_gain}</elevation_gain>
+                <elevation_loss>${route.elevation_loss}</elevation_loss>
                 <trkseg>`;
 
         const trkpts = route.markers
-            .map(
-            (p) =>
+            .map((p) =>
                 `<trkpt lat="${p.latitude}" lon="${p.longitude}">
                 <time>${new Date().toISOString()}</time>
                 </trkpt>`
@@ -74,11 +79,34 @@ export class RouteService {
         return header + trkpts + footer;
     }
 
-    static getFileName( name: string ): string {
+    static parseGPX ( gpxString: string ): Route|void {
+        const parser = new XMLParser({
+            ignoreAttributes: false,
+            attributeNamePrefix: "",
+        });
+
+        const data = parser.parse(gpxString);
+        const markers = data.gpx.trk.trkseg.trkpt?.map((p) => ({ latitude: parseFloat(p.lat), longitude: parseFloat(p.lon) }));
+
+        if (markers.length == 0) return;
+
+        return {
+            name: data.gpx?.trk?.name ?? `New Route - ${Format.dateToDateTime(new Date())}`,
+            notes: data.gpx?.trk?.notes ?? null,
+            markers: markers,
+            latitude: markers[0].latitude,
+            longitude: markers[0].longitude,
+            elevation_gain: data.gpx?.trk?.elevation_gain ? parseFloat(data.gpx.trk.elevation_gain) : undefined,
+            elevation_loss: data.gpx?.trk?.elevation_loss ? parseFloat(data.gpx.trk.elevation_loss) : undefined,
+            distance: this.calculateDistance(markers),
+        }
+    }
+
+    static getFileName ( name: string ): string {
         return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
-    static getPreviouslyPassedPointOnRoute( point: Coordinate, routePoints: Array<Coordinate> ): { coord: Coordinate, distancePast: number, index: number } {
+    static getPreviouslyPassedPointOnRoute ( point: Coordinate, routePoints: Array<Coordinate> ): { coord: Coordinate, distancePast: number, index: number } {
         if (routePoints.length === 0) throw new Error('No route points provided');
 
         let closestIndex = 0;
@@ -114,5 +142,23 @@ export class RouteService {
         }
 
         return totalDistance;
+    }
+
+    static async share ( route: Route, message: string = `Here\'s a GPX file for a route I've plotted on Wild Pitch Maps` ) {
+        this.export(route, message);
+    }
+
+    static async export ( route: Route, message?: string ) {
+        const gpx = this.generateGPX(route);
+        const fileName = `${this.getFileName(route.name)}.gpx`;
+
+        const path = await GPX.export(gpx, fileName);
+
+        await Share.open({
+            title: "Share Route GPX",
+            url: "file://" + path,
+            type: "application/gpx+xml",
+            message: message,
+        });
     }
 }

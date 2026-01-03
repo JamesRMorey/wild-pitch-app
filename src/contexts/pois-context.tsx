@@ -10,6 +10,7 @@ type PointsOfInterestContextState = {
 
 type PointsOfInterestContextActions = {
     create: (data: any)=>Promise<PointOfInterest|void>,
+    find: (id: number)=>PointOfInterest|void,
     update: (id: number, data: PointOfInterest)=>Promise<PointOfInterest|void>,
     remove: (id: number)=>void,
     findByLatLng: (latitude: number, longitude: number)=>PointOfInterest|void
@@ -31,39 +32,37 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
     }
 
     const create = async ( data: PointOfInterest ): Promise<PointOfInterest|void> => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await schema.validate(data, { abortEarly: false });
-                const newPoint = repo.create(data);
+        try {
+            await schema.validate(data, { abortEarly: false });
+            const newPoint = repo.create(data);
 
-                if (!newPoint) return resolve();
-                get();
+            if (!newPoint) return;
+            get();
 
-                return resolve(newPoint);
-            }
-            catch (error) {
-                return reject(error);
-            }
-        });
+            return newPoint;
+        }
+        catch (error: any) {
+            console.error(error);
+            return error;
+        }
     }
 
     const update = async ( id: number, data: PointOfInterest ): Promise<PointOfInterest|void> => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                if (!data.id) return reject();
+        try {
+            if (!id) return;
 
-                await schema.validate(data, { abortEarly: false });
-                const newPoint = repo.update(data.id, data);
+            await schema.validate(data, { abortEarly: false });
+            const newPoint = repo.update(id, data);
 
-                if (!newPoint) return resolve();
-                get();
+            if (!newPoint) return;
+            get();
 
-                return resolve(newPoint);
-            }
-            catch (error) {
-                return reject(error);
-            }
-        });
+            return newPoint;
+        }
+        catch (error: any) {
+            console.error(error);
+            return error;
+        }
     }
 
     const find = ( id: number ): PointOfInterest|void => {
@@ -73,8 +72,9 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
 
             return point;
         }
-        catch (err) {
-            return;
+        catch (error: any) {
+            console.error(error);
+            return error;
         }
     }
 
@@ -85,8 +85,9 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
 
             return point;
         }
-        catch (err) {
-            return;
+        catch (error: any) {
+            console.error(error);
+            return error;
         }
     }
 
@@ -111,6 +112,7 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
                     create,
                     update,
                     remove,
+                    find,
                     findByLatLng
                 }}
             >

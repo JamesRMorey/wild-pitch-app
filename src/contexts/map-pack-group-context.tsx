@@ -27,25 +27,24 @@ export const MapPackGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const get = async (): Promise<void> => {
         if (!user) return;
-        const groups = await repo.get();
+        const groups = repo.get();
         setMapPackGroups(groups);
     }
 
-    const create = ( data: MapPackGroup ): Promise<MapPackGroup|void> => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await schema.validate(data, { abortEarly: false });
-                const newGroup = repo.create(data);
+    const create = async ( data: MapPackGroup ): Promise<MapPackGroup|void> => {
+        try {
+            await schema.validate(data, { abortEarly: false });
+            const newGroup = repo.create(data);
 
-                if (!newGroup) return;
-                get();
+            if (!newGroup) return;
+            get();
 
-                return resolve(newGroup);
-            }
-            catch(err) {
-                return reject(err);
-            }
-        })
+            return newGroup;
+        }
+        catch (error: any) {
+            console.error(error);
+            return error;
+        }
     }
 
     const find = ( id: number ): MapPackGroup|void => {
@@ -53,16 +52,6 @@ export const MapPackGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
 
         return mapPackGroup;
     }
-
-    // const update = ( data: PointOfInterest ): PointOfInterest|void => {
-    //     if (!data.id) return;
-    //     const newPoint = repo.update(data.id, data);
-
-    //     if (!newPoint) return;
-
-    //     get();
-    //     return newPoint;
-    // }
 
     const remove = async ( id: number ) => {
         if (!id) return;

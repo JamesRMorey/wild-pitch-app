@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, View, useWindowDimensions, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, useWindowDimensions, Text, TouchableOpacity, Alert } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import PacksScreen from './packs';
 import PinsScreen from './pins';
 import CustomTabView from '../../components/navigation/custom-tab-view';
 import { SETTING, SHEET } from '../../consts';
 import { COLOUR, TEXT } from '../../styles';
-import { normalise } from '../../utils/helpers';
+import { delay, normalise } from '../../utils/helpers';
 import OptionsSheet from '../../sheets/options-sheet';
 import { SheetManager } from 'react-native-actions-sheet';
 import RoutesScreen from './routes';
@@ -14,6 +14,7 @@ import Icon from '../../components/misc/icon';
 import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
 import { useGlobalState } from '../../contexts/global-context';
+import { useRoutesActions } from '../../contexts/routes-context';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
@@ -33,6 +34,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
     const { user } = useGlobalState();
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
+    const { importFile: importRoute } = useRoutesActions();
 
     const openOptionsMenu = () => {
         SheetManager.show(SHEET.SAVED_OPTIONS)
@@ -43,7 +45,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
         navigation.navigate('map');
     }
 
-    const createRoute = () => {
+    const openRouteBuilder = () => {
         closeOptions();
         navigation.navigate('route-builder');
     }
@@ -64,10 +66,17 @@ export default function SavedTabsView({ navigation } : PropsType) {
         closeOptions();
     }
 
+    const routeImport = async () => {
+        await SheetManager.hide(SHEET.SAVED_OPTIONS); 
+        await delay(100);
+        importRoute();
+    }
+
     const OPTIONS = [
         { label: 'Download map', icon: 'map', onPress: navigateToBuilder },
         { label: 'Add pin', icon: 'map-pin', onPress: createPin },
-        { label: 'Create route', icon: 'route', onPress: createRoute },
+        { label: 'Create route', icon: 'route', onPress: openRouteBuilder },
+        { label: 'Import route', icon: 'import', onPress: routeImport },
         { label: 'Clear all downloaded maps', icon: 'trash', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },
     ];
     
