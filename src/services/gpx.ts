@@ -32,4 +32,14 @@ export class GPX {
 
         return await RNFS.readFile(path, "utf8");
     }
+
+    static escapeXml ( str: string ): string {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    };
 }

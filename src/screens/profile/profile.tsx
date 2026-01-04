@@ -45,8 +45,8 @@ export default function ProfileScreen({ navigation } : PropsType) {
             'Delete your account?', 
             'Are you sure you want to delete your account? This is irreversible.',
             [
-                { text: 'Delete', onPress: confirmDeleteAccount},
                 { text: 'Keep', onPress: () => {}},
+                { text: 'Delete', onPress: confirmDeleteAccount},
             ],
         )
     }

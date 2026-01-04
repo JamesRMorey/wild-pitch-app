@@ -73,8 +73,8 @@ export default function PacksScreen({}) {
             'Delete this route?', 
             'Are you sure you want to delete this route permanently?',
             [
-                { text: 'Delete', onPress: () => deletePackGroup(activeMapPackGroup)},
                 { text: 'Keep', onPress: () => {}},
+                { text: 'Delete', onPress: () => deletePackGroup(activeMapPackGroup)},
             ],
         )
     }

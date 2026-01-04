@@ -56,9 +56,11 @@ export class RouteService {
     static generateGPX ( route: Route ): string {
         const header = `<?xml version="1.0" encoding="UTF-8"?>
             <gpx version="1.1" creator="WildPitch" xmlns="http://www.topografix.com/GPX/1/1">
+                <metadata>
+                    <name>${GPX.escapeXml(route.name)}</name>
+                    <desc>${GPX.escapeXml(route.notes ?? '')}</desc>
+                </metadata>
                 <trk>
-                <name>${route.name.replaceAll('\n', '')}</name>
-                <notes>${route.notes ? route.notes?.replaceAll('\n', '') : ''}</notes>
                 <trkseg>`;
 
         const trkpts = route.markers
@@ -84,18 +86,19 @@ export class RouteService {
         });
 
         const data = parser.parse(gpxString);
+        console.log(data);
         const markers = data.gpx.trk.trkseg.trkpt?.map((p) => ({ latitude: parseFloat(p.lat), longitude: parseFloat(p.lon) }));
 
         if (markers.length == 0) return;
 
         return {
-            name: data.gpx?.trk?.name ?? `New Route - ${Format.dateToDateTime(new Date())}`,
-            notes: data.gpx?.trk?.notes ?? null,
+            name: data.gpx?.metadata?.name ?? `New Route - ${Format.dateToDateTime(new Date())}`,
+            notes: data.gpx?.metadata?.desc ?? null,
             markers: markers,
             latitude: markers[0].latitude,
             longitude: markers[0].longitude,
-            elevation_gain: data.gpx?.trk?.elevation_gain?.length ? parseFloat(data.gpx.trk.elevation_gain) : undefined,
-            elevation_loss: data.gpx?.trk?.elevation_loss?.length ? parseFloat(data.gpx.trk.elevation_loss) : undefined,
+            elevation_gain: data.gpx?.metadata?.elevation_gain?.length ? parseFloat(data.gpx.metadata.elevation_gain) : undefined,
+            elevation_loss: data.gpx?.metadata?.elevation_loss?.length ? parseFloat(data.gpx.metadata.elevation_loss) : undefined,
             distance: this.calculateDistance(markers),
         }
     }

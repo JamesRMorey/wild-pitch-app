@@ -88,8 +88,8 @@ export default function RoutesScreen({}) {
             'Delete this route?', 
             'Are you sure you want to delete this route permanently?',
             [
-                { text: 'Delete', onPress: () => deleteRoute()},
                 { text: 'Keep', onPress: () => {}},
+                { text: 'Delete', onPress: () => deleteRoute()},
             ],
         )
     }

@@ -113,17 +113,17 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const importFile = async (): Promise<Route|void> => {
         const gpxString = await GPX.import();
         if (!gpxString) {
-            Alert.alert('Error', 'Looks like the import wasn\'t in the right format');
+            Alert.alert('Error', 'Looks like the import wasn\'t in the right format.');
             return;
         }
 
         const routeData = RouteService.parseGPX(gpxString);
         if (!routeData) {
-            Alert.alert('Error', 'Looks like the import wasn\'t in the right format');
+            Alert.alert('Error', 'Looks like the import wasn\'t in the right format.');
             return;
         }
-        
-        return await create(routeData);
+
+        return routeData;
     }
 
     useEffect(() => {

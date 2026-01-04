@@ -15,6 +15,7 @@ import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
 import { useGlobalState } from '../../contexts/global-context';
 import { useRoutesActions } from '../../contexts/routes-context';
+import { Route } from '../../types';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
@@ -34,7 +35,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
     const { user } = useGlobalState();
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
-    const { importFile: importRoute } = useRoutesActions();
+    const { importFile: importRoute, create: createRoute } = useRoutesActions();
 
     const openOptionsMenu = () => {
         SheetManager.show(SHEET.SAVED_OPTIONS)
@@ -70,7 +71,22 @@ export default function SavedTabsView({ navigation } : PropsType) {
         await SheetManager.hide(SHEET.SAVED_OPTIONS); 
         await delay(100);
         
-        await importRoute();
+        const routeData = await importRoute();
+        if (!routeData) return;
+
+        Alert.alert(
+            'Import GPX file', 
+            'Are you sure you want to import this GPX file to your account?',
+            [
+                { text: 'Cancel', onPress: () => {}},
+                { text: 'Confirm', onPress: () => confirmRouteImport(routeData)}
+            ],
+        )
+    }
+
+    const confirmRouteImport = async ( data: Route ) => {
+        const route = await createRoute(data);
+        navigation.navigate('route-details', { route: route });
     }
 
     const OPTIONS = [

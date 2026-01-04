@@ -11,10 +11,8 @@ import Mapbox from "@rnmapbox/maps";
 import { MapPackService } from "../../services/map-pack-service";
 import { RouteService } from "../../services/route-service";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
-import Share from 'react-native-share';
 import { useRoutesActions } from "../../contexts/routes-context";
 import { useFocusEffect } from "@react-navigation/native";
-import { GPX } from "../../services/gpx";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {

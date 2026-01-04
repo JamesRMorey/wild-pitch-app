@@ -11,6 +11,7 @@ export default function ModalPopup({ children, visible=false, onClose=()=>{}, di
         <Modal 
             transparent 
             visible={visible}
+            animationType="fade"
         >
             <TouchableOpacity 
                 activeOpacity={1} 
@@ -21,12 +22,7 @@ export default function ModalPopup({ children, visible=false, onClose=()=>{}, di
                 disabled={disabled}
             >
                 <TouchableOpacity activeOpacity={1} onPress={() => {}} disabled={disabled}>
-                    <Animatable.View
-                        useNativeDriver={true}
-                        animation={'fadeIn'}
-                    >
-                        { children }
-                    </Animatable.View>
+                    { children }
                 </TouchableOpacity>
             </TouchableOpacity>
         </Modal>

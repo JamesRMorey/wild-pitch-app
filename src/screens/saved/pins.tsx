@@ -72,8 +72,8 @@ export default function PinsScreen({  } : PropsType) {
             'Delete this point?', 
             'Are you sure you want to delete this point permanently?',
             [
-                { text: 'Delete', onPress: () => deleteSelectedPOI()},
                 { text: 'Keep', onPress: () => {}},
+                { text: 'Delete', onPress: () => deleteSelectedPOI()},
             ],
         )
     }
