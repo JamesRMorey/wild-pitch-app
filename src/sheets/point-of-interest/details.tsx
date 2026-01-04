@@ -86,9 +86,7 @@ export default function PointOfInterestDetails({ point, onChangeSection, onUpdat
     }
 
     const confirmDeletePoint = () => {
-        if (point.id) {
-            deletePoint(point.id);
-        }
+        if (point.id) deletePoint(point.id);
         SheetManager.hide(SHEET.MAP_POI_SHEET);
     }
 

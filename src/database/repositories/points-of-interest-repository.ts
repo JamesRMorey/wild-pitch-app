@@ -1,6 +1,5 @@
-import { open, NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
+import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { PointOfInterest } from '../../types';
-import { PointTypeRepository } from './point-type-repository';
 import { getDB } from '../db';
 
 export class PointOfInterestRepository {
@@ -52,8 +51,7 @@ export class PointOfInterestRepository {
             WHERE t.id = ${id} AND t.user_id = ${this.userId}
         `);
         
-        const row = record.rows?._array[0] ?? null
-
+        const row = record.rows?._array[0] ?? null;
         if (!row) return;
 
         return {
@@ -81,8 +79,7 @@ export class PointOfInterestRepository {
             WHERE t.latitude = ${latitude} AND t.longitude = ${longitude} AND t.user_id = ${this.userId}
         `);
         
-        const row = record.rows?._array[0] ?? null
-
+        const row = record.rows?._array[0] ?? null;
         if (!row) return;
 
         return {
@@ -108,10 +105,7 @@ export class PointOfInterestRepository {
             RETURNING *
         `, [data.name, this.userId, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL]);
 
-        const newPoint = record.rows?._array[0] ?? null
-
-        if (!newPoint) return;
-
+        const newPoint = record.rows?._array[0];
         const row = this.find(newPoint.id);
         
         return {
@@ -146,10 +140,7 @@ export class PointOfInterestRepository {
             RETURNING *
         `, [data.name, data.notes || NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, data.elevation || NITRO_SQLITE_NULL, id]);
 
-        const updatedPoint = record.rows?._array[0] ?? null
-
-        if (!updatedPoint) return;
-
+        const updatedPoint = record.rows?._array[0];
         const row = this.find(updatedPoint.id);
 
         return {

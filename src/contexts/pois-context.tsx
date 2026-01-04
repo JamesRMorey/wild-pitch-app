@@ -32,37 +32,25 @@ export const PointsOfInterestProvider: React.FC<{ children: React.ReactNode }> =
     }
 
     const create = async ( data: PointOfInterest ): Promise<PointOfInterest|void> => {
-        try {
-            await schema.validate(data, { abortEarly: false });
-            const newPoint = repo.create(data);
+        await schema.validate(data, { abortEarly: false });
+        const newPoint = repo.create(data);
 
-            if (!newPoint) return;
-            get();
+        if (!newPoint) return;
+        get();
 
-            return newPoint;
-        }
-        catch (error: any) {
-            console.error(error);
-            return error;
-        }
+        return newPoint;
     }
 
     const update = async ( id: number, data: PointOfInterest ): Promise<PointOfInterest|void> => {
-        try {
-            if (!id) return;
+        if (!id) return;
 
-            await schema.validate(data, { abortEarly: false });
-            const newPoint = repo.update(id, data);
+        await schema.validate(data, { abortEarly: false });
+        const newPoint = repo.update(id, data);
 
-            if (!newPoint) return;
-            get();
+        if (!newPoint) return;
+        get();
 
-            return newPoint;
-        }
-        catch (error: any) {
-            console.error(error);
-            return error;
-        }
+        return newPoint;
     }
 
     const find = ( id: number ): PointOfInterest|void => {

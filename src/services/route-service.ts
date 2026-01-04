@@ -86,7 +86,6 @@ export class RouteService {
         });
 
         const data = parser.parse(gpxString);
-        console.log(data);
         const markers = data.gpx.trk.trkseg.trkpt?.map((p) => ({ latitude: parseFloat(p.lat), longitude: parseFloat(p.lon) }));
 
         if (markers.length == 0) return;

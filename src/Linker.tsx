@@ -17,35 +17,46 @@ export default function Linker ({ children } : PropsType) {
     const initialURLProcessed = useRef<boolean>(false);
 
     const confirmImport = async ( data: Route ) => {
-        const route = await createRoute(data);
-        //@ts-ignore
-        navigation.navigate('map');
-        await delay(500);
-        setActiveRoute(route);
-        fitToRoute(route);
+        try {
+            const route = await createRoute(data);
+            //@ts-ignore
+            navigation.navigate('map');
+            await delay(500);
+            setActiveRoute(route);
+            fitToRoute(route);
+        }
+        catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Looks like the import wasn\'t in the right format.');
+        }
     }
 
     const importRoute = async (event: any) => {
         if (!event.url) return;
 
-        const url = event.url;
-        if (!url || !url.endsWith('.gpx')) return;
+        try {
+            const url = event.url;
+            if (!url || !url.endsWith('.gpx')) return;
 
-        const data = await GPX.readFile(url);
-        const routeData = RouteService.parseGPX(data);
-        
-        if (routeData) {
-            Alert.alert(
-                'Import GPX file', 
-                'Are you sure you want to import this GPX file to your account?',
-                [
-                    { text: 'Cancel', onPress: () => {}},
-                    { text: 'Confirm', onPress: () => confirmImport(routeData)}
-                ],
-            )
+            const data = await GPX.readFile(url);
+            const routeData = RouteService.parseGPX(data);
+            
+            if (routeData) {
+                Alert.alert(
+                    'Import GPX file', 
+                    'Are you sure you want to import this GPX file to your account?',
+                    [
+                        { text: 'Cancel', onPress: () => {}},
+                        { text: 'Confirm', onPress: () => confirmImport(routeData)}
+                    ],
+                )
+            }
+            else {
+                Alert.alert('Error', 'Looks like the import wasn\'t in the right format.');
+            }
         }
-        else {
-            Alert.alert('Error', 'Looks like the import wasn\'t in the right format.');
+        catch (error) {
+            console.error(error);
         }
     }
 

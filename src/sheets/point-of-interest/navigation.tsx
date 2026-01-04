@@ -57,10 +57,11 @@ export default function PointOfInterestNavigation({ point, onBack } : { point: P
             setElevation(elev);
             
             if (point.id) {
-                update({ ...point, elevation: elev });
+                update(point.id, { ...point, elevation: elev });
             }
         }
-        catch(err) {
+        catch(error) {
+            console.error(error)
         }
         finally {
             setLoading(prev => ({ ...prev, elevation: false }));

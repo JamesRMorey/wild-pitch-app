@@ -1,9 +1,9 @@
 import React, { createContext,useContext, useEffect, useState } from 'react';
 import { MapPackGroup } from '../types';
-import Mapbox from '@rnmapbox/maps';
 import { useGlobalState } from './global-context';
 import { MapPackGroupRepository } from '../database/repositories/map-pack-group-repository';
 import { mapPackSchema as schema } from '../utils/schema';
+import { MapPackService } from '../services/map-pack-service';
 
 type MapPackGroupsContextState = {
     mapPackGroups: Array<MapPackGroup>
@@ -32,19 +32,13 @@ export const MapPackGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const create = async ( data: MapPackGroup ): Promise<MapPackGroup|void> => {
-        try {
-            await schema.validate(data, { abortEarly: false });
-            const newGroup = repo.create(data);
+        await schema.validate(data, { abortEarly: false });
+        const newGroup = repo.create(data);
 
-            if (!newGroup) return;
-            get();
+        if (!newGroup) return;
+        get();
 
-            return newGroup;
-        }
-        catch (error: any) {
-            console.error(error);
-            return error;
-        }
+        return newGroup;
     }
 
     const find = ( id: number ): MapPackGroup|void => {
@@ -56,13 +50,18 @@ export const MapPackGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
     const remove = async ( id: number ) => {
         if (!id) return;
         
-        const packGroup = find(id);
-        if (!packGroup) return;
+        try {
+            const packGroup = find(id);
+            if (!packGroup) return;
 
-        await Promise.all(packGroup.packs.map(p => Mapbox.offlineManager.deletePack(p.name)));
+            await MapPackService.removeDownloads(packGroup);
 
-        repo.delete(id);
-        get();
+            repo.delete(id);
+            get();
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
     useEffect(() => {

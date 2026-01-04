@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { PointOfInterest, PointType } from "../../types";
 import { normalise, parseValidationErrors } from "../../utils/helpers";
 import { TEXT } from "../../styles";
@@ -22,10 +22,10 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
     const { pointTypes } = usePointTypes();
     const { create, update } = usePointsOfInterestActions();
     
-    const validate = async () => {
+    const save = async () => {
         try {
             const updated = data.id ? await update(data.id, data) : await create(data);
-            console.log(updated);
+
             if (onGoBack) {
                 onGoBack({ point: updated });
             }
@@ -59,7 +59,7 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
 
     return (
         <KeyboardAvoidingView>
-            <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.form}>
                     <TextInput
                         label="Name"
@@ -94,11 +94,11 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
                 <Text style={TEXT.p}>This point is private and stored on your phone, but we will give you the option to share it with others soon :)</Text>
                 <View style={styles.buttons}>
                     <Button
-                        onPress={() => validate()}
+                        onPress={save}
                         title="Save"
                     />
                 </View>
-            </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     )
 }

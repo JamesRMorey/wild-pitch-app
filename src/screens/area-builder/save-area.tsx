@@ -1,4 +1,4 @@
-import { View, StyleSheet, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, Alert, ScrollView } from "react-native";
 import { SETTING } from "../../consts";
 import { normalise, parseValidationErrors } from "../../utils/helpers";
 import { FormErrors, MapPackGroup } from "../../types";
@@ -55,7 +55,7 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
                 return;
             }
 
-            create(group);
+            await create(group);
             if (onBack) {
                 onBack()
             }
@@ -73,34 +73,32 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
 
     return (
         <KeyboardAvoidingView>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.container}>
-                    <View style={styles.form}>
-                        <TextInput
-                            label="Name"
-                            placeHolder="Name your area..."
-                            onChangeText={(text: string) => setData({...data, name: text})}
-                            value={data.name}
-                            error={errors?.name?.[0] ?? undefined}
-                            onFocus={() => setErrors(({ ...errors, name: [] }))}
-                        />
-                        <TextArea
-                            label="Description"
-                            placeHolder="A description of the area..."
-                            onChangeText={(text: string) => setData({...data, description: text})}
-                            value={data.description}
-                            error={errors?.description?.[0] ?? undefined}
-                            onFocus={() => setErrors(({ ...errors, description: [] }))}
-                        />
-                    </View>
-                    <View style={styles.buttons}>
-                        <Button
-                            title="Save"
-                            onPress={save}
-                        />    
-                    </View>        
+            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                <View style={styles.form}>
+                    <TextInput
+                        label="Name"
+                        placeHolder="Name your area..."
+                        onChangeText={(text: string) => setData({...data, name: text})}
+                        value={data.name}
+                        error={errors?.name?.[0] ?? undefined}
+                        onFocus={() => setErrors(({ ...errors, name: [] }))}
+                    />
+                    <TextArea
+                        label="Description"
+                        placeHolder="A description of the area..."
+                        onChangeText={(text: string) => setData({...data, description: text})}
+                        value={data.description}
+                        error={errors?.description?.[0] ?? undefined}
+                        onFocus={() => setErrors(({ ...errors, description: [] }))}
+                    />
                 </View>
-            </TouchableWithoutFeedback>
+                <View style={styles.buttons}>
+                    <Button
+                        title="Save"
+                        onPress={save}
+                    />    
+                </View>        
+            </ScrollView>
         </KeyboardAvoidingView>
     )
 }
@@ -108,7 +106,9 @@ export default function AreaBuilderSaveAreaScreen ({ navigation, route } : Props
 
 const styles = StyleSheet.create({
     container: {
-        padding: normalise(20)
+        padding: normalise(20),
+        gap: normalise(20),
+        paddingBottom: normalise(35)
     },
     scrollView: {
     },
@@ -122,6 +122,6 @@ const styles = StyleSheet.create({
         gap: normalise(15)
     },
     buttons: {
-        marginTop: normalise(30)
+        
     }
 });

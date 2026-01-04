@@ -114,9 +114,8 @@ export default function PacksScreen({}) {
                 :
                 <NothingHere
                     title="No map areas"
-                    text="Press the button below to download an offline map area"
+                    text="Head to the map if you want to download an area without a route. These areas will display offline on the main map once downloaded."
                     onPress={navigateToBuilder}
-                    buttonText="Download map area"
                 />
                 }
             </ScrollView>
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         paddingVertical: normalise(20),
-        paddingHorizontal: normalise(20)
+        paddingHorizontal: normalise(30)
     },
     title: {
         ...TEXT.h4,

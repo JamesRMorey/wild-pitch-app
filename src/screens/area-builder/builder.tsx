@@ -89,10 +89,8 @@ export default function AreaBuilderScreen({ navigation, route } : PropsType) {
                 styleURL={Mapbox.StyleURL.Outdoors}
 				onPress={addMarkerFromLongPress}
 				attributionEnabled={true}
-				attributionPosition={{ 
-					bottom: 6, 
-					left: 90 
-				}}
+				attributionPosition={{ bottom: 6, left: 90 }}
+				scaleBarPosition={{ bottom: 40,left: 15 }}
             >
                 {(initialCenter || initialRegion) && (
 					<Mapbox.Camera

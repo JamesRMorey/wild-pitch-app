@@ -170,10 +170,8 @@ export default function MapScreen({ navigation } : PropsType) {
 				onLongPress={(e) => addMarkerFromLongPress(e)}
 				pitchEnabled={enable3DMode}
 				attributionEnabled={true}
-				attributionPosition={{ 
-					bottom: 6, 
-					left: 90 
-				}}
+				attributionPosition={{ bottom: 6, left: 90 }}
+				scaleBarPosition={{ bottom: 40,left: 15 }}
 				ref={mapRef}
 				onMapIdle={(event) => {
 					const heading = event.properties?.heading;

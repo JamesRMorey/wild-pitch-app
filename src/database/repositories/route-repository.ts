@@ -56,8 +56,7 @@ export class RouteRepository {
             data.elevation_loss || NITRO_SQLITE_NULL
         ]);
 
-        const row = record.rows?._array[0] ?? null
-        if (!row) return;
+        const row = record.rows?._array[0];
         
         return {
             id: row.id,
@@ -100,8 +99,7 @@ export class RouteRepository {
             id
         ]);
 
-        const row = record.rows?._array[0] ?? null;
-        if (!row) return;
+        const row = record.rows?._array[0];
 
         return {
             id: row.id,
@@ -127,7 +125,6 @@ export class RouteRepository {
         `, [id]);
 
         const row = record.rows?._array[0] ?? null
-
         if (!row) return;
 
         return {
@@ -152,8 +149,7 @@ export class RouteRepository {
             LIMIT 1
         `);
         
-        const row = record.rows?._array[0] ?? null
-
+        const row = record.rows?._array[0] ?? null;
         if (!row) return;
 
         return {
@@ -170,11 +166,28 @@ export class RouteRepository {
         }
     }
 
-    delete ( id: number ): void {
-        this.db.execute(`
+    delete ( id: number ): Route|void {
+        const record = this.db.execute(`
             DELETE FROM ${this.tableName}
             WHERE id = ?
             AND user_id = ${this.userId}
+            RETURNING *
         `, [id]);
+
+        const row = record.rows?._array[0];
+        if (!row) return;
+
+        return {
+            id: row.id,
+            name: row.name,
+            notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
+            markers: JSON.parse(row.markers),
+            latitude: row.latitude,
+            longitude: row.longitude,
+            distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
+            elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
+            elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
+            created_at: row.created_at
+        };
     }
 }

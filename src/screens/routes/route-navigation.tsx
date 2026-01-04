@@ -15,6 +15,7 @@ import MapStyleSheet from "../../sheets/map-style-sheet";
 import { RouteService } from "../../services/route-service";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
+import MapStyleButton from "../../components/buttons/map-style-button";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
@@ -23,6 +24,7 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 
 	const { route } = navRoute.params;
 	const { resetHeading, cameraRef, heading, setHeading, followUserPosition, setFollowUserPosition, fitToBounds, reCenter } = useMapCameraControls();
+	const { styleURL, setStyleURL } = useMapSettings();
 	const { userPosition, updateUserPosition, loaded } = useMapSettings();
 	const mapRef = useRef<Mapbox.MapView>(null);
 	const [distanceAlongRoute, setDistanceAlongRoute] = useState<{ distance: number, index: number }>();
@@ -54,13 +56,11 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
             <View style={{ flex: 1 }}>
 				<Mapbox.MapView
 					style={styles.map}
-					styleURL={Mapbox.StyleURL.Outdoors}
+					styleURL={styleURL}
 					pitchEnabled={false}
 					attributionEnabled={true}
-					attributionPosition={{ 
-						bottom: 6, 
-						left: 90 
-					}}
+					attributionPosition={{ bottom: 6, left: 90 }}
+					scaleBarPosition={{ bottom: 40,left: 15 }}
 					ref={mapRef}
 					onMapIdle={(event) => {
 						const heading = event.properties?.heading;
@@ -108,6 +108,20 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 							{ icon: 'map-pin', onPress: () => reCenter([userPosition?.longitude, userPosition?.latitude]), disabled: followUserPosition },
 							{ icon: followUserPosition ? 'navigation-2-off' : 'navigation-2', onPress: () => setFollowUserPosition(!followUserPosition) },
 						]}
+					/>
+				</View>
+				<View style={[styles.controlsContainer, { right: normalise(10), top: SETTING.TOP_PADDING }]}>
+					<MapStyleButton
+						styleURL={Mapbox.StyleURL.Outdoors}
+						onPress={() => setStyleURL(Mapbox.StyleURL.Outdoors)}
+						active={styleURL == Mapbox.StyleURL.Outdoors}
+						disabled={styleURL == Mapbox.StyleURL.Outdoors}
+					/>
+					<MapStyleButton
+						styleURL={Mapbox.StyleURL.SatelliteStreet}
+						onPress={() => setStyleURL(Mapbox.StyleURL.SatelliteStreet)}
+						active={styleURL == Mapbox.StyleURL.SatelliteStreet}
+						disabled={styleURL == Mapbox.StyleURL.SatelliteStreet}
 					/>
 				</View>
 				<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>

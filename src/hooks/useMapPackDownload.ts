@@ -38,7 +38,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
 
     const fetchPack = async () => {
         const p = await MapPackService.getPack(pack.name);
-        
+
         if (!p) {
             setProgress(0);
             setDownloaded(false);
@@ -59,7 +59,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
         if (onFail) onFail();
     }
 
-    const downloadRoute = (refreshOnSuccess: boolean=true) => {
+    const download = (refreshOnSuccess: boolean=true) => {
         setErrored(false);
         setProgress(0);
 
@@ -71,7 +71,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
             return;
         }
 
-        MapPackService.downloadRoute({
+        MapPackService.download({
             name: pack.name, 
             styleURL: pack.styleURL, 
             minZoom: SETTING.MAP_PACK_MIN_ZOOM, 
@@ -90,7 +90,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
         offlinePack,
         pack,
         setPack,
-        downloadRoute,
+        download,
         checkDownloaded: fetchPack
     };
 }

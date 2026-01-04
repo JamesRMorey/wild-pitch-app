@@ -1,5 +1,5 @@
-import { StyleSheet, View } from "react-native";
-import { delay, normalise, parseValidationErrors } from "../../../utils/helpers";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { normalise, parseValidationErrors } from "../../../utils/helpers";
 import { TEXT } from "../../../styles";
 import TextInput from "../../../components/inputs/text-input";
 import { useCallback, useState } from "react";
@@ -26,11 +26,9 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                 ...data,
                 distance: data.distance ?? RouteService.calculateDistance(data.markers),
             }
-            const updated = data.id ?
-                await update(data.id, routeData)
-                :
-                await create(routeData);
-
+            const updated = data.id ? await update(data.id, routeData) : await create(routeData);
+            if (!updated) return;
+            
             if (onGoBack) {
                 onGoBack({ point: updated });
             }
@@ -55,7 +53,7 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
 
     return (
         <KeyboardAvoidingView>
-            <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.form}>
                     <TextInput
                         label="Name"
@@ -80,7 +78,7 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                         title="Save"
                     />
                 </View>
-            </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     )
 }
@@ -121,5 +119,8 @@ const styles = StyleSheet.create({
     },
     form: {
         gap: normalise(15)
+    },
+    buttons: {
+        
     }
 })

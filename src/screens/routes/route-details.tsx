@@ -27,9 +27,9 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
         bounds: RouteService.getBounds(route.markers)
     };
-    const { progress, errored, downloading, downloaded, checkDownloaded, downloadRoute, setPack } = useMapPackDownload({ 
+    const { progress, errored, downloading, downloaded, checkDownloaded, download, setPack } = useMapPackDownload({ 
         mapPack: pack, 
-        onSuccess: () => saveRoute() 
+        onSuccess: () => saveRoute()
     });
 
     const goBack = () => {
@@ -50,6 +50,8 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             if (savedRoute) return;
 
             const newRoute = await create(route);
+            if (!newRoute) return;
+            
             setSavedRoute(newRoute);
         }
         catch (err) {
@@ -214,7 +216,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 {errored ?
                 <Button
                     title="Retry"
-                    onPress={downloadRoute}
+                    onPress={download}
                     style='outline'
                     flex={true}
                 />
@@ -234,7 +236,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 :
                 <Button
                     title="Download"
-                    onPress={downloadRoute}
+                    onPress={download}
                     style='outline'
                     flex={true}
                 />

@@ -1,90 +1,28 @@
 import { normalise } from "../../utils/helpers";
 import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
 import { MapPackGroup } from "../../types"
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
-import { useEffect, useState } from "react";
-import { MapPackService } from "../../services/map-pack-service";
+import { useEffect } from "react";
 import ProgressBar from "../misc/progress-bar";
-import { EventBus } from "../../services/event-bus";
-import OfflinePack from "@rnmapbox/maps/lib/typescript/src/modules/offline/OfflinePack";
 import { Format } from "../../services/formatter";
-import { ASSET, SETTING } from "../../consts";
-import { useGlobalState } from "../../contexts/global-context";
-import { MapService } from "../../services/map-service";
+import { ASSET } from "../../consts";
+import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 
 type PropsType = { mapPackGroup: MapPackGroup, onPress?: ()=>void, onOtherPress?: ()=>void }
 export default function MapPackGroupCard ({ mapPackGroup, onPress=()=>{}, onOtherPress } : PropsType ) {
 
-    const { user } = useGlobalState();
-    const [progress, setProgress] = useState<number>(0);
-    const [downloaded, setDownloaded] = useState<boolean>();
-    const [errored, setErrored] = useState<boolean>(false);
-    const [downloading, setDownloading] = useState<boolean>(false);
     const pack = mapPackGroup.packs[0];
-    const [offlinePack, setOfflinePack] = useState<OfflinePack>();
-
-    const checkDownloaded = async () => {
-        fetchPack();
-    }
-
-    const fetchPack = async () => {
-        const p = await MapPackService.getPack(pack.name);
-
-        if (!p) {
-            setProgress(0);
-            setDownloaded(false);
-            setOfflinePack(undefined);
-            return;
-        }
-
-        setOfflinePack(p);
-        setDownloaded(p.pack.state == "complete");
-        setProgress(p.pack.percentage);
-    }
-
-    const onDownloadProgress = (offlineRegion: any, status: { percentage: number }) => {
-        setProgress(status.percentage);
-        setDownloaded(status.percentage == 100 ? true : false);
-
-        if (status.percentage == 100) {
-            EventBus.emit.mapPackDownload(pack.name);
-            setDownloading(false);
-            setDownloaded(true);
-            checkDownloaded();
-        }
-    }
-
-    const onDownloadError = () => {
-        setErrored(true);
-        setDownloading(false);
-        setProgress(0);
-    }
-
-    const download = () => {
-        setErrored(false);
-        setProgress(0);
-
-        const area = MapService.calculateArea(mapPackGroup.bounds);
-        
-        if (area > SETTING.MAX_MAP_AREA) {
-            Alert.alert("Download Failed", 'The map area is too large.')
-            onDownloadError();
-            return;
-        }
-
-        MapPackService.download({ 
-            name: pack.name, 
-            styleURL: pack.styleURL, 
-            minZoom: mapPackGroup.minZoom, 
-            maxZoom: mapPackGroup.maxZoom, 
-            bounds: mapPackGroup.bounds 
-        }, user.id, mapPackGroup, onDownloadProgress, onDownloadError);
-
-        setDownloading(true);
-    }
-
-
+    const { progress, errored, downloading, offlinePack, downloaded, checkDownloaded, download } = useMapPackDownload({
+        mapPack: {
+            name: pack.name,
+            styleURL: pack.styleURL,
+            minZoom: mapPackGroup.minZoom,
+            maxZoom: mapPackGroup.maxZoom,
+            bounds: mapPackGroup.bounds
+        },
+    });
+    
     useEffect(() => {
         checkDownloaded();
     }, [])

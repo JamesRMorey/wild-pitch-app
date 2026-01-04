@@ -1,6 +1,5 @@
 import { MapPackGroup, PointOfInterest } from '../../types';
 import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
-import { PointTypeRepository } from './point-type-repository';
 import Mapbox from '@rnmapbox/maps';
 import { getDB } from '../db';
 
@@ -40,11 +39,7 @@ export class MapPackGroupRepository {
                     {
                         name: `${row.key}_OUTDOORS`,
                         styleURL: Mapbox.StyleURL.Outdoors
-                    },
-                    // {
-                    //     name: `${row.key}_SATELLITE`,
-                    //     styleURL: Mapbox.StyleURL.SatelliteStreet
-                    // }
+                    }
                 ]
             })) as any[]
             : [];
@@ -57,8 +52,7 @@ export class MapPackGroupRepository {
             WHERE id = ${id} AND user_id = ${this.userId}
         `);
         
-        const row = record.rows?._array[0] ?? null
-
+        const row = record.rows?._array[0] ?? null;
         if (!row) return;
 
         return {
@@ -74,26 +68,19 @@ export class MapPackGroupRepository {
                 {
                     name: `${row.key}_OUTDOORS`,
                     styleURL: Mapbox.StyleURL.Outdoors
-                },
-                // {
-                //     name: `${row.key}_SATELLITE`,
-                //     styleURL: Mapbox.StyleURL.SatelliteStreet
-                // }
+                }
             ]
         }
     }
 
     create ( data: MapPackGroup ): MapPackGroup|void {
-        console.log(this.userId, data)
         const record = this.db.execute(`
             INSERT OR IGNORE INTO ${this.tableName} (name, user_id, key, description, min_zoom, max_zoom, latitude, longitude, bounds) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             RETURNING *
         `, [data.name, this.userId, data.key, data.description ?? NITRO_SQLITE_NULL, data.minZoom, data.maxZoom,  data.center[1], data.center[0], JSON.stringify(data.bounds)]);
 
-        const row = record.rows?._array[0] ?? null
+        const row = record.rows?._array[0];
         
-        if (!row) return;
-
         return {
             id: row.id,
             key: row.key,
@@ -107,11 +94,7 @@ export class MapPackGroupRepository {
                 {
                     name: `${row.key}_OUTDOORS`,
                     styleURL: Mapbox.StyleURL.Outdoors
-                },
-                // {
-                //     name: `${row.key}_SATELLITE`,
-                //     styleURL: Mapbox.StyleURL.SatelliteStreet
-                // }
+                }
             ]
         }
     }
@@ -129,10 +112,7 @@ export class MapPackGroupRepository {
             RETURNING *
         `, [data.name, data.notes ?? NITRO_SQLITE_NULL, data.point_type_id,  data.latitude, data.longitude, id]);
 
-        const updatedPoint = record.rows?._array[0] ?? null
-
-        if (!updatedPoint) return;
-
+        const updatedPoint = record.rows?._array[0];
         const row = this.find(updatedPoint.id);
 
         return {

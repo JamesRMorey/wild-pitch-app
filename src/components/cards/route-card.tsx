@@ -22,7 +22,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
         maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
         bounds: RouteService.getBounds(route.markers)
     };
-    const { progress, errored, downloading, downloaded, offlinePack, checkDownloaded, downloadRoute } = useMapPackDownload({ 
+    const { progress, errored, downloading, downloaded, offlinePack, checkDownloaded, download } = useMapPackDownload({ 
         mapPack: pack
     });
 
@@ -93,7 +93,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                     </View>
                     <View style={styles.downloadContainer}>
                         {errored ?
-                        <TouchableOpacity style={styles.downloadButton} onPress={()=>downloadRoute()}>
+                        <TouchableOpacity style={styles.downloadButton} onPress={()=>download()}>
                             <Icon
                                 icon='cloud-download'
                                 size={normalise(12)}
@@ -118,13 +118,13 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                             <Text style={styles.downloadedText}>Downloaded</Text>
                         </View>
                         :
-                        <TouchableOpacity style={styles.downloadButton} onPress={() => downloadRoute(false)}>
+                        <TouchableOpacity style={styles.downloadButton} onPress={() => download(false)}>
                             <Icon
                                 icon='cloud-download'
                                 size={normalise(12)}
                                 colour={COLOUR.wp_orange[500]}
                             />
-                            <Text style={styles.downloadButtonText}>Download</Text>
+                            <Text style={styles.downloadButtonText}>Download map</Text>
                         </TouchableOpacity>
                         }
                     </View>

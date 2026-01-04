@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View, Alert } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
 import { useGlobalState } from "../../contexts/global-context";
 import { ASSET, SETTING, SHEET } from "../../consts";
@@ -8,27 +8,60 @@ import LearnCard from "../../components/cards/learn-card";
 import ImageBackgroundCard from "../../components/cards/image-background-card";
 import PillCard from "../../components/cards/pill";
 import { SheetManager } from "react-native-actions-sheet";
+import { Route } from "../../types";
+import { useRoutesActions } from "../../contexts/routes-context";
+import { useMapActions } from "../../contexts/map-context";
+import Icon from "../../components/misc/icon";
 
 type PropsType = { navigation: any }
 export default function ExploreScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
+	const { create: createRoute, importFile: importRoute } = useRoutesActions();
+	const { setActiveRoute, fitToRoute } = useMapActions();
 	const FEATURES_CARDS = useMemo(() => [
-		{ title: 'Plan a route', text: 'Plan & plot your own routes.', buttonText: 'Get started', icon: 'route', colour: COLOUR.blue, onPress: ()=>navigation.navigate('map') },
-		{ title: 'Download a map', text: 'Don\'t get lost when signal runs out.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_purple, onPress: ()=>navigation.navigate('map') },
-		{ title: 'Save a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.wp_yellow, onPress: ()=>exploreRoutes() },
-		{ title: 'Explore the map', text: 'Add places & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },
-	], []);
-	const LEARN_PILLS = useMemo(() => [
-		{ text: 'Maps', onPress: ()=>{}, colour: COLOUR.wp_purple[500] },
-		{ text: 'Routes', onPress: ()=>{}, colour: COLOUR.blue[500] },
-		{ text: 'Pins', onPress: ()=>{}, colour: COLOUR.wp_green[500] },
+		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },
+		{ title: 'Find a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.blue, onPress: ()=>exploreRoutes() },
+		{ title: 'Import a route', text: 'Import GPX route files directly into Wild Pitch!', buttonText: 'Get started', icon: 'import', colour: COLOUR.wp_purple, onPress: ()=>routeImport() },
+		{ title: 'Offline things', text: 'Save everything offline. See what you have saved here.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_yellow, onPress: ()=>navigation.navigate('saved') },
 	], []);
 
 	const exploreRoutes =  async() => {
 		navigation.navigate('map');
 		await delay(300);
 		SheetManager.show(SHEET.MAP_SEARCH)
+	}
+
+	const routeImport = async () => {
+		await SheetManager.hide(SHEET.SAVED_OPTIONS); 
+		await delay(100);
+		
+		const routeData = await importRoute();
+		if (!routeData) return;
+
+		Alert.alert(
+			'Import GPX file', 
+			'Are you sure you want to import this GPX file to your account?',
+			[
+				{ text: 'Cancel', onPress: () => {}},
+				{ text: 'Confirm', onPress: () => confirmRouteImport(routeData)}
+			],
+		)
+	}
+
+	const confirmRouteImport = async ( data: Route ) => {
+		try {
+			const route = await createRoute(data);
+			if (!route) return;
+
+			navigation.navigate('map');
+			await delay(500);
+			setActiveRoute(route);
+			fitToRoute(route);
+		}
+		catch (error) {
+			console.error(error)
+		}
 	}
 
     return (
@@ -71,24 +104,29 @@ export default function ExploreScreen({ navigation } : PropsType) {
 					})}
 				</ScrollView>
 			</View>
-			<View style={[styles.section, { paddingLeft: 0 }]}>
+			<View style={[styles.section]}>
 				<View style={styles.sectionTitleContainer}>
-					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Coming Soon</Text>
-					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>We're building a collection of routes and wild camping spots from the WP community. Help us by creating public routes and camping points in the map.</Text>
-					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>All your routes and pins are private at the moment, but you'll have the option to share these with others soon :)</Text>
+					<Text style={[styles.sectionTitle]}>What's New</Text>
+					<View style={styles.bullet}>
+						<Icon icon="dot"></Icon>
+						<View style={styles.bulletDesc}>
+							<Text style={[TEXT.p]}>Import routes by sharing GPX files from other apps or friends.</Text>
+						</View>
+					</View>
+					<View style={styles.bullet}>
+						<Icon icon="dot"></Icon>
+						<View style={styles.bulletDesc}>
+							<Text style={[TEXT.p]}>Export and share your routes as GPX files with friends.</Text>
+						</View>
+					</View>
 				</View>
-				{/* <ScrollView contentContainerStyle={styles.sectionScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-					{LEARN_PILLS.map((pill, i) => {
-						return (
-							<PillCard
-								key={i}
-								text={pill.text}
-								colour={pill.colour}
-								onPress={pill.onPress}
-							/>
-						)
-					})}
-				</ScrollView> */}
+			</View>
+			<View style={[styles.section]}>
+				<View style={styles.sectionTitleContainer}>
+					<Text style={[styles.sectionTitle]}>Coming Soon</Text>
+					<Text style={[TEXT.p]}>We're building a collection of routes and wild camping spots from the WP community. Help us by creating public routes and camping points in the map.</Text>
+					<Text style={[TEXT.p]}>All your routes and pins are private at the moment, but you'll have the option to share these with others soon :)</Text>
+				</View>
 			</View>
 		</ScrollView>            
     )
@@ -124,5 +162,15 @@ const styles = StyleSheet.create({
 	},
 	sectionTitleContainer: {
 		gap: normalise(5)
+	},
+	bullet: {
+		justifyContent: 'flex-start',
+		alignItems: 'flex-start',
+		flexDirection: 'row',
+		gap: normalise(5)
+	},
+	bulletDesc: {
+		flex: 1, 
+		marginTop: normalise(4)
 	}
 });

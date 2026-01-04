@@ -104,7 +104,7 @@ export default function PinsScreen({  } : PropsType) {
                 :
                 <NothingHere
                     title="No pins saved"
-                    text="Head to the map and add some pins"
+                    text="Head to the map and add some pins. You can use the search on the map to find places around the UK."
                     onPress={() => onPoiPress()}
                 />
                 }
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         paddingVertical: normalise(20),
-        paddingHorizontal: normalise(20)
+        paddingHorizontal: normalise(30)
     },
     title: {
         ...TEXT.h4,

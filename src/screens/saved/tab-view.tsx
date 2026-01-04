@@ -41,11 +41,6 @@ export default function SavedTabsView({ navigation } : PropsType) {
         SheetManager.show(SHEET.SAVED_OPTIONS)
     }
 
-    const createPin = () => {
-        closeOptions();
-        navigation.navigate('map');
-    }
-
     const openRouteBuilder = () => {
         closeOptions();
         navigation.navigate('route-builder');
@@ -85,13 +80,18 @@ export default function SavedTabsView({ navigation } : PropsType) {
     }
 
     const confirmRouteImport = async ( data: Route ) => {
-        const route = await createRoute(data);
-        navigation.navigate('route-details', { route: route });
+        try {
+            const route = await createRoute(data);
+            if (!route) return;
+            navigation.navigate('route-details', { route: route });
+        }
+        catch (error) {
+            console.error(error)
+        }
     }
 
     const OPTIONS = [
         { label: 'Download map', icon: 'map', onPress: navigateToBuilder },
-        { label: 'Add pin', icon: 'map-pin', onPress: createPin },
         { label: 'Create route', icon: 'route', onPress: openRouteBuilder },
         { label: 'Import route', icon: 'import', onPress: routeImport },
         { label: 'Clear all downloaded maps', icon: 'trash', colour: COLOUR.red[500], showArrow: false, onPress: clearAllDownloadedMaps },

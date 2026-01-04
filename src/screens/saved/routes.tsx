@@ -54,15 +54,10 @@ export default function RoutesScreen({}) {
     }
 
     const deleteRoute = async () => {
-        try {
-            if (selectedRoute?.id) removeRoute(selectedRoute.id);
+        if (selectedRoute?.id) {
+            removeRoute(selectedRoute.id);
         }
-        catch (error) {
-            console.error(error)
-        }
-        finally {
-            closeRouteOptions();
-        }
+        closeRouteOptions();
     }
 
     const exportGPX = async () => {
@@ -129,7 +124,7 @@ export default function RoutesScreen({}) {
                 :
                 <NothingHere
                     title="No routes saved"
-                    text="Head to the map to find and creates routes"
+                    text="Head to the map to find and creates routes. You can also import GPX files using the plus icon in the top right corner."
                     // onPress={navigateToBuilder}
                     // buttonText="Create new route"
                 />
@@ -150,7 +145,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         paddingVertical: normalise(20),
-        paddingHorizontal: normalise(20)
+        paddingHorizontal: normalise(30)
     },
     title: {
         ...TEXT.h4,

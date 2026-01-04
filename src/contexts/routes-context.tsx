@@ -7,6 +7,8 @@ import { PointOfInterestRepository } from '../database/repositories/points-of-in
 import { RouteService } from '../services/route-service';
 import { GPX } from '../services/gpx';
 import { Alert } from 'react-native';
+import Mapbox from '@rnmapbox/maps';
+import { MapPackService } from '../services/map-pack-service';
 
 type RoutesContextState = {
     routes: Array<Route>
@@ -38,43 +40,31 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     const create = async ( data: any ): Promise<Route|void> => {
-        try {
-            await schema.validate(data, { abortEarly: false });
-            const newRoute = repo.create(data);
+        await schema.validate(data, { abortEarly: false });
+        const newRoute = repo.create(data);
 
-            if (!newRoute) return;
+        if (!newRoute) return;
 
-            const poiToDelete = poiRepo.findByLatLng(newRoute.latitude, newRoute.longitude);
-            if (poiToDelete?.id) {
-                poiRepo.delete(poiToDelete.id);
-            }
-
-            get();
-            
-            return newRoute;
+        const poiToDelete = poiRepo.findByLatLng(newRoute.latitude, newRoute.longitude);
+        if (poiToDelete?.id) {
+            poiRepo.delete(poiToDelete.id);
         }
-        catch (error: any) {
-            console.error(error);
-            return error;
-        }
+
+        get();
+        
+        return newRoute;
     }
 
     const update = async ( id: number, data: Route ): Promise<Route|void> => {
-        try {
-            if (!data.id) return
+        if (!data.id) return
 
-            await schema.validate(data, { abortEarly: false });
-            const newPoint = repo.update(id, data);
+        await schema.validate(data, { abortEarly: false });
+        const newPoint = repo.update(id, data);
 
-            if (!newPoint) return;
-            get();
+        if (!newPoint) return;
+        get();
 
-            return newPoint;
-        }
-        catch (error: any) {
-            console.error(error);
-            return error;
-        }
+        return newPoint;
     }
 
     const find = ( id: number ): Route|void => {
@@ -86,7 +76,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
         catch (error: any) {
             console.error(error);
-            return error;
+            return;
         }
     }
 
@@ -99,15 +89,26 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
         catch (error: any) {
             console.error(error);
-            return error;
+            return;
         }
     }
 
-    const remove = ( id: number ) => {
+    const remove = async ( id: number ) => {
         if (!id) return;
         
-        repo.delete(id);
-        get();
+        try {
+            const deleted = repo.delete(id);
+            if (deleted) {
+                const packName = MapPackService.getPackName(deleted.name, Mapbox.StyleURL.Outdoors);
+                await MapPackService.removeDownload(packName)
+            }
+           
+            console.log(await Mapbox.offlineManager.getPacks());
+            get();
+        }
+        catch (error) {
+            console.error('Error deleting route');
+        }
     }
 
     const importFile = async (): Promise<Route|void> => {
