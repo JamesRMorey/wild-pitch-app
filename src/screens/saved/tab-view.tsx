@@ -69,7 +69,8 @@ export default function SavedTabsView({ navigation } : PropsType) {
     const routeImport = async () => {
         await SheetManager.hide(SHEET.SAVED_OPTIONS); 
         await delay(100);
-        importRoute();
+        
+        await importRoute();
     }
 
     const OPTIONS = [

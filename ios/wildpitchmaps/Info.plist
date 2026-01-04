@@ -68,5 +68,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>wildpitchmaps</string>
+            </array>
+            <key>CFBundleURLName</key>
+            <string>com.wildpitch.maps</string>
+        </dict>
+    </array>
 </dict>
 </plist>

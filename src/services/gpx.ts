@@ -23,7 +23,7 @@ export class GPX {
 
     }
 
-    private static async readFile ( uri: string ): Promise<string> {
+    static async readFile ( uri: string ): Promise<string> {
         let path = uri;
 
         if (path.startsWith("file://")) {

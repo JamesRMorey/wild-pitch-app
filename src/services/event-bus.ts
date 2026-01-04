@@ -15,6 +15,7 @@ export class EventBus {
     }
 
     static listen: any = {
+        fileImport: (callback: Function) => DeviceEventEmitter.addListener(EVENT.URL, () => callback()),
         mapPackDownload: (callback: Function) => DeviceEventEmitter.addListener(EVENT.MAP_PACK_DOWNLOAD, () => callback()),
         mapInspectPOI: (callback: Function) => DeviceEventEmitter.addListener(EVENT.MAP_INSPECT_POI, (e: PointOfInterest) => callback(e)),
         inspectRoute: (callback: Function) => DeviceEventEmitter.addListener(EVENT.INSPECT_ROUTE, (e: any) => callback(e)),

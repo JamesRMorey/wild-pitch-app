@@ -58,9 +58,7 @@ export class RouteService {
             <gpx version="1.1" creator="WildPitch" xmlns="http://www.topografix.com/GPX/1/1">
                 <trk>
                 <name>${route.name.replaceAll('\n', '')}</name>
-                <notes>${route.notes?.replaceAll('\n', '')}</notes>
-                <elevation_gain>${route.elevation_gain}</elevation_gain>
-                <elevation_loss>${route.elevation_loss}</elevation_loss>
+                <notes>${route.notes ? route.notes?.replaceAll('\n', '') : ''}</notes>
                 <trkseg>`;
 
         const trkpts = route.markers
@@ -72,9 +70,9 @@ export class RouteService {
             .join("\n");
 
         const footer = `
-            </trkseg>
-            </trk>
-        </gpx>`;
+                </trkseg>
+                </trk>
+            </gpx>`;
 
         return header + trkpts + footer;
     }
@@ -96,8 +94,8 @@ export class RouteService {
             markers: markers,
             latitude: markers[0].latitude,
             longitude: markers[0].longitude,
-            elevation_gain: data.gpx?.trk?.elevation_gain ? parseFloat(data.gpx.trk.elevation_gain) : undefined,
-            elevation_loss: data.gpx?.trk?.elevation_loss ? parseFloat(data.gpx.trk.elevation_loss) : undefined,
+            elevation_gain: data.gpx?.trk?.elevation_gain?.length ? parseFloat(data.gpx.trk.elevation_gain) : undefined,
+            elevation_loss: data.gpx?.trk?.elevation_loss?.length ? parseFloat(data.gpx.trk.elevation_loss) : undefined,
             distance: this.calculateDistance(markers),
         }
     }
@@ -162,3 +160,7 @@ export class RouteService {
         });
     }
 }
+
+
+// ${route.elevation_gain ? `<elevation_gain>${route.elevation_gain}</elevation_gain>` : ''}
+// ${route.elevation_loss ? `<elevation_loss>${route.elevation_loss}</elevation_loss>` : ''}
