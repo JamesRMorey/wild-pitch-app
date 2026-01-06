@@ -1,12 +1,11 @@
 import { Image, ScrollView, StyleSheet, Text, View, Alert } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
-import { useGlobalState } from "../../contexts/global-context";
+import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
 import { ASSET, SETTING, SHEET } from "../../consts";
 import { delay, normalise } from "../../utils/helpers";
 import { useMemo } from "react";
 import LearnCard from "../../components/cards/learn-card";
 import ImageBackgroundCard from "../../components/cards/image-background-card";
-import PillCard from "../../components/cards/pill";
 import { SheetManager } from "react-native-actions-sheet";
 import { Route } from "../../types";
 import { useRoutesActions } from "../../contexts/routes-context";
@@ -17,13 +16,14 @@ type PropsType = { navigation: any }
 export default function ExploreScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
+	const { verifyLogin } = useGlobalActions();
 	const { create: createRoute, importFile: importRoute } = useRoutesActions();
 	const { setActiveRoute, fitToRoute } = useMapActions();
 	const FEATURES_CARDS = useMemo(() => [
 		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },
 		{ title: 'Find a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.blue, onPress: ()=>exploreRoutes() },
 		{ title: 'Import a route', text: 'Import GPX route files directly into Wild Pitch!', buttonText: 'Get started', icon: 'import', colour: COLOUR.wp_purple, onPress: ()=>routeImport() },
-		{ title: 'Offline things', text: 'Save everything offline. See what you have saved here.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_yellow, onPress: ()=>navigation.navigate('saved') },
+		{ title: 'Offline things', text: 'Save everything offline. See what you have saved here.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_yellow, onPress: ()=>navigateToSaved() },
 	], []);
 
 	const exploreRoutes =  async() => {
@@ -32,7 +32,14 @@ export default function ExploreScreen({ navigation } : PropsType) {
 		SheetManager.show(SHEET.MAP_SEARCH)
 	}
 
+	const navigateToSaved = () => {
+		if (!verifyLogin()) return;
+		navigation.navigate('saved')
+	}
+
 	const routeImport = async () => {
+		if (!verifyLogin()) return;
+
 		await SheetManager.hide(SHEET.SAVED_OPTIONS); 
 		await delay(100);
 		

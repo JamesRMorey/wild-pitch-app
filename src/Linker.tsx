@@ -7,10 +7,12 @@ import { useNavigation } from '@react-navigation/native';
 import { Route } from './types';
 import { delay } from './utils/helpers';
 import { useMapActions } from './contexts/map-context';
+import { useGlobalActions } from './contexts/global-context';
 
 type PropsType = { children: any }
 export default function Linker ({ children } : PropsType) {
 
+    const { verifyLogin } = useGlobalActions();
     const { create: createRoute } = useRoutesActions();
     const { setActiveRoute, fitToRoute } = useMapActions();
     const navigation = useNavigation();
@@ -18,6 +20,7 @@ export default function Linker ({ children } : PropsType) {
 
     const confirmImport = async ( data: Route ) => {
         try {
+            if (!verifyLogin()) return;
             const route = await createRoute(data);
             //@ts-ignore
             navigation.navigate('map');
@@ -33,6 +36,7 @@ export default function Linker ({ children } : PropsType) {
 
     const importRoute = async (event: any) => {
         if (!event.url) return;
+        if (!verifyLogin()) return;
 
         try {
             const url = event.url;
