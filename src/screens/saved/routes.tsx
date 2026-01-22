@@ -55,7 +55,7 @@ export default function RoutesScreen({}) {
 
     const deleteRoute = async () => {
         if (selectedRoute?.id) {
-            removeRoute(selectedRoute.id);
+            removeRoute(selectedRoute);
         }
         closeRouteOptions();
     }

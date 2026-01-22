@@ -1,11 +1,8 @@
-import { hasNotch, hasDynamicIsland } from "react-native-device-info";
 import { normalise } from "../utils/helpers";
 import { COLOUR } from "../styles";
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
-const deviceHasNotch = hasNotch();
-const deviceHasDynamicIsland = hasDynamicIsland();
-const unknownDevice = (deviceHasNotch !== true || deviceHasNotch !== false) || (deviceHasDynamicIsland !== true || deviceHasDynamicIsland !== false) || deviceHasNotch == 'unknown' || deviceHasDynamicIsland == 'unknown';
-
+const { top } = initialWindowMetrics?.insets;
 
 export const settings = {
     MAP_DEFAULT_ZOOM: 6,
@@ -18,6 +15,5 @@ export const settings = {
     ROUTE_DEFAULT_ZOOM: 12,
     ROUTE_LINE_COLOUR: COLOUR.blue[500],
     MAX_MAP_AREA: 50000000, //m2
-
-    TOP_PADDING: ( deviceHasNotch || deviceHasDynamicIsland || unknownDevice ) ? normalise(50) : normalise(15),
+    TOP_PADDING: top,
 }

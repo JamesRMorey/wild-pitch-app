@@ -11,7 +11,6 @@ export default function ProfileScreen({ navigation } : PropsType) {
 
     const { user } = useGlobalState();
     const { logout } = useGlobalActions();
-    const wpApi = new WildPitchApi();
 
     const shareWithFriends = () => {
         Share.share({
@@ -30,7 +29,7 @@ export default function ProfileScreen({ navigation } : PropsType) {
 
     const confirmDeleteAccount = async() => {
         try {
-            await wpApi.deleteAccount();
+            await WildPitchApi.deleteAccount();
         }
         catch (error) {
             console.log(error)

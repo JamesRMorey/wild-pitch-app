@@ -3,8 +3,8 @@ import BootSplash from "react-native-bootsplash";
 import { useEffect, useState } from 'react';
 import { GlobalProvider } from './src/contexts/global-context';
 import App from './src/App';
-import migrations from './src/migrations'; 
-import { Migration } from './src/migrations/migration';
+import migrations from './src/database/migrations'; 
+import { Migration } from './src/database/migrations/migration';
 
 export default function AppWrapper() {
 
@@ -12,8 +12,13 @@ export default function AppWrapper() {
 
 	const runMigrations = async (): Promise<void> => {
 		for (const migration of migrations) {
-			const mig = new Migration(migration);
-			mig.run();
+			try {
+				const mig = new Migration(migration);
+				mig.run();
+			}
+			catch (error) {
+				console.error(error)
+			}
 		}
 	}
 	

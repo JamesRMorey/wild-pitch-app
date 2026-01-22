@@ -62,7 +62,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                                 <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
                             </View>
                         )}
-                        {route.elevation_gain !== undefined && (
+                        {route.elevation_gain && (
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-up'
@@ -72,7 +72,7 @@ export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} 
                             <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
                         </View>
                         )}
-                        {route.elevation_loss !== undefined && (
+                        {route.elevation_loss && (
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-down'

@@ -15,10 +15,9 @@ export class RouteRepository {
         this.tableName = 'routes';
     }
 
-
     get ( limit: number=100 ): Array<Route>  {
         const data = this.db.execute(`
-            SELECT id, name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss, created_at
+            SELECT *
             FROM ${this.tableName} t
             WHERE t.user_id = ${this.userId}
             LIMIT ${limit}
@@ -35,14 +34,34 @@ export class RouteRepository {
                 distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
                 elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
                 elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
-                created_at: row.created_at
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
+                server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
+                status: row.status
             })) as Route[]
             : [];
     }
 
     create ( data: Route ): Route|void {
         const record = this.db.execute(`
-            INSERT INTO "${this.tableName}" (name, user_id, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO "${this.tableName}" (
+                name, 
+                user_id, 
+                notes,
+                markers, 
+                latitude, 
+                longitude, 
+                distance, 
+                elevation_gain, 
+                elevation_loss, 
+                server_id, 
+                published_at,
+                created_at,
+                updated_at,
+                status
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)
             RETURNING *
         `, [
             data.name, 
@@ -53,7 +72,10 @@ export class RouteRepository {
             data.longitude, 
             data.distance || NITRO_SQLITE_NULL, 
             data.elevation_gain || NITRO_SQLITE_NULL, 
-            data.elevation_loss || NITRO_SQLITE_NULL
+            data.elevation_loss || NITRO_SQLITE_NULL,
+            data.server_id || NITRO_SQLITE_NULL,
+            data.published_at || NITRO_SQLITE_NULL,
+            data.status || 'PRIVATE',
         ]);
 
         const row = record.rows?._array[0];
@@ -68,7 +90,11 @@ export class RouteRepository {
             distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
             elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
             elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
-            created_at: row.created_at
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
+            server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
+            status: data.status
         }
     }
 
@@ -83,7 +109,11 @@ export class RouteRepository {
                 longitude = ?,
                 distance = ?,
                 elevation_gain = ?,
-                elevation_loss = ?
+                elevation_loss = ?,
+                server_id = ?,
+                published_at = ?,
+                status = ?,
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = ? 
             AND user_id = ${this.userId}
             RETURNING *
@@ -96,6 +126,9 @@ export class RouteRepository {
             data.distance || NITRO_SQLITE_NULL,
             data.elevation_gain || NITRO_SQLITE_NULL,
             data.elevation_loss || NITRO_SQLITE_NULL,
+            data.server_id || NITRO_SQLITE_NULL,
+            data.published_at || NITRO_SQLITE_NULL,
+            data.status || 'PRIVATE',
             id
         ]);
 
@@ -111,13 +144,17 @@ export class RouteRepository {
             distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
             elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
             elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
-            created_at: row.created_at
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
+            server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
+            status: row.status
         };
     }
 
     find ( id: number ): Route|void  {
         const record = this.db.execute(`
-            SELECT id, name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss, created_at
+            SELECT *
             FROM ${this.tableName} t
             WHERE t.id = ?
             AND t.user_id = ${this.userId}
@@ -137,13 +174,17 @@ export class RouteRepository {
             distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
             elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
             elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
-            created_at: row.created_at
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
+            server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
+            status: row.status
         }
     }
 
     findByLatLng ( latitude: number, longitude: number ): Route|void  {
         const record = this.db.execute(`
-            SELECT id, name, notes, markers, latitude, longitude, distance, elevation_gain, elevation_loss, created_at
+            SELECT *
             FROM ${this.tableName} t
             WHERE t.latitude = ${latitude} AND t.longitude = ${longitude} AND t.user_id = ${this.userId}
             LIMIT 1
@@ -162,7 +203,11 @@ export class RouteRepository {
             distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
             elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
             elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
-            created_at: row.created_at
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
+            server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
+            status: row.status
         }
     }
 
@@ -187,7 +232,34 @@ export class RouteRepository {
             distance: row.distance && row.distance.isNitroSQLiteNull ? undefined : row.distance,
             elevation_gain: row.elevation_gain && row.elevation_gain.isNitroSQLiteNull ? undefined : row.elevation_gain,
             elevation_loss: row.elevation_loss && row.elevation_loss.isNitroSQLiteNull ? undefined : row.elevation_loss,
-            created_at: row.created_at
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
+            server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
+            status: row.status
         };
+    }
+
+    generateSlug( name: string ): string {
+        const baseSlug = `${this.userId}-${name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
+        let slug = baseSlug;
+        let i = 1;
+
+        while (this.slugExists(slug)) {
+            slug = `${baseSlug}-${i++}`;
+        }
+
+        return slug;
+    }
+
+    private slugExists( slug: string ): boolean {
+        const record = this.db.execute(`
+            SELECT COUNT(*) as count
+            FROM ${this.tableName}
+            WHERE slug = ?
+            AND user_id = ${this.userId}
+        `, [slug]);
+
+        return record.rows?._array[0]?.count > 0;
     }
 }

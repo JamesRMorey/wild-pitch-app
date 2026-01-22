@@ -7,7 +7,7 @@ import { COLOUR, TEXT } from "../../styles";
 import TextInput from "../../components/inputs/text-input";
 import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";
 import Icon from "../../components/misc/icon";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { object, string, ref } from "yup";
 import { FormErrors } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,7 +43,6 @@ export default function RegisterScreen({ navigation } : PropsType) {
         { label: 'Other', value: 'other', icon: 'user' }
     ];
     const [loading, setLoading] = useState<boolean>(false);
-    const wpApi = useMemo(() => new WildPitchApi(), []);
 
     const goBack = () => {
         navigation.goBack();
@@ -56,7 +55,7 @@ export default function RegisterScreen({ navigation } : PropsType) {
             setLoading(true);
             setErrors(undefined);
 
-            const { user, token } = await wpApi.register(data); 
+            const { user, token } = await WildPitchApi.register(data); 
 
             await AsyncStorage.setItem('user', JSON.stringify(user));
             await Keychain.setGenericPassword(user.email, token, {service: 'wild_pitch'});

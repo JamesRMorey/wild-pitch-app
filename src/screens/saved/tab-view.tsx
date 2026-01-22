@@ -25,7 +25,7 @@ const renderScene = SceneMap({
 
 const ROUTES = [
     { key: 'packs', title: 'Offline maps' },
-    { key: 'routes', title: 'Routes' },
+    { key: 'routes', title: 'My routes' },
     { key: 'pins', title: 'Pins' },
 ];
 

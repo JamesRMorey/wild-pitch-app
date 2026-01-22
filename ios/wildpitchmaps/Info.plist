@@ -32,11 +32,11 @@
 		<true/>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to show your position on the map.</string>
+	<string>We need your location to show your position on the main map and measure distances to points from you. We do not transmit this location off the device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to show your position on the map.</string>
+	<string>We need your location to show your position on the main map and measure distances to points from you. We do not transmit this location off the device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need to use your photo library to upload photos of your camps.</string>
+	<string>We need to use your photo library to save photos of your camps to your phone.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>

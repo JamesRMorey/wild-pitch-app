@@ -26,6 +26,7 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                 ...data,
                 distance: data.distance ?? RouteService.calculateDistance(data.markers),
             }
+            
             const updated = data.id ? await update(data.id, routeData) : await create(routeData);
             if (!updated) return;
             

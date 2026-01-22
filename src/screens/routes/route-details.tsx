@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Linking } from "react-native"
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Linking, Alert } from "react-native"
 import { normalise, stripHtml } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
@@ -18,7 +18,8 @@ type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
 
     const [route, setRoute] = useState<Route>(navRoute.params.route);
-    const { create, findByLatLng, find } = useRoutesActions();
+    const [sharing, setSharing] = useState<boolean>(false);
+    const { create, findByLatLng, find, makePublic } = useRoutesActions();
     const [savedRoute, setSavedRoute] = useState<Route|void>(findByLatLng(route.latitude, route.longitude));
     const pack: MapPack = {
         name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
@@ -72,6 +73,34 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             route: route,
             initialCenter: { latitude: route.latitude, longitude: route.longitude } 
         })
+    }
+
+    const confirmPublic = async () => {
+        try {
+            setSharing(true);
+            const uploaded = await makePublic(route);
+            
+            if (uploaded) {
+                setRoute(uploaded)
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
+        finally {
+            setSharing(false)
+        }
+    }
+
+    const uploadRoute = async () => {
+        Alert.alert(
+            'Share this route',
+            'Thanks for sharing this route, this route will be made available to other users once approved by our team.',
+            [
+                { text: 'Cancel', onPress: () => {}},
+                { text: 'Confirm', onPress: () => confirmPublic()},
+            ]
+        )
     }
 
     const findRoute = () => {
@@ -178,6 +207,23 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
                 </View>
                 )}
+                {route.server_id && route.status == 'PUBLIC' ?
+                <View style={[styles.section]}>
+                    <Text style={styles.sectionTitle}>Thanks for sharing</Text>
+                    <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route is shared with others to enjoy.</Text>
+                </View>
+                :
+                <View style={[styles.section, { gap: normalise(15) }]}>
+                    <Text style={styles.sectionTitle}>Share this route</Text>
+                    <Text style={[TEXT.p]}>This route is currently private but we'd love if you would make it available for other users to discover.</Text>
+                    <Button
+                        title="Share with Wild Pitch"
+                        icon="tent"
+                        onPress={uploadRoute}
+                        loading={sharing}
+                    />
+                </View>
+                }
                 <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
                     <SectionItemCard
                         title="Edit this route"
@@ -207,9 +253,6 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         arrow={true}
                         last={true}
                     />
-                </View>
-                <View style={[styles.section]}>
-                    <Text style={TEXT.p}>This route is private and stored on your phone, but we will give you the option to share it with others soon :)</Text>
                 </View>
             </ScrollView>
             <View style={styles.buttons}>

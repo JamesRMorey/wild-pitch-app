@@ -35,6 +35,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 	const mapRef = useRef<Mapbox.MapView>(null);
 	const [mapHeading, setMapHeading] = useState<number>(0);
 	const [markers, setMarkers] = useState<Array<Coordinate>>(initialRoute ? initialRoute.markers : initialPoint ? [initialPoint] : []);
+	
 	const [line, setLine] = useState<any>({
 		type: 'FeatureCollection',
 		features: [{
@@ -81,15 +82,10 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 		if (markers.length === 0) return;
 		navigation.navigate('route-save', {
 			route: {
-				id: initialRoute?.id ?? undefined,
-				name: initialRoute?.name ?? null, 
-				notes: initialRoute?.notes ?? null, 
+				...initialRoute,
 				markers: markers,
 				latitude: markers[0].latitude,
 				longitude: markers[0].longitude,
-				distance: null,
-				elevation_gain: null,
-				elevation_loss: null
 			}
 		});
 	}

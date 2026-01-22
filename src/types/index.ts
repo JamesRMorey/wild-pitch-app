@@ -54,6 +54,16 @@ export type MarkerType = 'route'|'area'|'poi'
 
 export type PointOfInterestSheetSection = 'details'|'edit'|'save'|undefined
 
+export type Migration = {
+    id: number;
+    name: string;
+}
+
+export type DbMigration = {
+    name: string;
+    query: string;
+}
+
 export type PointOfInterest = {
     created_at?: string,
     updated_at?: string,
@@ -100,7 +110,12 @@ export type Route = {
     elevation_loss?: number,
     created_at?: string,
     updated_at?: string,
+    published_at?: string,
+    status?: RouteStatus,
+    server_id?: number,
 }
+
+export type RouteStatus = 'PRIVATE'|'PUBLIC'
 
 export type RouteSearchResult = {
     id: string,

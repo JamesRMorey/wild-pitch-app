@@ -1,20 +1,12 @@
-import { User } from "../../types";
+import { Route, User } from "../../types";
 import * as Keychain from 'react-native-keychain';
+
+const URL = 'https://api.wild-pitch.co.uk';
 
 export class WildPitchApi {
 
-    url;
-
-    constructor() {
-        this.url = 'https://api.wild-pitch.co.uk';
-    }
-
-    init() {
-        this.url = 'https://api.wild-pitch.co.uk';
-    }
-
-    async login( data: { email: string; password: string } ): Promise<{ token: string; user: User }> {
-        const response = await fetch(`${this.url}/login`, {
+    static async login( data: { email: string; password: string } ): Promise<{ token: string; user: User }> {
+        const response = await fetch(`${URL}/login`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json, text/plain, */*',
@@ -24,14 +16,14 @@ export class WildPitchApi {
         });
 
         if (!response.ok) {
-            throw await response.json();
+            throw new Error(await response.json());
         }
 
         return response.json();
     }
 
 
-    async register(
+    static async register(
         data: {
             email: string;
             password: string;
@@ -40,7 +32,7 @@ export class WildPitchApi {
             gender?: string;
         }
     ): Promise<{ token: string; user: User }> {
-        const response = await fetch(`${this.url}/register`, {
+        const response = await fetch(`${URL}/register`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json, text/plain, */*',
@@ -50,30 +42,117 @@ export class WildPitchApi {
         });
 
         if (!response.ok) {
-            throw await response.json();
+            throw new Error(await response.json());
         }
 
         return response.json();
     }
 
-
-    async deleteAccount(): Promise<void> {
+    static async deleteAccount(): Promise<void> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
         }
 
-        const response = await fetch(`${this.url}/delete-account`, {
+        const response = await fetch(`${URL}/delete-account`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${credentials.password}`
-            },
+            }
         });
 
         if (!response.ok) {
-            throw await response.json();
+            throw new Error(await response.json());
+        }
+    }
+
+    static async createRoute ( data: Route ): Promise<Route> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${URL}/routes`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+
+        return await response.json()
+    }
+
+    static async updateRoute ( id: number, data: Route ): Promise<Route> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${URL}/routes/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+
+        return await response.json()
+    }
+
+    static async fetchSavedRoutes (): Promise<Array<Route>> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${URL}/routes`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+
+        return await response.json();
+    }
+    
+    static async deleteRoute( route: Route ): Promise<void> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${URL}/routes/${route.server_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(await response.json());
         }
     }
 }

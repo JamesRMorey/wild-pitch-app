@@ -1,6 +1,6 @@
 import React, { createContext,useContext, useEffect, useState } from 'react';
 import { routeSchema as schema } from '../utils/schema';
-import { Route } from '../types';
+import { Route, RouteStatus } from '../types';
 import { RouteRepository } from '../database/repositories/route-repository';
 import { useGlobalState } from './global-context';
 import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
@@ -9,6 +9,7 @@ import { GPX } from '../services/gpx';
 import { Alert } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import { MapPackService } from '../services/map-pack-service';
+import { WildPitchApi } from '../services/api/wild-pitch';
 
 type RoutesContextState = {
     routes: Array<Route>
@@ -17,10 +18,12 @@ type RoutesContextState = {
 type RoutesContextActions = {
     create: (data: any)=>Promise<Route|void>,
     update: (id: number, data: any)=>Promise<Route|void>,
-    remove: (id: number)=>void,
+    remove: (route: Route)=>void,
     findByLatLng: (latitude: number, longitude: number)=>Route|void
     find: (id: number)=>Route|void
     importFile: ()=>Promise<Route|void>
+    upload: (data: Route, status: RouteStatus)=>Promise<Route|void>
+    makePublic: (data: Route)=>Promise<Route|void>
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -30,6 +33,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     const { user }  = useGlobalState();
     const [routes, setRoutes] = useState<Array<Route>>([]);
+
     const repo = new RouteRepository(user?.id);
     const poiRepo = new PointOfInterestRepository(user?.id);
 
@@ -37,6 +41,48 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (!user) return;
         const data = repo.get() ?? [];
         setRoutes(data);
+    }
+
+    const sync = async (): Promise<void> => {
+        if (!user) return;
+
+        const savedRoutes = repo.get();
+        const serverRoutes = await WildPitchApi.fetchSavedRoutes();
+        const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.id));
+        
+        for (const route of unSavedRoutes) {
+            repo.create({
+                ...route,
+                server_id: route.id
+            });
+        }
+
+        for (const saved of savedRoutes) {
+            if (!saved.server_id) {
+                upload(saved, saved.status ?? 'PRIVATE')
+                    .then((data) => {
+                        update(saved.id, { ...data, server_id: data.server_id})
+                    })
+                    .catch((error) => console.error(error));
+                continue;
+            }
+
+            const serverRoute = serverRoutes.find(r => r.id == saved.server_id);
+            if (!serverRoute) continue;
+
+            if (serverRoute.updated_at > saved.updated_at && saved.id) {
+                update(
+                    saved.id, 
+                    {...serverRoute, server_id: saved.server_id}, 
+                    false
+                )
+            }
+            else if (serverRoute.updated_at < saved.updated_at) {
+                WildPitchApi.updateRoute(serverRoute.id, saved);
+            }
+        }
+
+        get();
     }
 
     const create = async ( data: any ): Promise<Route|void> => {
@@ -50,21 +96,31 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             poiRepo.delete(poiToDelete.id);
         }
 
+        upload(newRoute, 'PRIVATE')
+            .then((data) => {
+                update(newRoute.id, { ...data, server_id: data.server_id});
+            })
+            .catch((error) => console.error(error));
+
         get();
         
         return newRoute;
     }
 
-    const update = async ( id: number, data: Route ): Promise<Route|void> => {
+    const update = async ( id: number, data: Route, sync: boolean = true ): Promise<Route|void> => {
         if (!data.id) return
 
         await schema.validate(data, { abortEarly: false });
-        const newPoint = repo.update(id, data);
+        const updated = repo.update(id, data);
 
-        if (!newPoint) return;
+        if (!updated) return;
         get();
 
-        return newPoint;
+        if (sync && updated.server_id) {
+            WildPitchApi.updateRoute(updated.server_id, updated);
+        }
+
+        return updated;
     }
 
     const find = ( id: number ): Route|void => {
@@ -93,22 +149,50 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     }
 
-    const remove = async ( id: number ) => {
-        if (!id) return;
+    const remove = async ( route: Route ) => {
+        if (!route.id) return;
         
         try {
-            const deleted = repo.delete(id);
+            const deleted = repo.delete(route.id);
             if (deleted) {
                 const packName = MapPackService.getPackName(deleted.name, Mapbox.StyleURL.Outdoors);
                 await MapPackService.removeDownload(packName)
             }
-           
-            console.log(await Mapbox.offlineManager.getPacks());
+
+            if (route.server_id) {
+                WildPitchApi.deleteRoute(route);
+            }
+
             get();
         }
         catch (error) {
             console.error('Error deleting route');
         }
+    }
+
+    const upload = async ( data: Route, status: RouteStatus ): Promise<Route|void> => {
+        if (!data.id) return;
+        const route = await WildPitchApi.createRoute({
+            ...data,
+            status: status
+        });
+        
+        return await update(data.id, {...data, server_id: route.id, status: status });
+    }
+
+    const makePublic = async ( data: Route ): Promise<Route|void> => {
+        if (!data.id) return;
+        
+        if (!data.server_id) {
+            const uploaded = await upload(data, 'PUBLIC');
+            return uploaded;
+        }
+
+        if (data.status == 'PUBLIC') return data;
+
+        const updated = await WildPitchApi.updateRoute(data.server_id, { ...data, status: 'PUBLIC' });
+        
+        return await update(data.id, updated);
     }
 
     const importFile = async (): Promise<Route|void> => {
@@ -129,6 +213,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         get();
+        sync();
     }, [])
     
 
@@ -145,7 +230,9 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     remove,
                     findByLatLng,
                     find,
-                    importFile
+                    importFile,
+                    upload,
+                    makePublic
                 }}
             >
                 {children}

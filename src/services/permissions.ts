@@ -19,7 +19,7 @@ export class Permission {
                             request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE)
                             .then((result) => {
                                 if (result != 'granted') {
-                                    Alert.alert('You need to enable location permission in your device settings');
+                                    Alert.alert('We need your location to show your position on the main map and measure distances to points from you. We do not transmit this location off the device. You need to enable location permission in your device settings.');
                                     reject("You can't play without location permission");
                                 }
                                 resolve();
@@ -37,7 +37,7 @@ export class Permission {
                             break;
                         case RESULTS.BLOCKED:
                             // console.log('The permission is denied and not requestable anymore');
-                            Alert.alert('You need to enable location permission in your device settings');
+                            Alert.alert('We need your location to show your position on the main map and measure distances to points from you. We do not transmit this location off the device. You need to enable location permission in your device settings.');
                             reject("You can't play without location permission");
                             break;
                     }
