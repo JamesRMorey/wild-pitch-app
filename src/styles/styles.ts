@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { normalise } from '../utils/helpers';
 
 export const SHADOW = {
   sm: {
@@ -66,4 +67,25 @@ export const SHADOW = {
       },
     }),
   },
+};
+
+export const ROUNDED = {
+	sm: {
+		borderRadius: normalise(5)
+	},
+	md: {
+		borderRadius: normalise(9)
+	},
+	lg: {
+		borderRadius: normalise(12)
+	},
+	xl: {
+		borderRadius: normalise(15)
+	},
+	full: {
+		borderRadius: normalise(100)
+	},
+	none: {
+		borderRadius: 0
+	},
 };

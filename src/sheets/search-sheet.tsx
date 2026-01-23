@@ -4,29 +4,28 @@ import { SHEET } from "../consts";
 import { COLOUR, SHADOW, TEXT } from "../styles";
 import { getPointType, normalise } from "../utils/helpers";
 import TextInput from "../components/inputs/text-input";
-import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import { PlaceSearch } from "../services/place-search";
 import { Place, RouteSearchResult } from "../types";
 import PlaceCard from "../components/cards/place-card";
 import Loader from "../components/map/loader";
 import NothingHere from "../components/misc/nothing-here";
 import { usePointTypes } from "../hooks/repositories/usePointType";
-import RouteSearchCard from "../components/cards/route-search-card";
-import { RouteProvider } from "../services/route-provider";
+import RouteSearchCard from "../components/routes/route-search-card";
 import { useGlobalState } from "../contexts/global-context";
+import { WildPitchApi } from "../services/api/wild-pitch";
 
 type PropsType = { id?: string, onPlaceResultPress: (place: Place) => void, onRouteResultPress: (route: RouteSearchResult) => void }
 export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, onRouteResultPress } : PropsType) {
 
     const { user } = useGlobalState();
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [results, setResults] = useState<Array<Place>>();
     const [loading, setLoading] = useState<boolean>(false);
     const requestRef = useRef(0);
     const { pointTypes } = usePointTypes();
     const [searchType, setSearchType] = useState<'place'|'route'>('place');
-    const [routeResults, setRouteResults] = useState<Array<any>>();
-    const routeProvider = useMemo(() => new RouteProvider(user), [user]);
+    const [placeResults, setPlaceResults] = useState<Array<Place>>();
+    const [routeResults, setRouteResults] = useState<Array<RouteSearchResult>>();
 
     const close = () => {
         SheetManager.hide(id);
@@ -36,14 +35,13 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
         setLoading(true);
         const currentRequest = ++requestRef.current;
         try {
-            const res = await routeProvider.search(searchTerm);
-
+            const res = await WildPitchApi.searchRoutes({ query: searchTerm })
+            
             if (currentRequest === requestRef.current) {
                 setRouteResults(res);
             }
         }
         catch (err) {
-            console.log(err)
             setRouteResults([]);
         }
         finally {
@@ -53,19 +51,19 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
         }
     }, [searchTerm]);
 
-    const performSearch = useCallback(async () => {
+    const performPlaceSearch = useCallback(async () => {
         setLoading(true);
         const currentRequest = ++requestRef.current;
         try {
             const res = await PlaceSearch.search(searchTerm);
 
             if (currentRequest === requestRef.current) {
-                setResults(res);
+                setPlaceResults(res);
             }
         }
         catch (err) {
             console.error(err)
-            setResults([]);
+            setPlaceResults([]);
         }
         finally {
             if (currentRequest === requestRef.current) {
@@ -82,11 +80,11 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                 performRoutesSearch();
             }
             else {
-                performSearch();
+                performPlaceSearch();
             }
         }, 600);
         return () => clearTimeout(handler);
-    }, [searchTerm, performSearch]);
+    }, [searchTerm, performPlaceSearch]);
 
     useEffect(() => {
         if (searchTerm.length < 3) return;
@@ -94,7 +92,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
             performRoutesSearch();
         }
         else {
-            performSearch();
+            performPlaceSearch();
         }
     }, [searchType]);
 
@@ -155,16 +153,17 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                                 key={i}
                                 route={route}
                                 onPress={() => onRouteResultPress(route)}
+                                belongsToUser={user.id == route.user.id}
                             />
                         )
                     })}
                 </ScrollView>
-                :results && results.length > 0 && searchType == 'place' ?
+                :placeResults && placeResults.length > 0 && searchType == 'place' ?
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     style={styles.scrollView}
                 >
-                    {results.map((place, i) => {
+                    {placeResults.map((place, i) => {
                         const p: Place = { ...place, point_type: getPointType(place.category, pointTypes)}
                         return (
                             <PlaceCard
@@ -177,8 +176,8 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                 </ScrollView>
                 :
                 <NothingHere
-                    title={searchTerm.length > 3 && results !== undefined ?  "No Results" : null}
-                    text={searchTerm.length < 3 && results !== undefined ? `Start typing to search for ${searchType == 'place' ? 'places' : 'routes'}.` : `No ${searchType == 'place' ? 'places' : 'routes'} found, try a different search term.`}
+                    title={searchTerm.length > 3 && placeResults !== undefined ?  "No Results" : null}
+                    text={searchTerm.length < 3 && placeResults !== undefined ? `Start typing to search for ${searchType == 'place' ? 'places' : 'routes'}.` : `No ${searchType == 'place' ? 'places' : 'routes'} found, try a different search term.`}
                 />
                 }
             </View>

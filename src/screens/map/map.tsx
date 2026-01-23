@@ -28,9 +28,9 @@ import RouteLine from "../../components/routes/route-line";
 import ActiveRouteInformation from "../../components/routes/active-route-information";
 import Loader from "../../components/map/loader";
 import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
-import { RouteProvider } from "../../services/route-provider";
 import { useRoutesState } from "../../contexts/routes-context";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
+import { WildPitchApi } from "../../services/api/wild-pitch";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
@@ -51,7 +51,6 @@ export default function MapScreen({ navigation } : PropsType) {
 	const [mapCenter, setMapCenter] = useState<Position>();
 	const [lineKey, setLineKey] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(false);
-	const routeProvider = useMemo(() => new RouteProvider(user), [user])
 
 	const addMarkerFromLongPress = async ( e: any ) => {
 		setFollowUserPosition(false);
@@ -105,7 +104,8 @@ export default function MapScreen({ navigation } : PropsType) {
 		try {
 			setLoading(true);
 			await SheetManager.hide(SHEET.MAP_SEARCH);
-			const data = await routeProvider.fetchRoute(route.id, route.slug);
+			const data = await WildPitchApi.findRoute(route.server_id);
+
 			if (!data) return;
 
 			updateActiveRoute(data, fit);
@@ -292,6 +292,7 @@ export default function MapScreen({ navigation } : PropsType) {
 							route={activeRoute}
 							onPress={() => navigateToRoute(activeRoute)}
 							onClose={() => clearActiveRoute()}
+							belongsToUser={user.id == activeRoute.user_id}
 						/>
 					</View>
 				:activePackGroup ?

@@ -48,13 +48,10 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         const savedRoutes = repo.get();
         const serverRoutes = await WildPitchApi.fetchSavedRoutes();
-        const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.id));
+        const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.server_id));
         
         for (const route of unSavedRoutes) {
-            repo.create({
-                ...route,
-                server_id: route.id
-            });
+            repo.create(route);
         }
 
         for (const saved of savedRoutes) {
@@ -67,20 +64,25 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 continue;
             }
 
-            const serverRoute = serverRoutes.find(r => r.id == saved.server_id);
-            if (!serverRoute) continue;
+            const serverRoute = serverRoutes.find(r => r.server_id == saved.server_id);
+            if (!serverRoute) {
+                remove(saved);
+                continue;
+            };
 
             if (serverRoute.updated_at > saved.updated_at && saved.id) {
                 update(
                     saved.id, 
-                    {...serverRoute, server_id: saved.server_id}, 
+                    {...serverRoute, server_id: saved.server_id},
                     false
                 )
             }
             else if (serverRoute.updated_at < saved.updated_at) {
-                WildPitchApi.updateRoute(serverRoute.id, saved);
+                WildPitchApi.updateRoute(serverRoute.server_id, saved);
             }
         }
+
+        // if the server route does not exist in the server then unassign the server id from the route
 
         get();
     }
@@ -108,7 +110,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     const update = async ( id: number, data: Route, sync: boolean = true ): Promise<Route|void> => {
-        if (!data.id) return
+        if (!id) return;
 
         await schema.validate(data, { abortEarly: false });
         const updated = repo.update(id, data);
@@ -177,12 +179,12 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             status: status
         });
         
-        return await update(data.id, {...data, server_id: route.id, status: status });
+        return await update(data.id, {...data, server_id: route.server_id, status: status });
     }
 
     const makePublic = async ( data: Route ): Promise<Route|void> => {
         if (!data.id) return;
-        
+
         if (!data.server_id) {
             const uploaded = await upload(data, 'PUBLIC');
             return uploaded;
@@ -192,7 +194,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         const updated = await WildPitchApi.updateRoute(data.server_id, { ...data, status: 'PUBLIC' });
         
-        return await update(data.id, updated);
+        return await update(data.id, updated, false);
     }
 
     const importFile = async (): Promise<Route|void> => {

@@ -4,8 +4,8 @@ import { Route } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 
-type PropsType = { route: Route, onPress?: ()=>void, onClose?: ()=>void }
-export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose } : PropsType ) {
+type PropsType = { route: Route, onPress?: ()=>void, onClose?: ()=>void, belongsToUser: boolean }
+export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose, belongsToUser } : PropsType ) {
 
 
     return (
@@ -45,29 +45,41 @@ export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose
                         </View>
                         )}
                         {route.elevation_loss && (
-                        <View style={styles.itemContainer}>
-                            <Icon
-                                icon='arrow-down'
-                                size={'small'}
-                                colour={COLOUR.gray[700]}
-                            />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.elevation_loss).toFixed(2)} m`}</Text>
-                        </View>
+                            <View style={[styles.itemContainer]}>
+                                <Icon
+                                    icon='arrow-down'
+                                    size={'small'}
+                                    colour={COLOUR.gray[700]}
+                                />
+                                <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.elevation_loss).toFixed(2)} m`}</Text>
+                            </View>
                         )}
                     </View>
                 </View>
             </TouchableOpacity>
             {onClose && (
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={onClose}
-                    style={styles.closeButton}
-                >
-                    <Icon
-                        icon="x"
-                        size={normalise(16)}
-                    />
-                </TouchableOpacity>
+                <View style={{ height: '100%', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={onClose}
+                        style={styles.closeButton}
+                    >
+                        <Icon
+                            icon="x"
+                            size={normalise(16)}
+                        />
+                    </TouchableOpacity>
+                    {belongsToUser && 
+                        <View style={styles.belongsToUser}>
+                            <Icon
+                                icon="user-check"
+                                colour={COLOUR.green[500]}
+                                size={'small'}
+                            />
+                            <Text style={[TEXT.xs, { color: COLOUR.green[500] }]}>Created by you</Text>
+                        </View>
+                    }
+                </View>
             )}
         </View>
     )
@@ -112,5 +124,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: normalise(5),
         alignItems: 'center'
+    },
+    belongsToUser: {
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+        paddingRight: normalise(15),
     }
 })

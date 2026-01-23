@@ -1,11 +1,11 @@
 import { normalise } from "../../utils/helpers";
-import { COLOUR, OPACITY, TEXT } from "../../styles";
+import { COLOUR, OPACITY, ROUNDED, TEXT } from "../../styles";
 import { RouteSearchResult } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 
-type PropsType = { route: RouteSearchResult, onPress?: ()=>void }
-export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType ) {
+type PropsType = { route: RouteSearchResult, onPress?: ()=>void, belongsToUser: boolean }
+export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser } : PropsType ) {
 
 
     return (
@@ -14,11 +14,13 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
             onPress={onPress}
             activeOpacity={0.8}
         >
-            <View style={styles.iconContainer}>
-                <Icon
-                    icon='route'
-                    colour={COLOUR.blue[700]}
-                />
+            <View>
+                <View style={styles.iconContainer}>
+                    <Icon
+                        icon='route'
+                        colour={COLOUR.blue[700]}
+                    />
+                </View>
             </View>
             <View style={styles.rightContainer}>
                 <View><Text style={TEXT.h4}>{route.name.replaceAll('\n', '')}</Text></View>
@@ -55,6 +57,14 @@ export default function RouteSearchCard ({ route, onPress=()=>{} } : PropsType )
                     )}
                 </View>
             </View>
+            {belongsToUser && 
+                <View style={styles.belongsToUser}>
+                    <Icon
+                        icon="user-check"
+                        colour={COLOUR.green[500]}
+                    />
+                </View>
+            }
         </TouchableOpacity>
     )
 }
@@ -91,5 +101,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: normalise(5),
         alignItems: 'center'
+    },
+    belongsToUser: {
+        marginTop: normalise(5),
+        ...ROUNDED.full,
     }
 })

@@ -26,6 +26,7 @@ export class RouteRepository {
         return data.rows?._array ? 
             data.rows._array.map(row => ({
                 id: row.id,
+                user_id: row.user_id,
                 name: row.name,
                 notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
                 markers: JSON.parse(row.markers),
@@ -82,6 +83,7 @@ export class RouteRepository {
         
         return {
             id: row.id,
+            user_id: row.user_id,
             name: row.name,
             notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
             markers: JSON.parse(row.markers),
@@ -136,6 +138,7 @@ export class RouteRepository {
 
         return {
             id: row.id,
+            user_id: row.user_id ?? this.userId,
             name: row.name,
             notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
             markers: JSON.parse(row.markers),
@@ -166,6 +169,7 @@ export class RouteRepository {
 
         return {
             id: row.id,
+            user_id: row.user_id,
             name: row.name,
             notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
             markers: JSON.parse(row.markers),
@@ -195,6 +199,7 @@ export class RouteRepository {
 
         return {
             id: row.id,
+            user_id: row.user_id,
             name: row.name,
             notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
             markers: JSON.parse(row.markers),
@@ -224,6 +229,7 @@ export class RouteRepository {
 
         return {
             id: row.id,
+            user_id: row.user_id,
             name: row.name,
             notes: row.notes && row.notes.isNitroSQLiteNull ? undefined : row.notes,
             markers: JSON.parse(row.markers),

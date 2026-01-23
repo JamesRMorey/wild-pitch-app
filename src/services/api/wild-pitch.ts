@@ -1,12 +1,12 @@
+import { ENVIRONMENT } from "../../../ENV";
 import { Route, User } from "../../types";
 import * as Keychain from 'react-native-keychain';
 
-const URL = 'https://api.wild-pitch.co.uk';
 
 export class WildPitchApi {
 
     static async login( data: { email: string; password: string } ): Promise<{ token: string; user: User }> {
-        const response = await fetch(`${URL}/login`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/login`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json, text/plain, */*',
@@ -32,7 +32,7 @@ export class WildPitchApi {
             gender?: string;
         }
     ): Promise<{ token: string; user: User }> {
-        const response = await fetch(`${URL}/register`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/register`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json, text/plain, */*',
@@ -54,7 +54,7 @@ export class WildPitchApi {
             throw new Error('No credentials found');
         }
 
-        const response = await fetch(`${URL}/delete-account`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/delete-account`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -74,7 +74,7 @@ export class WildPitchApi {
             throw new Error('No credentials found');
         }
 
-        const response = await fetch(`${URL}/routes`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -97,7 +97,7 @@ export class WildPitchApi {
             throw new Error('No credentials found');
         }
 
-        const response = await fetch(`${URL}/routes/${id}`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/${id}`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -120,7 +120,7 @@ export class WildPitchApi {
             throw new Error('No credentials found');
         }
 
-        const response = await fetch(`${URL}/routes`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -142,7 +142,7 @@ export class WildPitchApi {
             throw new Error('No credentials found');
         }
 
-        const response = await fetch(`${URL}/routes/${route.server_id}`, {
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/${route.server_id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -154,5 +154,50 @@ export class WildPitchApi {
         if (!response.ok) {
             throw new Error(await response.json());
         }
+    }
+
+    static async searchRoutes (filters: { query: string }): Promise<Array<Route>> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/search`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            },
+            body: JSON.stringify(filters)
+        });
+
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+
+        return await response.json();
+    }
+
+    static async findRoute (id: string): Promise<Route> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/${id}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+
+        return await response.json();
     }
 }

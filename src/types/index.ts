@@ -98,8 +98,14 @@ export type Place = {
     point_type?: PointType
 }
 
+export type PublicUser = {
+    id: number;
+    name: string;
+}
+
 export type Route = {
     id?: number,
+    user_id?: number;
     name: string,
     notes?: string,
     markers: Array<Coordinate>,
@@ -113,19 +119,21 @@ export type Route = {
     published_at?: string,
     status?: RouteStatus,
     server_id?: number,
+    user?: PublicUser,
 }
 
 export type RouteStatus = 'PRIVATE'|'PUBLIC'
 
 export type RouteSearchResult = {
-    id: string,
+    server_id: string;
     name: string,
     slug: string,
     latitude: number,
     longitude: number,
     distance?: number,
     elevation_gain?: number,
-    elevation_loss?: number
+    elevation_loss?: number;
+    user: PublicUser
 }
 
 export type Bounds = {

@@ -3,7 +3,7 @@ import { normalise, stripHtml } from "../../utils/helpers"
 import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { MapPack, Route } from "../../types";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
@@ -13,10 +13,13 @@ import { RouteService } from "../../services/route-service";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 import { useRoutesActions } from "../../contexts/routes-context";
 import { useFocusEffect } from "@react-navigation/native";
+import { WildPitchApi } from "../../services/api/wild-pitch";
+import { useGlobalState } from "../../contexts/global-context";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
 
+    const { user } = useGlobalState();
     const [route, setRoute] = useState<Route>(navRoute.params.route);
     const [sharing, setSharing] = useState<boolean>(false);
     const { create, findByLatLng, find, makePublic } = useRoutesActions();
@@ -30,8 +33,9 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     };
     const { progress, errored, downloading, downloaded, checkDownloaded, download, setPack } = useMapPackDownload({ 
         mapPack: pack, 
-        onSuccess: () => saveRoute()
+        onSuccess: () => bookmarkRoute()
     });
+    const belongsToUser: boolean = useMemo(() => user.id == route.user_id && user?.id !== undefined, [user, route]);
 
     const goBack = () => {
         navigation.goBack();
@@ -46,7 +50,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         Linking.openURL(appleMapsUrl);
     }
 
-    const saveRoute = async () => {
+    const bookmarkRoute = async () => {
         try {
             if (savedRoute) return;
 
@@ -79,7 +83,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         try {
             setSharing(true);
             const uploaded = await makePublic(route);
-            
+            console.log(uploaded)
             if (uploaded) {
                 setRoute(uploaded)
             }
@@ -103,8 +107,8 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         )
     }
 
-    const findRoute = () => {
-        const found = find(route.id);
+    const findRoute = async () => {
+        const found = route.id ? find(route.id) : await WildPitchApi.findRoute(route.server_id);
         if (!found) return;
 
         setPack({
@@ -113,7 +117,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             minZoom: SETTING.MAP_PACK_MIN_ZOOM,
             maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
             bounds: RouteService.getBounds(found.markers)
-        })
+        });
         
         setRoute(found);
         checkDownloaded();
@@ -139,8 +143,18 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     />
                 </TouchableOpacity>
                 <View style={styles.rightIconsContainer}>
+                    {belongsToUser && 
+                        <View style={styles.belongsToUser}>
+                            <Text style={[TEXT.sm, { color: COLOUR.green[500] }]}>Created by you</Text>
+                            <Icon
+                                icon="user-check"
+                                colour={COLOUR.green[500]}
+                                size={normalise(18)}
+                            />
+                        </View>
+                    }
                     <TouchableOpacity
-                        onPress={saveRoute}
+                        onPress={bookmarkRoute}
                         disabled={!!savedRoute}
                         style={styles.bookmarkButton}
                     >
@@ -180,24 +194,24 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                                 <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
                             </View>
                         )}
-                        {route.elevation_gain !== undefined && (
+                        {route.elevation_gain && (
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-up'
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.elevation_gain).toFixed(2)} m`}</Text>
+                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
                         </View>
                         )}
-                        {route.elevation_loss !== undefined && (
+                        {route.elevation_loss && (
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-down'
                                 size={'small'}
                                 colour={COLOUR.gray[700]}
                             />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.elevation_loss).toFixed(2)} m`}</Text>
+                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
                         </View>
                         )}
                     </View>
@@ -207,30 +221,35 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
                 </View>
                 )}
-                {route.server_id && route.status == 'PUBLIC' ?
-                <View style={[styles.section]}>
-                    <Text style={styles.sectionTitle}>Thanks for sharing</Text>
-                    <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route is shared with others to enjoy.</Text>
-                </View>
-                :
-                <View style={[styles.section, { gap: normalise(15) }]}>
-                    <Text style={styles.sectionTitle}>Share this route</Text>
-                    <Text style={[TEXT.p]}>This route is currently private but we'd love if you would make it available for other users to discover.</Text>
-                    <Button
-                        title="Share with Wild Pitch"
-                        icon="tent"
-                        onPress={uploadRoute}
-                        loading={sharing}
-                    />
-                </View>
-                }
+                {belongsToUser && 
+                <View>
+                    {route.server_id && route.status == 'PUBLIC' ?
+                    <View style={[styles.section]}>
+                        <Text style={styles.sectionTitle}>Thanks for sharing</Text>
+                        <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route is shared with others to enjoy.</Text>
+                    </View>
+                    :
+                    <View style={[styles.section, { gap: normalise(15) }]}>
+                        <Text style={styles.sectionTitle}>Share this route</Text>
+                        <Text style={[TEXT.p]}>This route is currently private but we'd love if you would make it available for other users to discover.</Text>
+                        <Button
+                            title="Share with Wild Pitch"
+                            icon="tent"
+                            onPress={uploadRoute}
+                            loading={sharing}
+                        />
+                    </View>
+                    }
+                </View>}
                 <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
+                    {belongsToUser && 
                     <SectionItemCard
                         title="Edit this route"
                         icon="pencil"
                         onPress={edit}
                         arrow={true}
                     />
+                    }
                     <SectionItemCard
                         title="Export GPX"
                         icon="save"
@@ -355,5 +374,11 @@ const styles = StyleSheet.create({
         borderTopColor: COLOUR.gray[200],
         flexDirection: 'row',
         gap: normalise(10),
+    },
+    belongsToUser: {
+        flexDirection: 'row',
+        gap: normalise(5),
+        alignItems: 'center',
+        marginRight: normalise(10)
     }
 })
