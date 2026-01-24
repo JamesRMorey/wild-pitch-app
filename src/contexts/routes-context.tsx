@@ -82,8 +82,6 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
         }
 
-        // if the server route does not exist in the server then unassign the server id from the route
-
         get();
     }
 
