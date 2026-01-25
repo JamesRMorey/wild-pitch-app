@@ -4,8 +4,8 @@ import { RouteSearchResult } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 
-type PropsType = { route: RouteSearchResult, onPress?: ()=>void, belongsToUser: boolean }
-export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser } : PropsType ) {
+type PropsType = { route: RouteSearchResult, onPress?: ()=>void, belongsToUser: boolean, isBookmarked: boolean }
+export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser, isBookmarked } : PropsType ) {
 
 
     return (
@@ -57,14 +57,21 @@ export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser 
                     )}
                 </View>
             </View>
-            {belongsToUser && 
+            {belongsToUser ? 
                 <View style={styles.belongsToUser}>
                     <Icon
                         icon="user-check"
                         colour={COLOUR.green[500]}
                     />
                 </View>
-            }
+            :isBookmarked ?
+            <View style={styles.belongsToUser}>
+                <Icon
+                    icon="bookmark-check"
+                    colour={COLOUR.wp_orange[500]}
+                />
+            </View>
+            :null}
         </TouchableOpacity>
     )
 }

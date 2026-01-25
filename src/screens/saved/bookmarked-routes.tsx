@@ -30,7 +30,7 @@ export default function BookmarkedRoutesScreen({}) {
 
     const openRouteOptions = ( route: Route ) => {
         setSelectedRoute(route);
-        SheetManager.show(SHEET.ROUTES_EDIT_OPTIONS);
+        SheetManager.show(SHEET.BOOKMARKED_ROUTES_EDIT_OPTIONS);
     }
 
     const inspectRoute = async () => {
@@ -50,7 +50,7 @@ export default function BookmarkedRoutesScreen({}) {
     }
 
     const closeRouteOptions = async () => {
-        await SheetManager.hide(SHEET.ROUTES_EDIT_OPTIONS);
+        await SheetManager.hide(SHEET.BOOKMARKED_ROUTES_EDIT_OPTIONS);
     }
 
     const deleteRoute = async () => {
@@ -75,13 +75,13 @@ export default function BookmarkedRoutesScreen({}) {
         { label: 'Inspect', icon: 'eye', onPress: ()=>inspectRoute() },
         { label: 'Send GPX to a friend', icon: 'user-star', onPress: ()=>shareGPX() },
         { label: 'Export GPX', icon: 'save', onPress: ()=>exportGPX() },
-        { label: 'Delete route', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>openConfirmDeletePrompt() },
+        { label: 'Remove bookmark', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>openConfirmDeletePrompt() },
     ];
 
     const openConfirmDeletePrompt = () => {
         Alert.alert(
-            'Delete this route?', 
-            'Are you sure you want to delete this route permanently?',
+            'Remove this bookmark?', 
+            'Are you sure you want to remove this bookmark?',
             [
                 { text: 'Keep', onPress: () => {}},
                 { text: 'Delete', onPress: () => deleteRoute()},

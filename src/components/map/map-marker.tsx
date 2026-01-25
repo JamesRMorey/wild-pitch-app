@@ -1,13 +1,13 @@
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import Mapbox from "@rnmapbox/maps";
 import { COLOUR, SHADOW } from "../../styles";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { normalise } from "../../utils/helpers";
 import Icon from "../misc/icon";
 
-type PropsType = { coordinate: Position, icon: string, colour: string, disabled?: boolean, onPress?: Function }
+type PropsType = { coordinate: Position, icon: string, colour: string, disabled?: boolean, onPress?: Function, isBookmarked?: boolean }
 
-export default function PointOfInterestMarker ({ coordinate, icon='flag', colour=COLOUR.red[500], disabled=false, onPress=()=>{} } : PropsType ) {
+export default function PointOfInterestMarker ({ coordinate, icon='flag', colour=COLOUR.red[500], disabled=false, onPress=()=>{}, isBookmarked=false } : PropsType ) {
 
     if (!coordinate) return;
     return (
@@ -31,6 +31,15 @@ export default function PointOfInterestMarker ({ coordinate, icon='flag', colour
                     colour={COLOUR.white}
                 />
             </TouchableOpacity>
+            {isBookmarked && 
+            <View style={styles.bookmarked}>
+                <Icon
+                    icon={'bookmark-check'}
+                    size={16}
+                    colour={COLOUR.white}
+                />
+            </View>
+            }
         </Mapbox.MarkerView>
     )
 }
@@ -39,11 +48,24 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLOUR.red[500],
         borderWidth: normalise(2),
         borderRadius: normalise(30),
         width: normalise(35),
         height: normalise(35),
+        borderColor: COLOUR.white,
+        ...SHADOW.sm
+    },
+    bookmarked: {
+        position: 'absolute',
+        top: -normalise(12),
+        right: -normalise(12),
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLOUR.red[500],
+        borderWidth: normalise(2),
+        borderRadius: normalise(30),
+        width: normalise(25),
+        height: normalise(25),
         borderColor: COLOUR.white,
         ...SHADOW.sm
     }

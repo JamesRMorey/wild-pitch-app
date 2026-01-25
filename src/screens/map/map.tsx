@@ -31,6 +31,8 @@ import { useGlobalActions, useGlobalState } from "../../contexts/global-context"
 import { useRoutesState } from "../../contexts/routes-context";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
 import { WildPitchApi } from "../../services/api/wild-pitch";
+import { useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
+import { ROUTE_ENTRY_TYPE } from "../../consts/enums";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
@@ -45,6 +47,7 @@ export default function MapScreen({ navigation } : PropsType) {
 	const { heading, setHeading, followUserPosition, setFollowUserPosition } = useMapCameraControls();
 	const { findByLatLng: findPointOfInterest } = usePointsOfInterestActions();
 	const { routes } = useRoutesState();
+	const { bookmarkedRoutes } = useBookmarkedRoutesState();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
@@ -221,6 +224,19 @@ export default function MapScreen({ navigation } : PropsType) {
 						/>
 					)
 				})}
+				{bookmarkedRoutes.map((route, i) => {
+					if (!showRoutes) return;
+					return (
+						<PointOfInterestMarker
+							key={i}
+							coordinate={[route.longitude, route.latitude]}
+							icon={'route'}
+							colour={COLOUR.blue[500]}
+							onPress={() => handleRoutePress(route)}
+							isBookmarked={true}
+						/>
+					)
+				})}
 				{activeRoute && (
 					<RouteLine
 						key={`line-${lineKey}`}
@@ -292,7 +308,7 @@ export default function MapScreen({ navigation } : PropsType) {
 							route={activeRoute}
 							onPress={() => navigateToRoute(activeRoute)}
 							onClose={() => clearActiveRoute()}
-							belongsToUser={user.id == activeRoute.user_id}
+							belongsToUser={user.id == activeRoute.user_id && activeRoute.entry_type == ROUTE_ENTRY_TYPE.ROUTE}
 						/>
 					</View>
 				:activePackGroup ?
