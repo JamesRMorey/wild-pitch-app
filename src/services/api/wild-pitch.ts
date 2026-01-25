@@ -1,5 +1,5 @@
 import { ENVIRONMENT } from "../../../ENV";
-import { Route, User } from "../../types";
+import { Route, RouteSearchResult, User } from "../../types";
 import * as Keychain from 'react-native-keychain';
 
 
@@ -114,7 +114,7 @@ export class WildPitchApi {
         return await response.json()
     }
 
-    static async fetchSavedRoutes (): Promise<Array<Route>> {
+    static async fetchUserRoutes (): Promise<Array<Route>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -156,7 +156,7 @@ export class WildPitchApi {
         }
     }
 
-    static async searchRoutes (filters: { query: string }): Promise<Array<Route>> {
+    static async searchRoutes (filters: { query: string }): Promise<Array<RouteSearchResult>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -199,5 +199,67 @@ export class WildPitchApi {
         }
 
         return await response.json();
+    }
+
+    static async fetchBookmarkedRoutes (): Promise<Array<Route>> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/bookmarked`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+        console.log(response)
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+
+        return await response.json();
+    }
+
+    static async bookmarkRoute ( id: number ): Promise<void> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/${id}/bookmark`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+        console.log(response);
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
+    }
+
+    static async removeBookmarkedRoute ( id: number ): Promise<void> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/${id}/bookmark`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+        console.log(response);
+        if (!response.ok) {
+            throw new Error(await response.json());
+        }
     }
 }

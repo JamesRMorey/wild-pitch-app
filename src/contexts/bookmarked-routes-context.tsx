@@ -1,0 +1,175 @@
+import React, { createContext,useContext, useEffect, useState } from 'react';
+import { routeSchema as schema } from '../utils/schema';
+import { Route } from '../types';
+import { RouteRepository } from '../database/repositories/route-repository';
+import { useGlobalState } from './global-context';
+import Mapbox from '@rnmapbox/maps';
+import { MapPackService } from '../services/map-pack-service';
+import { WildPitchApi } from '../services/api/wild-pitch';
+import { ROUTE_ENTRY_TYPE } from '../consts/enums';
+
+type BookmarkedRoutesContextState = {
+    bookmarkedRoutes: Array<Route>;
+};
+
+type BookmarkedRoutesContextActions = {
+    create: (data: any)=>Promise<Route|void>;
+    update: (id: number, data: any)=>Promise<Route|void>;
+    remove: (serverId: number)=>void;
+    find: (id: number)=>Route|void;
+    upload: (serverId: number)=>Promise<void>;
+    isBookmarked: (serverId: number)=>boolean;
+};
+
+const StateContext = createContext<BookmarkedRoutesContextState | undefined>(undefined);
+const ActionsContext = createContext<BookmarkedRoutesContextActions | undefined>(undefined);
+
+export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    
+    const { user }  = useGlobalState();
+    const [bookmarkedRoutes, setBookmarkedRoutes] = useState<Array<Route>>([]);
+
+    const repo = new RouteRepository(user?.id);
+
+    const get = (): void => {
+        if (!user) return;
+        const data = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK) ?? [];
+        setBookmarkedRoutes(data);
+    }
+
+    const sync = async (): Promise<void> => {
+        if (!user) return;
+
+        const savedRoutes = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
+        const serverRoutes = await WildPitchApi.fetchBookmarkedRoutes();
+        const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.server_id));
+        
+        for (const route of unSavedRoutes) {
+            repo.create(route);
+        }
+
+        for (const saved of savedRoutes) {
+            const serverRoute = serverRoutes.find(r => r.server_id == saved.server_id);
+            if (!serverRoute) {
+                remove(saved.id);
+                continue;
+            };
+
+            if (serverRoute.updated_at > saved.updated_at && saved.id) {
+                update(
+                    saved.id, 
+                    serverRoute
+                )
+            }
+        }
+
+        get();
+    }
+
+    const create = async ( data: any ): Promise<Route|void> => {
+        await schema.validate(data, { abortEarly: false });
+        
+        const existing = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
+        const isExisting = existing.find((bm: Route) => bm.server_id == data.server_id);
+        if (isExisting) return;
+
+        const newRoute = repo.create(data, ROUTE_ENTRY_TYPE.BOOKMARK);
+        if (!newRoute || !newRoute.server_id) return;
+
+        upload(newRoute.server_id)
+            .then((data) => console.log('success bookmarking route'))
+            .catch((error) => console.error(error));
+
+        get();
+        
+        return newRoute;
+    }
+
+    const update = async ( id: number, data: Route ): Promise<Route|void> => {
+        if (!id) return;
+
+        await schema.validate(data, { abortEarly: false });
+        const updated = repo.update(id, data);
+
+        if (!updated) return;
+        get();
+
+        return updated;
+    }
+
+    const find = ( id: number ): Route|void => {
+        try {
+            const point = repo.find(id);
+            if (!point) return;
+
+            return point;
+        }
+        catch (error: any) {
+            console.error(error);
+            return;
+        }
+    }
+
+    const remove = async ( id: number): Promise<void> => {      
+        const deleted = repo.delete(id, ROUTE_ENTRY_TYPE.BOOKMARK);
+
+        if (deleted) {
+            const packName = MapPackService.getPackName(deleted.name, Mapbox.StyleURL.Outdoors);
+            await MapPackService.removeDownload(packName);
+
+            if (deleted.server_id) {
+                WildPitchApi.removeBookmarkedRoute(deleted.server_id);
+            }
+        }
+
+        get();
+    }
+
+    const upload = async ( serverId: number ): Promise<void> => {
+        await WildPitchApi.bookmarkRoute(serverId);
+    }
+
+    const isBookmarked = ( serverId: number ): boolean => {
+        return bookmarkedRoutes.find((b) => b.server_id == serverId) ? true : false;
+    }
+
+
+    useEffect(() => {
+        get();
+        sync();
+    }, [])
+
+
+    return (
+        <StateContext.Provider
+            value={{
+                bookmarkedRoutes
+            }}
+        >
+            <ActionsContext.Provider
+                value={{
+                    create,
+                    update,
+                    remove,
+                    find,
+                    upload,
+                    isBookmarked
+                }}
+            >
+                {children}
+            </ActionsContext.Provider>
+        </StateContext.Provider>
+    );
+};
+
+export const useBookmarkedRoutesState = (): BookmarkedRoutesContextState => {
+    const context = useContext(StateContext);
+    if (!context) throw new Error('useBookmarkedRoutesState must be used within a RoutesProvider');
+    return context;
+};
+
+export const useBookmarkedRoutesActions = (): BookmarkedRoutesContextActions => {
+    const context = useContext(ActionsContext);
+    if (!context) throw new Error('useBookmarkedRoutesActions must be used within a RoutesProvider');
+    return context;
+};

@@ -16,17 +16,20 @@ import { EventBus } from '../../services/event-bus';
 import { useGlobalState } from '../../contexts/global-context';
 import { useRoutesActions } from '../../contexts/routes-context';
 import { Route } from '../../types';
+import BookmarkedRoutesScreen from './bookmarked-routes';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
     pins: PinsScreen,
-    routes: RoutesScreen
+    routes: RoutesScreen,
+    bookmarkedRoutes: BookmarkedRoutesScreen
 });
 
 const ROUTES = [
-    { key: 'packs', title: 'Offline maps' },
     { key: 'routes', title: 'My routes' },
-    { key: 'pins', title: 'Pins' },
+    { key: 'pins', title: 'My pins' },
+    { key: 'bookmarkedRoutes', title: 'Bookmarks' },
+    { key: 'packs', title: 'Maps' },
 ];
 
 type PropsType = { navigation: any };

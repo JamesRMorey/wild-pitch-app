@@ -1,6 +1,7 @@
 import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { Route } from '../../types';
 import { getDB } from '../db';
+import { ROUTE_ENTRY_TYPE } from '../../consts/enums';
 
 export class RouteRepository {
 
@@ -15,12 +16,12 @@ export class RouteRepository {
         this.tableName = 'routes';
     }
 
-    get ( limit: number=100 ): Array<Route>  {
+    get ( entryType: ROUTE_ENTRY_TYPE=ROUTE_ENTRY_TYPE.ROUTE ): Array<Route>  {
         const data = this.db.execute(`
             SELECT *
             FROM ${this.tableName} t
             WHERE t.user_id = ${this.userId}
-            LIMIT ${limit}
+            AND t.entry_type = '${entryType}'
         `);
         
         return data.rows?._array ? 
@@ -39,12 +40,13 @@ export class RouteRepository {
                 updated_at: row.updated_at,
                 published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
                 server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
-                status: row.status
+                status: row.status,
+                entry_type: row.entry_type
             })) as Route[]
             : [];
     }
 
-    create ( data: Route ): Route|void {
+    create ( data: Route, entryType: ROUTE_ENTRY_TYPE=ROUTE_ENTRY_TYPE.ROUTE ): Route|void {
         const record = this.db.execute(`
             INSERT INTO "${this.tableName}" (
                 name, 
@@ -60,9 +62,10 @@ export class RouteRepository {
                 published_at,
                 created_at,
                 updated_at,
-                status
+                status,
+                entry_type
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, ?)
             RETURNING *
         `, [
             data.name, 
@@ -77,10 +80,11 @@ export class RouteRepository {
             data.server_id || NITRO_SQLITE_NULL,
             data.published_at || NITRO_SQLITE_NULL,
             data.status || 'PRIVATE',
+            entryType || ROUTE_ENTRY_TYPE.ROUTE
         ]);
 
         const row = record.rows?._array[0];
-        
+        console.log('created', row)
         return {
             id: row.id,
             user_id: row.user_id,
@@ -96,12 +100,13 @@ export class RouteRepository {
             updated_at: row.updated_at,
             published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
             server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
-            status: data.status
+            status: data.status,
+            entry_type: data.entry_type
         }
     }
 
 
-    update(id: number, data: Route): Route | void {
+    update( id: number, data: Route ): Route | void {
         const record = this.db.execute(`
             UPDATE "${this.tableName}"
             SET name = ?,
@@ -151,7 +156,8 @@ export class RouteRepository {
             updated_at: row.updated_at,
             published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
             server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
-            status: row.status
+            status: row.status,
+            entry_type: row.entry_type
         };
     }
 
@@ -182,15 +188,19 @@ export class RouteRepository {
             updated_at: row.updated_at,
             published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
             server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
-            status: row.status
+            status: row.status,
+            entry_type: row.entry_type
         }
     }
 
-    findByLatLng ( latitude: number, longitude: number ): Route|void  {
+    findByLatLng ( latitude: number, longitude: number, entryType: ROUTE_ENTRY_TYPE=ROUTE_ENTRY_TYPE.ROUTE ): Route|void  {
         const record = this.db.execute(`
             SELECT *
             FROM ${this.tableName} t
-            WHERE t.latitude = ${latitude} AND t.longitude = ${longitude} AND t.user_id = ${this.userId}
+            WHERE t.latitude = ${latitude} 
+            AND t.longitude = ${longitude} 
+            AND t.user_id = ${this.userId}
+            AND t.entry_type = '${entryType}'
             LIMIT 1
         `);
         
@@ -212,15 +222,17 @@ export class RouteRepository {
             updated_at: row.updated_at,
             published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
             server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
-            status: row.status
+            status: row.status,
+            entry_type: row.entry_type
         }
     }
 
-    delete ( id: number ): Route|void {
+    delete ( id: number, entryType: ROUTE_ENTRY_TYPE=ROUTE_ENTRY_TYPE.ROUTE ): Route|void {
         const record = this.db.execute(`
             DELETE FROM ${this.tableName}
             WHERE id = ?
             AND user_id = ${this.userId}
+            AND entry_type = '${entryType}'
             RETURNING *
         `, [id]);
 
@@ -242,7 +254,8 @@ export class RouteRepository {
             updated_at: row.updated_at,
             published_at: row.published_at && row.published_at.isNitroSQLiteNull ? undefined : row.published_at,
             server_id: row.server_id && row.server_id.isNitroSQLiteNull ? undefined : row.server_id,
-            status: row.status
+            status: row.status,
+            entry_type: row.entry_type
         };
     }
 

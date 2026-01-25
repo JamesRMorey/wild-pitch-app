@@ -14,11 +14,13 @@ import { usePointTypes } from "../hooks/repositories/usePointType";
 import RouteSearchCard from "../components/routes/route-search-card";
 import { useGlobalState } from "../contexts/global-context";
 import { WildPitchApi } from "../services/api/wild-pitch";
+import { useBookmarkedRoutesActions } from "../contexts/bookmarked-routes-context";
 
 type PropsType = { id?: string, onPlaceResultPress: (place: Place) => void, onRouteResultPress: (route: RouteSearchResult) => void }
 export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, onRouteResultPress } : PropsType) {
 
     const { user } = useGlobalState();
+    const { isBookmarked } = useBookmarkedRoutesActions();
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const requestRef = useRef(0);
@@ -36,12 +38,12 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
         const currentRequest = ++requestRef.current;
         try {
             const res = await WildPitchApi.searchRoutes({ query: searchTerm })
-            
             if (currentRequest === requestRef.current) {
                 setRouteResults(res);
             }
         }
         catch (err) {
+            console.error(err)
             setRouteResults([]);
         }
         finally {
@@ -84,17 +86,12 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
             }
         }, 600);
         return () => clearTimeout(handler);
-    }, [searchTerm, performPlaceSearch]);
+    }, [searchTerm, performPlaceSearch, searchType]);
 
     useEffect(() => {
-        if (searchTerm.length < 3) return;
-        if (searchType === 'route') {
-            performRoutesSearch();
-        }
-        else {
-            performPlaceSearch();
-        }
-    }, [searchType]);
+        performPlaceSearch();
+        performRoutesSearch();
+    }, [])
 
 
     return (
@@ -153,7 +150,8 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                                 key={i}
                                 route={route}
                                 onPress={() => onRouteResultPress(route)}
-                                belongsToUser={user.id == route.user.id}
+                                belongsToUser={user.id == route.user?.id}
+                                isBookmarked={isBookmarked(route.server_id)}
                             />
                         )
                     })}

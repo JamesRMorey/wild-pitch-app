@@ -1,6 +1,6 @@
 import React, { createContext,useContext, useEffect, useState } from 'react';
 import { routeSchema as schema } from '../utils/schema';
-import { Route, RouteStatus } from '../types';
+import { Route } from '../types';
 import { RouteRepository } from '../database/repositories/route-repository';
 import { useGlobalState } from './global-context';
 import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';
@@ -10,6 +10,7 @@ import { Alert } from 'react-native';
 import Mapbox from '@rnmapbox/maps';
 import { MapPackService } from '../services/map-pack-service';
 import { WildPitchApi } from '../services/api/wild-pitch';
+import { ROUTE_STATUS } from '../consts/enums';
 
 type RoutesContextState = {
     routes: Array<Route>
@@ -22,7 +23,7 @@ type RoutesContextActions = {
     findByLatLng: (latitude: number, longitude: number)=>Route|void
     find: (id: number)=>Route|void
     importFile: ()=>Promise<Route|void>
-    upload: (data: Route, status: RouteStatus)=>Promise<Route|void>
+    upload: (data: Route, status: ROUTE_STATUS)=>Promise<Route|void>
     makePublic: (data: Route)=>Promise<Route|void>
 };
 
@@ -47,7 +48,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (!user) return;
 
         const savedRoutes = repo.get();
-        const serverRoutes = await WildPitchApi.fetchSavedRoutes();
+        const serverRoutes = await WildPitchApi.fetchUserRoutes();
         const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.server_id));
         
         for (const route of unSavedRoutes) {
@@ -166,7 +167,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             get();
         }
         catch (error) {
-            console.error('Error deleting route');
+            console.error(error);
         }
     }
 

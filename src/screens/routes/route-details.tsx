@@ -4,26 +4,29 @@ import { COLOUR, TEXT } from "../../styles";
 import { SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
 import { useCallback, useMemo, useState } from "react";
-import { MapPack, Route } from "../../types";
+import { MapPack, Route as RouteType } from "../../types";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
 import Mapbox from "@rnmapbox/maps";
 import { MapPackService } from "../../services/map-pack-service";
 import { RouteService } from "../../services/route-service";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
-import { useRoutesActions } from "../../contexts/routes-context";
 import { useFocusEffect } from "@react-navigation/native";
 import { WildPitchApi } from "../../services/api/wild-pitch";
 import { useGlobalState } from "../../contexts/global-context";
+import { useBookmarkedRoutesActions, useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
+import { useRoutesActions } from "../../contexts/routes-context";
+import { Route } from "../../classes/route";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
 
     const { user } = useGlobalState();
-    const [route, setRoute] = useState<Route>(navRoute.params.route);
+    const [route, setRoute] = useState<Route>(new Route(navRoute.params.route));
+    const { bookmarkedRoutes } = useBookmarkedRoutesState();
     const [sharing, setSharing] = useState<boolean>(false);
-    const { create, findByLatLng, find, makePublic } = useRoutesActions();
-    const [savedRoute, setSavedRoute] = useState<Route|void>(findByLatLng(route.latitude, route.longitude));
+    const { create: createBookmarkedRoute } = useBookmarkedRoutesActions();
+    const { makePublic, find } = useRoutesActions();
     const pack: MapPack = {
         name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
         styleURL: Mapbox.StyleURL.Outdoors,
@@ -35,14 +38,14 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         mapPack: pack, 
         onSuccess: () => bookmarkRoute()
     });
-    const belongsToUser: boolean = useMemo(() => user.id == route.user_id && user?.id !== undefined, [user, route]);
+    const isBookmarked: boolean = useMemo(() => route.isBookmarked(bookmarkedRoutes), [bookmarkedRoutes, route]);
 
     const goBack = () => {
         navigation.goBack();
     }
 
     const shareRoute = async () => {
-        RouteService.share(route);
+        RouteService.share(route.toJSON());
     }
 
     const directionsToStart = async () => {
@@ -52,12 +55,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
 
     const bookmarkRoute = async () => {
         try {
-            if (savedRoute) return;
-
-            const newRoute = await create(route);
-            if (!newRoute) return;
-            
-            setSavedRoute(newRoute);
+            const newRoute = await createBookmarkedRoute(route);
         }
         catch (err) {
             console.log(err);
@@ -69,7 +67,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const saveGPX = async () => {
-        RouteService.export(route);
+        RouteService.export(route.toJSON());
     }
 
     const edit = () => {
@@ -82,10 +80,10 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const confirmPublic = async () => {
         try {
             setSharing(true);
-            const uploaded = await makePublic(route);
-            console.log(uploaded)
+            const uploaded = await makePublic(route.toJSON());
+
             if (uploaded) {
-                setRoute(uploaded)
+                setRoute(new Route(uploaded))
             }
         }
         catch (error) {
@@ -110,7 +108,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const findRoute = async () => {
         const found = route.id ? find(route.id) : await WildPitchApi.findRoute(route.server_id);
         if (!found) return;
-
+        
         setPack({
             name: MapPackService.getPackName(found.name, Mapbox.StyleURL.Outdoors),
             styleURL: Mapbox.StyleURL.Outdoors,
@@ -119,7 +117,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             bounds: RouteService.getBounds(found.markers)
         });
         
-        setRoute(found);
+        setRoute(new Route(found));
         checkDownloaded();
     }
 
@@ -143,7 +141,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     />
                 </TouchableOpacity>
                 <View style={styles.rightIconsContainer}>
-                    {belongsToUser && 
+                    {route.isOwnedByUser(user.id) ? 
                         <View style={styles.belongsToUser}>
                             <Text style={[TEXT.sm, { color: COLOUR.green[500] }]}>Created by you</Text>
                             <Icon
@@ -152,18 +150,20 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                                 size={normalise(18)}
                             />
                         </View>
-                    }
+                    :
                     <TouchableOpacity
                         onPress={bookmarkRoute}
-                        disabled={!!savedRoute}
+                        disabled={false}
                         style={styles.bookmarkButton}
                     >
                         <Icon
-                            icon={`${savedRoute ? 'bookmark-check' : 'bookmark'}`}
+                            icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
                             size={normalise(18)}
                             colour={COLOUR.gray[700]}
                         />
                     </TouchableOpacity>
+                    }
+                    
                     <TouchableOpacity
                         onPress={shareRoute}
                         style={styles.shareButton}
@@ -221,9 +221,9 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
                 </View>
                 )}
-                {belongsToUser && 
+                {route.isOwnedByUser(user.id) && 
                 <View>
-                    {route.server_id && route.status == 'PUBLIC' ?
+                    {route.isPublic() ?
                     <View style={[styles.section]}>
                         <Text style={styles.sectionTitle}>Thanks for sharing</Text>
                         <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route is shared with others to enjoy.</Text>
@@ -242,7 +242,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     }
                 </View>}
                 <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
-                    {belongsToUser && 
+                    {route.isOwnedByUser(user.id) && 
                     <SectionItemCard
                         title="Edit this route"
                         icon="pencil"
