@@ -3,6 +3,7 @@ import { COLOUR, OPACITY, ROUNDED, TEXT } from "../../styles";
 import { RouteSearchResult } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
+import { Format } from "../../services/formatter";
 
 type PropsType = { route: RouteSearchResult, onPress?: ()=>void, belongsToUser: boolean, isBookmarked: boolean }
 export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser, isBookmarked } : PropsType ) {
@@ -55,6 +56,26 @@ export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser,
                         <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
                     </View>
                     )}
+                    {route.type && (
+                    <View style={styles.itemContainer}>
+                        <Icon
+                            icon='route'
+                            size={'small'}
+                            colour={COLOUR.gray[700]}
+                        />
+                        <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{Format.capitalise(route.type)}</Text>
+                    </View>
+                    )}
+                    {route.difficulty && (
+                    <View style={styles.itemContainer}>
+                        <Icon
+                            icon='smile'
+                            size={'small'}
+                            colour={COLOUR.gray[700]}
+                        />
+                        <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{Format.capitalise(route.difficulty)}</Text>
+                    </View>
+                    )}
                 </View>
             </View>
             {belongsToUser ? 
@@ -103,6 +124,8 @@ const styles = StyleSheet.create({
         gap: normalise(10),
         alignItems: 'center',
         marginTop: normalise(5),
+        flexWrap: 'wrap',
+        flex: 1
     },
     itemContainer: {
         flexDirection: 'row',

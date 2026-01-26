@@ -3,7 +3,7 @@ import Mapbox from '@rnmapbox/maps';
 import { useEffect, useRef, useState } from "react";
 import { normalise } from "../../../utils/helpers";
 import { SETTING } from "../../../consts";
-import { Coordinate, PointOfInterest, Route } from "../../../types";
+import { Coordinate, PointOfInterest } from "../../../types";
 import { COLOUR, TEXT } from "../../../styles";
 import useHaptic from "../../../hooks/useHaptic";
 import UserPosition from "../../../components/map/user-position";
@@ -17,6 +17,7 @@ import IconButton from "../../../components/buttons/icon-button";
 import PointOfInterestMarker from "../../../components/map/map-marker";
 import { RouteService } from "../../../services/route-service";
 import MapStyleButton from "../../../components/buttons/map-style-button";
+import { Route } from "../../../classes/route";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
@@ -79,7 +80,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 	}
 
 	const saveRoute = () => {
-		if (markers.length === 0) return;
+		if (markers.length <= 1) return;
 		navigation.navigate('route-save', {
 			route: {
 				...initialRoute,
@@ -125,7 +126,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 						setMapHeading(heading);
 					}}
 				>
-					{(initialPoint || initialCenter || initialRegion) && (
+					{(initialPoint || initialCenter || initialRegion) &&
 					<Mapbox.Camera
 						ref={(ref) => {
 							if (ref) cameraRef.current = ref;
@@ -139,7 +140,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 						zoomLevel={SETTING.ROUTE_CLOSE_ZOOM}
 						animationDuration={0}
 					/>
-					)}
+					}
 					{markers.map((marker, index) => {
 						return (
 							<RouteMarker
@@ -166,13 +167,13 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					<UserPosition
 						onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
 					/>
-					{activePOI && (
+					{activePOI &&
 						<PointOfInterestMarker
 							coordinate={[activePOI.longitude, activePOI.latitude]}
 							icon={activePOI.point_type?.icon ?? 'flag'}
 							colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
 						/>
-					)}
+					}
 				</Mapbox.MapView>
 				<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
 					{mapHeading > 0 && (
@@ -226,7 +227,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 				<TouchableOpacity 
 					style={[styles.save, { opacity: markers.length === 0 ? 0.5 : 1,  }]}
 					onPress={saveRoute}
-					disabled={markers.length === 0}
+					disabled={markers.length <= 1}
 				>
 					<Text style={styles.saveText}>Save</Text>
 				</TouchableOpacity>

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import NothingHere from "../../components/misc/nothing-here"
 import RouteCard from "../../components/routes/route-card"
 import { EventBus } from "../../services/event-bus"
-import { Route } from "../../types"
+import { Route } from "../../classes/route"
 import { SheetManager } from "react-native-actions-sheet"
 import { SHEET } from "../../consts"
 import OptionsSheet from "../../sheets/options-sheet"
@@ -37,6 +37,7 @@ export default function RoutesScreen({}) {
         await closeRouteOptions();
         if (!selectedRoute) return;
 
+        // @ts-ignore
         navigation.navigate('map');
         
         await delay(200);
@@ -46,6 +47,7 @@ export default function RoutesScreen({}) {
 
     const viewRouteDetails = async ( route: Route ) => {
         await closeRouteOptions();
+        // @ts-ignore
         navigation.navigate('route-details', { route: route });
     }
 
@@ -125,8 +127,6 @@ export default function RoutesScreen({}) {
                 <NothingHere
                     title="No routes saved"
                     text="Head to the map to find and creates routes. You can also import GPX files using the plus icon in the top right corner."
-                    // onPress={navigateToBuilder}
-                    // buttonText="Create new route"
                 />
                 }
             </ScrollView>

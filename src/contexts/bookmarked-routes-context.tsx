@@ -1,12 +1,13 @@
 import React, { createContext,useContext, useEffect, useState } from 'react';
 import { routeSchema as schema } from '../utils/schema';
-import { Route } from '../types';
 import { RouteRepository } from '../database/repositories/route-repository';
 import { useGlobalState } from './global-context';
 import Mapbox from '@rnmapbox/maps';
 import { MapPackService } from '../services/map-pack-service';
 import { WildPitchApi } from '../services/api/wild-pitch';
 import { ROUTE_ENTRY_TYPE } from '../consts/enums';
+import { Route } from '../classes/route';
+import { RouteData } from '../types';
 
 type BookmarkedRoutesContextState = {
     bookmarkedRoutes: Array<Route>;
@@ -34,20 +35,20 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
     const get = (): void => {
         if (!user) return;
         const data = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK) ?? [];
-        setBookmarkedRoutes(data);
+        setBookmarkedRoutes(data.map(r => new Route(r)));
     }
 
     const sync = async (): Promise<void> => {
         if (!user) return;
-
+        
         const savedRoutes = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
         const serverRoutes = await WildPitchApi.fetchBookmarkedRoutes();
         const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.server_id));
         
         for (const route of unSavedRoutes) {
-            repo.create(route);
+            repo.create(route, ROUTE_ENTRY_TYPE.BOOKMARK);
         }
-
+        
         for (const saved of savedRoutes) {
             const serverRoute = serverRoutes.find(r => r.server_id == saved.server_id);
             if (!serverRoute) {
@@ -56,13 +57,10 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
             };
 
             if (serverRoute.updated_at > saved.updated_at && saved.id) {
-                update(
-                    saved.id, 
-                    serverRoute
-                )
+                repo.update(saved.id, serverRoute);
             }
         }
-
+        
         get();
     }
 
@@ -70,7 +68,7 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         await schema.validate(data, { abortEarly: false });
         
         const existing = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
-        const isExisting = existing.find((bm: Route) => bm.server_id == data.server_id);
+        const isExisting = existing.find((bm: RouteData) => bm.server_id == data.server_id);
         if (isExisting) return;
 
         const newRoute = repo.create(data, ROUTE_ENTRY_TYPE.BOOKMARK);
@@ -82,7 +80,7 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
 
         get();
         
-        return newRoute;
+        return new Route(newRoute);
     }
 
     const update = async ( id: number, data: Route ): Promise<Route|void> => {
@@ -94,15 +92,15 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         if (!updated) return;
         get();
 
-        return updated;
+        return new Route(updated);
     }
 
     const find = ( id: number ): Route|void => {
         try {
-            const point = repo.find(id);
-            if (!point) return;
+            const route = repo.find(id);
+            if (!route) return;
 
-            return point;
+            return new Route(route);
         }
         catch (error: any) {
             console.error(error);
@@ -110,7 +108,7 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         }
     }
 
-    const remove = async ( id: number): Promise<void> => {      
+    const remove = async ( id: number ): Promise<void> => {      
         const deleted = repo.delete(id, ROUTE_ENTRY_TYPE.BOOKMARK);
 
         if (deleted) {

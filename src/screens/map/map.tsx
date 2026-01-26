@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import IconButton from "../../components/buttons/icon-button";
 import { delay, normalise } from "../../utils/helpers";
@@ -9,7 +9,8 @@ import MapArea from "../../components/map/map-area";
 import ActiveItemControls from "../../components/map/active-item-controls";
 import { ASSET, SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
-import { Place, PointOfInterest, Route, RouteSearchResult } from "../../types";
+import { Place, PointOfInterest, RouteSearchResult } from "../../types";
+import { Route } from "../../classes/route";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../../services/formatter";
 import ThreeDMode from "../../components/map/three-d-mode";
@@ -32,7 +33,6 @@ import { useRoutesState } from "../../contexts/routes-context";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
 import { WildPitchApi } from "../../services/api/wild-pitch";
 import { useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
-import { ROUTE_ENTRY_TYPE } from "../../consts/enums";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
@@ -111,7 +111,7 @@ export default function MapScreen({ navigation } : PropsType) {
 
 			if (!data) return;
 
-			updateActiveRoute(data, fit);
+			updateActiveRoute(new Route(data), fit);
 		}
 		catch(err) {
 			console.log(err);
@@ -308,7 +308,7 @@ export default function MapScreen({ navigation } : PropsType) {
 							route={activeRoute}
 							onPress={() => navigateToRoute(activeRoute)}
 							onClose={() => clearActiveRoute()}
-							belongsToUser={user.id == activeRoute.user_id && activeRoute.entry_type == ROUTE_ENTRY_TYPE.ROUTE}
+							belongsToUser={activeRoute.isOwnedByUser(user.id)}
 						/>
 					</View>
 				:activePackGroup ?

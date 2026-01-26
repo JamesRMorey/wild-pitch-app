@@ -1,5 +1,9 @@
-import { ROUTE_ENTRY_TYPE, ROUTE_STATUS } from '../consts/enums';
-import { Coordinate, Route as RouteType } from '../types';
+import { ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_TYPE } from '../consts/enums';
+import { GPX } from '../services/gpx';
+import { RouteService } from '../services/route-service';
+import { Coordinate, RouteData } from '../types';
+import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
+import Share from 'react-native-share';
 
 export class Route {
     id?: number;
@@ -13,14 +17,16 @@ export class Route {
     distance?: number;
     elevation_gain?: number;
     elevation_loss?: number;
-    created_at?: string;
-    updated_at?: string;
+    created_at: string;
+    updated_at: string;
     published_at?: string;
     status: ROUTE_STATUS;
     entry_type: ROUTE_ENTRY_TYPE;
     user?: { id: number; name: string };
+    type: ROUTE_TYPE;
+    difficulty: ROUTE_DIFFICULTY;
 
-    constructor (data: RouteType) {
+    constructor (data: RouteData) {
         this.id = data.id;
         this.user_id = data.user_id;
         this.name = data.name;
@@ -39,13 +45,15 @@ export class Route {
         this.entry_type = data.entry_type || 'ROUTE';
         this.user_id = data.user_id;
         this.user = data.user;
+        this.type = data.type;
+        this.difficulty = data.difficulty;
     }
 
     isBookmark (): boolean {
         return this.entry_type == ROUTE_ENTRY_TYPE.BOOKMARK;
     }
 
-    isBookmarked ( existingBookmarks: Array<RouteType>): boolean {
+    isBookmarked ( existingBookmarks: Array<RouteData>): boolean {
         return existingBookmarks.find((r) => r.entry_type == ROUTE_ENTRY_TYPE.BOOKMARK && r.server_id == this.server_id) ? true : false;
     }
 
@@ -80,7 +88,58 @@ export class Route {
         return true;
     }
 
-    toJSON (): RouteType {
+    calculateBoundingBox (): { ne: Position, sw: Position } | null {
+        return RouteService.calculateBoundingBox(this.markers);
+    }
+
+    getFileName (): string {
+        return this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    generateGPX (): string {
+        const header = `<?xml version="1.0" encoding="UTF-8"?>
+            <gpx version="1.1" creator="WildPitch" xmlns="http://www.topografix.com/GPX/1/1">
+                <metadata>
+                    <name>${GPX.escapeXml(this.name)}</name>
+                    <desc>${GPX.escapeXml(this.notes ?? '')}</desc>
+                    <difficulty>${GPX.escapeXml(this.difficulty ?? '')}</desc>
+                    <type>${GPX.escapeXml(this.type ?? '')}</desc>
+                </metadata>
+                <trk>
+                <trkseg>`;
+
+        const trkpts = this.markers
+            .map((p) =>
+                `<trkpt lat="${p.latitude}" lon="${p.longitude}">
+                <time>${new Date().toISOString()}</time>
+                </trkpt>`
+            )
+            .join("\n");
+
+        const footer = `
+                </trkseg>
+                </trk>
+            </gpx>`;
+
+        return header + trkpts + footer;
+    }
+
+    async export ( message?: string ) {
+        const gpx = this.generateGPX();
+        const fileName = `${this.getFileName()}.gpx`;
+
+        const path = await GPX.export(gpx, fileName);
+
+        await Share.open({
+            title: "Share Route GPX",
+            url: "file://" + path,
+            type: "application/gpx+xml",
+            message: message,
+        });
+    } 
+    
+
+    toJSON (): RouteData {
         return {
             id: this.id,
             user_id: this.user_id,
@@ -99,6 +158,8 @@ export class Route {
             server_id: this.server_id,
             entry_type: this.entry_type,
             user: this.user,
+            difficulty: this.difficulty,
+            type: this.type
         };
     }
 }

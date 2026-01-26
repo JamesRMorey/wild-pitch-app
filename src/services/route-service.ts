@@ -1,4 +1,4 @@
-import { Coordinate, Route, RouteSearchResult } from "../types";
+import { Coordinate, RouteData, RouteSearchResult } from "../types";
 import { getDistanceBetweenPoints } from "../utils/helpers";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import { OSMaps } from "./api/os-maps";
@@ -53,7 +53,7 @@ export class RouteService {
         );
     }
 
-    static generateGPX ( route: Route ): string {
+    static generateGPX ( route: RouteData ): string {
         const header = `<?xml version="1.0" encoding="UTF-8"?>
             <gpx version="1.1" creator="WildPitch" xmlns="http://www.topografix.com/GPX/1/1">
                 <metadata>
@@ -79,7 +79,7 @@ export class RouteService {
         return header + trkpts + footer;
     }
 
-    static parseGPX ( gpxString: string ): Route|void {
+    static parseGPX ( gpxString: string ): RouteData|void {
         const parser = new XMLParser({
             ignoreAttributes: false,
             attributeNamePrefix: "",
@@ -98,7 +98,7 @@ export class RouteService {
             longitude: markers[0].longitude,
             elevation_gain: data.gpx?.metadata?.elevation_gain?.length ? parseFloat(data.gpx.metadata.elevation_gain) : undefined,
             elevation_loss: data.gpx?.metadata?.elevation_loss?.length ? parseFloat(data.gpx.metadata.elevation_loss) : undefined,
-            distance: this.calculateDistance(markers),
+            distance: this.calculateDistance(markers)
         }
     }
 

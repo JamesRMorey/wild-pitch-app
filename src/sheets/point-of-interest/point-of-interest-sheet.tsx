@@ -22,7 +22,7 @@ export default function PointOfInterestSheet({ id=SHEET.MAP_POI_SHEET, point: po
     useEffect(() => {
         if (!poi) return;
         setPoint(poi)
-    }, [poi])
+    }, [poi]);
 
 
     return (

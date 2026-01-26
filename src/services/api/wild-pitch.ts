@@ -1,5 +1,5 @@
 import { ENVIRONMENT } from "../../../ENV";
-import { Route, RouteSearchResult, User } from "../../types";
+import { RouteData, RouteSearchResult, User } from "../../types";
 import * as Keychain from 'react-native-keychain';
 
 
@@ -15,11 +15,14 @@ export class WildPitchApi {
             body: JSON.stringify(data),
         });
 
+        const result = await response.json();
+        console.log('login', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return response.json();
+        return result;
     }
 
 
@@ -41,11 +44,14 @@ export class WildPitchApi {
             body: JSON.stringify(data),
         });
 
+        const result = await response.json();
+        console.log('register', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return response.json();
+        return result;
     }
 
     static async deleteAccount(): Promise<void> {
@@ -68,7 +74,7 @@ export class WildPitchApi {
         }
     }
 
-    static async createRoute ( data: Route ): Promise<Route> {
+    static async createRoute ( data: RouteData ): Promise<RouteData> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -84,14 +90,17 @@ export class WildPitchApi {
             body: JSON.stringify(data)
         });
         
+        const result = await response.json();
+        console.log('createRoute', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return await response.json()
+        return result;
     }
 
-    static async updateRoute ( id: number, data: Route ): Promise<Route> {
+    static async updateRoute ( id: number, data: RouteData ): Promise<RouteData> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -107,14 +116,17 @@ export class WildPitchApi {
             body: JSON.stringify(data)
         });
         
+        const result = await response.json();
+        console.log('updateRoute', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return await response.json()
+        return result;
     }
 
-    static async fetchUserRoutes (): Promise<Array<Route>> {
+    static async fetchUserRoutes (): Promise<Array<RouteData>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -129,14 +141,17 @@ export class WildPitchApi {
             }
         });
 
+        const result = await response.json();
+        console.log('fetchUserRoutes', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return await response.json();
+        return result;
     }
     
-    static async deleteRoute( route: Route ): Promise<void> {
+    static async deleteRoute( route: RouteData ): Promise<void> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -172,14 +187,17 @@ export class WildPitchApi {
             body: JSON.stringify(filters)
         });
 
+        const result = await response.json();
+        console.log('searchRoutes', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return await response.json();
+        return result;
     }
 
-    static async findRoute (id: string): Promise<Route> {
+    static async findRoute (id: number): Promise<RouteData> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -194,14 +212,17 @@ export class WildPitchApi {
             }
         });
         
+        const result = await response.json();
+        console.log('findRoute', response, result);
+        
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return await response.json();
+        return result;
     }
 
-    static async fetchBookmarkedRoutes (): Promise<Array<Route>> {
+    static async fetchBookmarkedRoutes (): Promise<Array<RouteData>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
@@ -215,12 +236,15 @@ export class WildPitchApi {
                 'Authorization': `Bearer ${credentials.password}`
             }
         });
-        console.log(response)
+
+        const result = await response.json();
+        console.log('fetchBookmarkedRoutes', response, result);
+
         if (!response.ok) {
-            throw new Error(await response.json());
+            throw new Error(result);
         }
 
-        return await response.json();
+        return result;
     }
 
     static async bookmarkRoute ( id: number ): Promise<void> {
@@ -237,7 +261,9 @@ export class WildPitchApi {
                 'Authorization': `Bearer ${credentials.password}`
             }
         });
-        console.log(response);
+
+        console.log('bookmarkRoute', response);
+        
         if (!response.ok) {
             throw new Error(await response.json());
         }
@@ -257,7 +283,7 @@ export class WildPitchApi {
                 'Authorization': `Bearer ${credentials.password}`
             }
         });
-        console.log(response);
+        
         if (!response.ok) {
             throw new Error(await response.json());
         }

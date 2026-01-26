@@ -91,7 +91,6 @@ export default function PointOfInterestEditScreen({ navigation, route } : PropsT
                         onFocus={() => setErrors(({ ...errors, notes: [] }))}
                     />
                 </View>
-                <Text style={TEXT.p}>This point is private and stored on your phone, but we will give you the option to share it with others soon :)</Text>
                 <View style={styles.buttons}>
                     <Button
                         onPress={save}
@@ -139,5 +138,8 @@ const styles = StyleSheet.create({
     },
     form: {
         gap: normalise(15)
+    },
+    buttons: {
+        marginTop: normalise(10)
     }
 })

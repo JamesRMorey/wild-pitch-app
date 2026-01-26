@@ -77,4 +77,13 @@ export class Format {
 
         return `${degrees.toFixed(0)}° ${compass}`;
     }
+
+    static capitalise = (str: string): string => {
+        const formatted = str.replace(/_/g, ' ');
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1).toLowerCase();
+    }
+
+    static currentTimestamp = (): string => {
+       return new Date().toISOString().slice(0, 19).replace('T', ' ')
+    }
 }

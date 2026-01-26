@@ -1,30 +1,44 @@
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Text } from "react-native";
 import { normalise, parseValidationErrors } from "../../../utils/helpers";
 import { TEXT } from "../../../styles";
 import TextInput from "../../../components/inputs/text-input";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Button from "../../../components/buttons/button";
 import TextArea from "../../../components/inputs/text-area";
-import { FormErrors, Route } from "../../../types";
+import { FormErrors, Option, RouteData } from "../../../types";
 import { useFocusEffect } from "@react-navigation/native";
 import KeyboardAvoidingView from "../../../components/misc/keyboard-avoiding-view";
 import { RouteService } from "../../../services/route-service";
 import { useRoutesActions } from "../../../contexts/routes-context";
+import { ROUTE_DIFFICULTY, ROUTE_TYPE } from "../../../consts/enums";
+import PillSelectInput from "../../../components/inputs/pill-select-input";
+import Icon from "../../../components/misc/icon";
 
-type PropsType = { navigation: any, route: any };
-export default function RouteSaveScreen({ navigation, route } : PropsType) {
+type PropsType = { navigation: any, route: any, popCount?: number };
+export default function RouteSaveScreen({ navigation, route: params, popCount=2 } : PropsType) {
 
-    const { route: WPRoute, onGoBack } = route.params;
-    const [data, setData] = useState<Route>(WPRoute);
+    const { route, onGoBack } = params.params;
+    const [data, setData] = useState<RouteData>(route);
     const [errors, setErrors] = useState<FormErrors>()
     const { create, update } = useRoutesActions();
+    const TYPE_OPTIONS: Array<Option> = [
+        { label: 'Circular', value: ROUTE_TYPE.CIRCULAR },
+        { label: 'Out and back', value: ROUTE_TYPE.OUT_AND_BACK },
+        { label: 'Point to point', value: ROUTE_TYPE.POINT_TO_POINT },
+    ];
+    const DIFFICULTY_OPTIONS: Array<Option> = [
+        { label: 'Easy', value: ROUTE_DIFFICULTY.EASY },
+        { label: 'Moderate', value: ROUTE_DIFFICULTY.MODERATE },
+        { label: 'Challenging', value: ROUTE_DIFFICULTY.CHALLENGING },
+        { label: 'Difficult', value: ROUTE_DIFFICULTY.DIFFICULT }
+    ];
+    const distance = useMemo(() => data.distance ?? RouteService.calculateDistance(data.markers), [route]);
 
-    
     const validate = async () => {
         try {
             const routeData = {
                 ...data,
-                distance: data.distance ?? RouteService.calculateDistance(data.markers),
+                distance: distance,
             }
             
             const updated = data.id ? await update(data.id, routeData) : await create(routeData);
@@ -34,8 +48,11 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                 onGoBack({ point: updated });
             }
             
-            await navigation.pop();
-            await navigation.pop();
+            let i = 1;
+            while (i <= popCount) {
+                await navigation.pop();
+                i++;
+            }
         }
         catch (err: any) {
             console.log(err);
@@ -44,6 +61,7 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
         }
     }
 
+
     useFocusEffect(
         useCallback(() => {
         return () => {
@@ -51,6 +69,7 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
         };
         }, [])
     );
+
 
     return (
         <KeyboardAvoidingView>
@@ -64,6 +83,20 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                         error={errors?.name?.[0] ?? undefined}
                         onFocus={() => setErrors(({ ...errors, name: [] }))}
                     />
+                    <PillSelectInput
+                        label="Type"
+                        options={TYPE_OPTIONS}
+                        onChange={(value) => setData(prev => ({...prev, type: value }))}
+                        value={data.type}
+                        error={errors?.type?.[0] ?? undefined}
+                    />
+                    <PillSelectInput
+                        label="Difficulty"
+                        options={DIFFICULTY_OPTIONS}
+                        onChange={(value) => setData(prev => ({...prev, difficulty: value }))}
+                        value={data.difficulty}
+                        error={errors?.difficulty?.[0] ?? undefined}
+                    />
                     <TextArea
                         label="Notes"
                         placeHolder="Notes about your route..."
@@ -72,6 +105,14 @@ export default function RouteSaveScreen({ navigation, route } : PropsType) {
                         error={errors?.notes?.[0] ?? undefined}
                         onFocus={() => setErrors(({ ...errors, notes: [] }))}
                     />
+                    {distance && 
+                    <View style={{ flexDirection: 'row', gap: normalise(5), alignItems: 'center' }}>
+                        <Icon
+                            icon="footprints"
+                        />
+                        <Text style={TEXT.label}>Distance: {`${(distance / 1000).toFixed(2)} km`}</Text>
+                    </View>
+                    }
                 </View>
                 <View style={styles.buttons}>
                     <Button

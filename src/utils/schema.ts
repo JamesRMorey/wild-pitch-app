@@ -2,6 +2,8 @@ import { array, number, object, string } from "yup";
 
 export const routeSchema = object({
     name: string().required("Name is required"),
+    type: string().required("Type is required"),
+    difficulty: string().required("Difficlity is required"),
     notes: string().optional().nullable(),
     markers: array().required("Markers are required"),
     latitude: number().required("Latitude is required"),

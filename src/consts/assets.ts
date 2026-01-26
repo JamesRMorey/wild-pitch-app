@@ -14,4 +14,5 @@ export const ASSETS = {
     LANDING_1: require('../assets/images/landing-2.jpg'),
     BACKGROUND_SMALL_1: require('../assets/images/background-small-1.jpg'),
     BACKGROUND_SMALL_2: require('../assets/images/background-small-2.jpg'),
+    BACKGROUND_WP_SMALL_BLURRED: require('../assets/images/background-wp-small-blurred.jpg'),
 }

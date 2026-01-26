@@ -16,13 +16,14 @@ import { RouteService } from "../../services/route-service";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
 import MapStyleButton from "../../components/buttons/map-style-button";
+import { Route } from "../../classes/route";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
 type PropsType = { navigation: any, route: any }
 export default function RouteNavigationScreen({ navigation, route: navRoute }: PropsType) {
 
-	const { route } = navRoute.params;
+	const { route } : { route: Route } = navRoute.params;
 	const { resetHeading, cameraRef, heading, setHeading, followUserPosition, setFollowUserPosition, fitToBounds, reCenter } = useMapCameraControls();
 	const { styleURL, setStyleURL } = useMapSettings();
 	const { userPosition, updateUserPosition, loaded } = useMapSettings();
@@ -49,7 +50,7 @@ export default function RouteNavigationScreen({ navigation, route: navRoute }: P
 		if (!distanceAlong) return;
 
 		setDistanceAlongRoute({ distance: distanceAlong + point.distancePast, index: point.index });
-	}, [userPosition])
+	}, [userPosition]);
 
     return (
         <View style={styles.container}>

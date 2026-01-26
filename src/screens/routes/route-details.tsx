@@ -1,10 +1,10 @@
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Linking, Alert } from "react-native"
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Linking, Alert, ImageBackground } from "react-native"
 import { normalise, stripHtml } from "../../utils/helpers"
-import { COLOUR, TEXT } from "../../styles";
-import { SETTING } from "../../consts";
+import { COLOUR, OPACITY, TEXT } from "../../styles";
+import { ASSET, SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
 import { useCallback, useMemo, useState } from "react";
-import { MapPack, Route as RouteType } from "../../types";
+import { MapPack } from "../../types";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
 import Mapbox from "@rnmapbox/maps";
@@ -17,12 +17,13 @@ import { useGlobalState } from "../../contexts/global-context";
 import { useBookmarkedRoutesActions, useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
 import { useRoutesActions } from "../../contexts/routes-context";
 import { Route } from "../../classes/route";
+import { Format } from "../../services/formatter";
 
 type PropsType = { navigation: any, route: any }
 export default function RouteDetailsScreen({ navigation, route: navRoute } : PropsType) {
 
     const { user } = useGlobalState();
-    const [route, setRoute] = useState<Route>(new Route(navRoute.params.route));
+    const [route, setRoute] = useState<Route>(navRoute.params.route);
     const { bookmarkedRoutes } = useBookmarkedRoutesState();
     const [sharing, setSharing] = useState<boolean>(false);
     const { create: createBookmarkedRoute } = useBookmarkedRoutesActions();
@@ -55,7 +56,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
 
     const bookmarkRoute = async () => {
         try {
-            const newRoute = await createBookmarkedRoute(route);
+            await createBookmarkedRoute(route);
         }
         catch (err) {
             console.log(err);
@@ -67,7 +68,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const saveGPX = async () => {
-        RouteService.export(route.toJSON());
+        route.export();
     }
 
     const edit = () => {
@@ -80,7 +81,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const confirmPublic = async () => {
         try {
             setSharing(true);
-            const uploaded = await makePublic(route.toJSON());
+            const uploaded = await makePublic(route);
 
             if (uploaded) {
                 setRoute(new Route(uploaded))
@@ -129,53 +130,55 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
 
     return (
         <View style={styles.container}>
-            <View style={styles.titleContainer}>
-                <TouchableOpacity 
-                    style={styles.backContainer}
-                    onPress={goBack}
-                >
-                    <Icon
-                        icon='chevron-left'
-                        size={normalise(18)}
-                        colour={COLOUR.gray[700]}
-                    />
-                </TouchableOpacity>
-                <View style={styles.rightIconsContainer}>
-                    {route.isOwnedByUser(user.id) ? 
-                        <View style={styles.belongsToUser}>
-                            <Text style={[TEXT.sm, { color: COLOUR.green[500] }]}>Created by you</Text>
+            <ImageBackground source={ASSET.BACKGROUND_WP_SMALL_BLURRED}>
+                <View style={styles.overlay}></View>
+                <View style={styles.titleContainer}>
+                    <TouchableOpacity 
+                        style={styles.backContainer}
+                        onPress={goBack}
+                    >
+                        <Icon
+                            icon='chevron-left'
+                            size={normalise(18)}
+                            colour={COLOUR.white}
+                        />
+                    </TouchableOpacity>
+                    <View style={styles.rightIconsContainer}>
+                        {route.isOwnedByUser(user.id) ? 
+                            <View style={styles.belongsToUser}>
+                                <Text style={[TEXT.sm, { color: COLOUR.white }]}>Created by you</Text>
+                                <Icon
+                                    icon="user-check"
+                                    colour={COLOUR.white}
+                                    size={normalise(18)}
+                                />
+                            </View>
+                        :
+                        <TouchableOpacity
+                            onPress={bookmarkRoute}
+                            disabled={false}
+                            style={styles.bookmarkButton}
+                        >
                             <Icon
-                                icon="user-check"
-                                colour={COLOUR.green[500]}
+                                icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
                                 size={normalise(18)}
+                                colour={COLOUR.white}
                             />
-                        </View>
-                    :
-                    <TouchableOpacity
-                        onPress={bookmarkRoute}
-                        disabled={false}
-                        style={styles.bookmarkButton}
-                    >
-                        <Icon
-                            icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
-                            size={normalise(18)}
-                            colour={COLOUR.gray[700]}
-                        />
-                    </TouchableOpacity>
-                    }
-                    
-                    <TouchableOpacity
-                        onPress={shareRoute}
-                        style={styles.shareButton}
-                    >
-                        <Icon
-                            icon='share'
-                            size={normalise(18)}
-                            colour={COLOUR.gray[700]}
-                        />
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                        }
+                        <TouchableOpacity
+                            onPress={shareRoute}
+                            style={styles.shareButton}
+                        >
+                            <Icon
+                                icon='share'
+                                size={normalise(18)}
+                                colour={COLOUR.white}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </ImageBackground>
             <ScrollView
                 contentContainerStyle={styles.scrollContainerContent}
                 style={styles.scrollContainer}
@@ -184,7 +187,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>{route.name.replaceAll('\n', '')}</Text>
                     <View style={styles.infoContainer}>
-                        {route.distance && (
+                        {route.distance &&
                             <View style={styles.itemContainer}>
                                 <Icon
                                     icon='footprints'
@@ -193,8 +196,8 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                                 />
                                 <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
                             </View>
-                        )}
-                        {route.elevation_gain && (
+                        }
+                        {route.elevation_gain &&
                         <View style={styles.itemContainer}>
                             <Icon
                                 icon='arrow-up'
@@ -203,7 +206,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                             />
                             <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
                         </View>
-                        )}
+                        }
                         {route.elevation_loss && (
                         <View style={styles.itemContainer}>
                             <Icon
@@ -214,6 +217,26 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                             <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
                         </View>
                         )}
+                        {route.type &&
+                            <View style={[styles.itemContainer]}>
+                                <Icon
+                                    icon='route'
+                                    size={'small'}
+                                    colour={COLOUR.gray[700]}
+                                />
+                                <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{Format.capitalise(route.type)}</Text>
+                            </View>
+                        }
+                        {route.difficulty &&
+                            <View style={[styles.itemContainer]}>
+                                <Icon
+                                    icon='smile'
+                                    size={'small'}
+                                    colour={COLOUR.gray[700]}
+                                />
+                                <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{Format.capitalise(route.difficulty)}</Text>
+                            </View>
+                        }
                     </View>
                 </View>
                 {route.notes && (
@@ -316,16 +339,16 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: SETTING.TOP_PADDING,
         backgroundColor: COLOUR.white,
     },
     titleContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        paddingTop: SETTING.TOP_PADDING,
         borderBottomWidth: normalise(2),
         borderBottomColor: COLOUR.wp_brown[100],
-        paddingBottom: normalise(20),
+        paddingBottom: normalise(80),
     },
     scrollContainer: {
         backgroundColor: COLOUR.wp_brown[100]
@@ -333,7 +356,7 @@ const styles = StyleSheet.create({
     scrollContainerContent: {
         gap: normalise(10),
         backgroundColor: COLOUR.wp_brown[100],
-        paddingVertical: normalise(8)
+        paddingBottom: normalise(8)
     },
     sectionTitle: {
         ...TEXT.h3,
@@ -348,7 +371,7 @@ const styles = StyleSheet.create({
     rightIconsContainer: {
         flexDirection: 'row',
         gap: normalise(5),
-        alignItems: 'center',
+        alignItems: 'center'
     },
     infoContainer: {
         flexDirection: 'row',
@@ -380,5 +403,13 @@ const styles = StyleSheet.create({
         gap: normalise(5),
         alignItems: 'center',
         marginRight: normalise(10)
+    },
+    overlay: {
+        backgroundColor: COLOUR.black + OPACITY[30], 
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
     }
 })

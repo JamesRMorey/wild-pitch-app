@@ -1,14 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { COLOUR, TEXT } from '../../styles';
+import { COLOUR, ROUNDED, TEXT } from '../../styles';
 import { normalise } from '../../utils/helpers';
 import Icon from '../misc/icon';
 
-
 type PropsType = { label?: string, options: Array<{ label: string, value: string, icon?: string }>, value?: string, onChange: (value: any) => void, onFocus?: ()=>void, error?: string };
-export default function RadioInput ({ value, label, options, onChange, onFocus=()=>{}, error } : PropsType) {
+export default function PillSelectInput ({ value, label, options, onChange, onFocus=()=>{}, error } : PropsType) {
 
     return (
-        <View style={{ width: '100%' }}>
+        <View style={styles.container}>
             {label && (
             <Text style={TEXT.label}>{label}</Text>
             )}
@@ -39,12 +38,8 @@ export default function RadioInput ({ value, label, options, onChange, onFocus=(
 }
 
 const styles = StyleSheet.create({
-    input: {
-        backgroundColor: COLOUR.gray[200],
-        borderRadius: normalise(10),
-        padding: normalise(15),
-        borderWidth: normalise(1),
-        borderColor: COLOUR.gray[200],
+    container: { 
+        width: '100%'
     },
     errorText: {
         ...TEXT.xs,
@@ -57,12 +52,13 @@ const styles = StyleSheet.create({
     options: {
         flexDirection: 'row',
         gap: normalise(10),
+        flexWrap: 'wrap'
     },
     option: {
-        flex: 1,
         backgroundColor: COLOUR.gray[200],
-        borderRadius: normalise(10),
-        paddingVertical: normalise(15),
+        ...ROUNDED.full,
+        paddingVertical: normalise(10),
+        paddingHorizontal: normalise(10),
         justifyContent: 'center',
         alignItems: 'center',
         gap: normalise(5),

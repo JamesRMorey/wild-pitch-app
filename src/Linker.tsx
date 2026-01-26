@@ -4,7 +4,7 @@ import { Linking, Alert } from 'react-native';
 import { useRoutesActions } from './contexts/routes-context';
 import { RouteService } from './services/route-service';
 import { useNavigation } from '@react-navigation/native';
-import { Route } from './types';
+import { RouteData } from './types';
 import { delay } from './utils/helpers';
 import { useMapActions } from './contexts/map-context';
 import { useGlobalActions } from './contexts/global-context';
@@ -18,10 +18,11 @@ export default function Linker ({ children } : PropsType) {
     const navigation = useNavigation();
     const initialURLProcessed = useRef<boolean>(false);
 
-    const confirmImport = async ( data: Route ) => {
+    const confirmImport = async ( data: RouteData ) => {
         try {
             if (!verifyLogin()) return;
             const route = await createRoute(data);
+            if (!route) return;
             //@ts-ignore
             navigation.navigate('map');
             await delay(500);

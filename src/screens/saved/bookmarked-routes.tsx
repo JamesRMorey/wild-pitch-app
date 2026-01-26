@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import NothingHere from "../../components/misc/nothing-here"
 import RouteCard from "../../components/routes/route-card"
 import { EventBus } from "../../services/event-bus"
-import { Route } from "../../types"
+import { Route } from "../../classes/route"
 import { SheetManager } from "react-native-actions-sheet"
 import { SHEET } from "../../consts"
 import OptionsSheet from "../../sheets/options-sheet"
@@ -125,8 +125,6 @@ export default function BookmarkedRoutesScreen({}) {
                 <NothingHere
                     title="No routes bookmarked"
                     text="Head to the map to explore section to find routes from the Wild Pitch community."
-                    // onPress={navigateToBuilder}
-                    // buttonText="Create new route"
                 />
                 }
             </ScrollView>

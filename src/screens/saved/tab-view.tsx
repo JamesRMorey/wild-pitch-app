@@ -15,7 +15,7 @@ import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
 import { useGlobalState } from '../../contexts/global-context';
 import { useRoutesActions } from '../../contexts/routes-context';
-import { Route } from '../../types';
+import { RouteData } from '../../types';
 import BookmarkedRoutesScreen from './bookmarked-routes';
 
 const renderScene = SceneMap({
@@ -38,7 +38,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
     const { user } = useGlobalState();
     const layout = useWindowDimensions();
     const [index, setIndex] = React.useState(0);
-    const { importFile: importRoute, create: createRoute } = useRoutesActions();
+    const { importFile: importRoute } = useRoutesActions();
 
     const openOptionsMenu = () => {
         SheetManager.show(SHEET.SAVED_OPTIONS)
@@ -82,15 +82,10 @@ export default function SavedTabsView({ navigation } : PropsType) {
         )
     }
 
-    const confirmRouteImport = async ( data: Route ) => {
-        try {
-            const route = await createRoute(data);
-            if (!route) return;
-            navigation.navigate('route-details', { route: route });
-        }
-        catch (error) {
-            console.error(error)
-        }
+    const confirmRouteImport = async ( data: RouteData ) => {
+        navigation.navigate('route-import', {
+			route: data
+		});
     }
 
     const OPTIONS = [

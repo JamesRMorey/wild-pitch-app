@@ -1,10 +1,10 @@
 import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
-import { Coordinate, MapPackGroup, PointOfInterest, Route } from '../types';
+import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
+import { Route } from '../classes/route';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
-import { RouteService } from '../services/route-service';
 import { usePointsOfInterestState } from './pois-context';
 
 type MapContextState = {
@@ -64,7 +64,7 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     const fitToRoute = ( route: Route ) => {
-        const boundingBox = RouteService.calculateBoundingBox(route.markers);
+        const boundingBox = route.calculateBoundingBox();
         if (boundingBox) {
             fitToBounds(boundingBox.ne, boundingBox.sw);
         }
