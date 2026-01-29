@@ -133,49 +133,106 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             <ImageBackground source={ASSET.BACKGROUND_WP_SMALL_BLURRED}>
                 <View style={styles.overlay}></View>
                 <View style={styles.titleContainer}>
-                    <TouchableOpacity 
-                        style={styles.backContainer}
-                        onPress={goBack}
-                    >
-                        <Icon
-                            icon='chevron-left'
-                            size={normalise(18)}
-                            colour={COLOUR.white}
-                        />
-                    </TouchableOpacity>
-                    <View style={styles.rightIconsContainer}>
-                        {route.isOwnedByUser(user.id) ? 
-                            <View style={styles.belongsToUser}>
-                                <Text style={[TEXT.sm, { color: COLOUR.white }]}>Created by you</Text>
+                    <View style={styles.headerContainer}>
+                        <TouchableOpacity 
+                            style={styles.backContainer}
+                            onPress={goBack}
+                        >
+                            <Icon
+                                icon='chevron-left'
+                                size={normalise(18)}
+                                colour={COLOUR.white}
+                            />
+                        </TouchableOpacity>
+                        <View style={styles.rightIconsContainer}>
+                            {route.isOwnedByUser(user.id) ? 
+                                <View style={styles.belongsToUser}>
+                                    <Text style={[TEXT.sm, { color: COLOUR.white }]}>Created by you</Text>
+                                    <Icon
+                                        icon="user-check"
+                                        colour={COLOUR.white}
+                                        size={normalise(18)}
+                                    />
+                                </View>
+                            :
+                            <TouchableOpacity
+                                onPress={bookmarkRoute}
+                                disabled={false}
+                                style={styles.bookmarkButton}
+                            >
                                 <Icon
-                                    icon="user-check"
-                                    colour={COLOUR.white}
+                                    icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
                                     size={normalise(18)}
+                                    colour={COLOUR.white}
                                 />
+                            </TouchableOpacity>
+                            }
+                            <TouchableOpacity
+                                onPress={shareRoute}
+                                style={styles.shareButton}
+                            >
+                                <Icon
+                                    icon='share'
+                                    size={normalise(18)}
+                                    colour={COLOUR.white}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={{ paddingHorizontal: normalise(20) }}>
+                        <Text style={[TEXT.h3, { color: COLOUR.white }]}>{route.name.replaceAll('\n', '')}</Text>
+                        <View style={styles.infoContainer}>
+                            {route.distance &&
+                                <View style={styles.itemContainer}>
+                                    <Icon
+                                        icon='footprints'
+                                        size={'small'}
+                                        colour={COLOUR.white}
+                                    />
+                                    <Text style={[TEXT.xs, { color: COLOUR.white }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
+                                </View>
+                            }
+                            {route.elevation_gain &&
+                            <View style={styles.itemContainer}>
+                                <Icon
+                                    icon='arrow-up'
+                                    size={'small'}
+                                    colour={COLOUR.white}
+                                />
+                                <Text style={[TEXT.xs, { color: COLOUR.white }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
                             </View>
-                        :
-                        <TouchableOpacity
-                            onPress={bookmarkRoute}
-                            disabled={false}
-                            style={styles.bookmarkButton}
-                        >
-                            <Icon
-                                icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
-                                size={normalise(18)}
-                                colour={COLOUR.white}
-                            />
-                        </TouchableOpacity>
-                        }
-                        <TouchableOpacity
-                            onPress={shareRoute}
-                            style={styles.shareButton}
-                        >
-                            <Icon
-                                icon='share'
-                                size={normalise(18)}
-                                colour={COLOUR.white}
-                            />
-                        </TouchableOpacity>
+                            }
+                            {route.elevation_loss && (
+                            <View style={styles.itemContainer}>
+                                <Icon
+                                    icon='arrow-down'
+                                    size={'small'}
+                                    colour={COLOUR.white}
+                                />
+                                <Text style={[TEXT.xs, { color: COLOUR.white }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
+                            </View>
+                            )}
+                            {route.type &&
+                                <View style={[styles.itemContainer]}>
+                                    <Icon
+                                        icon='route'
+                                        size={'small'}
+                                        colour={COLOUR.white}
+                                    />
+                                    <Text style={[TEXT.xs, { color: COLOUR.white }]}>{Format.capitalise(route.type)}</Text>
+                                </View>
+                            }
+                            {route.difficulty &&
+                                <View style={[styles.itemContainer]}>
+                                    <Icon
+                                        icon='smile'
+                                        size={'small'}
+                                        colour={COLOUR.white}
+                                    />
+                                    <Text style={[TEXT.xs, { color: COLOUR.white }]}>{Format.capitalise(route.difficulty)}</Text>
+                                </View>
+                            }
+                        </View>
                     </View>
                 </View>
             </ImageBackground>
@@ -184,61 +241,6 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 style={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
             >
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{route.name.replaceAll('\n', '')}</Text>
-                    <View style={styles.infoContainer}>
-                        {route.distance &&
-                            <View style={styles.itemContainer}>
-                                <Icon
-                                    icon='footprints'
-                                    size={'small'}
-                                    colour={COLOUR.gray[700]}
-                                />
-                                <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${(route.distance / 1000).toFixed(2)} km`}</Text>
-                            </View>
-                        }
-                        {route.elevation_gain &&
-                        <View style={styles.itemContainer}>
-                            <Icon
-                                icon='arrow-up'
-                                size={'small'}
-                                colour={COLOUR.gray[700]}
-                            />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_gain.toFixed(2)} m`}</Text>
-                        </View>
-                        }
-                        {route.elevation_loss && (
-                        <View style={styles.itemContainer}>
-                            <Icon
-                                icon='arrow-down'
-                                size={'small'}
-                                colour={COLOUR.gray[700]}
-                            />
-                            <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{`${route.elevation_loss.toFixed(2)} m`}</Text>
-                        </View>
-                        )}
-                        {route.type &&
-                            <View style={[styles.itemContainer]}>
-                                <Icon
-                                    icon='route'
-                                    size={'small'}
-                                    colour={COLOUR.gray[700]}
-                                />
-                                <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{Format.capitalise(route.type)}</Text>
-                            </View>
-                        }
-                        {route.difficulty &&
-                            <View style={[styles.itemContainer]}>
-                                <Icon
-                                    icon='smile'
-                                    size={'small'}
-                                    colour={COLOUR.gray[700]}
-                                />
-                                <Text style={[TEXT.xs, { color: COLOUR.gray[700] }]}>{Format.capitalise(route.difficulty)}</Text>
-                            </View>
-                        }
-                    </View>
-                </View>
                 {route.notes && (
                 <View style={styles.section}>
                     <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
@@ -342,16 +344,18 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.white,
     },
     titleContainer: {
+        paddingTop: SETTING.TOP_PADDING,
+        paddingBottom: normalise(20),
+        gap: normalise(70),
+    },
+    headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingTop: SETTING.TOP_PADDING,
-        borderBottomWidth: normalise(2),
-        borderBottomColor: COLOUR.wp_brown[100],
-        paddingBottom: normalise(80),
     },
     scrollContainer: {
-        backgroundColor: COLOUR.wp_brown[100]
+        backgroundColor: COLOUR.wp_brown[100],
+        paddingTop: normalise(10)
     },
     scrollContainerContent: {
         gap: normalise(10),
@@ -367,6 +371,7 @@ const styles = StyleSheet.create({
     },
     backContainer: {
         paddingLeft: normalise(20),
+        paddingRight: normalise(10)
     },
     rightIconsContainer: {
         flexDirection: 'row',

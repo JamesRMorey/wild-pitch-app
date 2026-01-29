@@ -288,4 +288,30 @@ export class WildPitchApi {
             throw new Error(await response.json());
         }
     }
+
+    static async searchFeaturedRoutes (filters?: { query: string }): Promise<Array<RouteSearchResult>> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/search`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            },
+            body: JSON.stringify(filters)
+        });
+
+        const result = await response.json();
+        console.log('searchFeaturedRoutes', response, result);
+        
+        if (!response.ok) {
+            throw new Error(result);
+        }
+
+        return result;
+    }
 }

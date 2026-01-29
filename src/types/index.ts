@@ -140,7 +140,7 @@ export type RouteSearchResult = {
     distance?: number,
     elevation_gain?: number,
     elevation_loss?: number;
-    user: PublicUser;
+    user?: PublicUser;
     difficulty?: ROUTE_DIFFICULTY;
     type?: ROUTE_TYPE;
 }

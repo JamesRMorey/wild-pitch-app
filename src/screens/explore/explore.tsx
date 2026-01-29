@@ -7,18 +7,21 @@ import { useMemo } from "react";
 import LearnCard from "../../components/cards/learn-card";
 import ImageBackgroundCard from "../../components/cards/image-background-card";
 import { SheetManager } from "react-native-actions-sheet";
-import { Route } from "../../types";
 import { useRoutesActions } from "../../contexts/routes-context";
-import { useMapActions } from "../../contexts/map-context";
 import Icon from "../../components/misc/icon";
+import FeaturedRoutes from "../../components/routes/featured-routes";
+import { RouteData } from "../../types";
+import { useMapActions } from "../../contexts/map-context";
+import { Route } from "../../classes/route";
 
 type PropsType = { navigation: any }
 export default function ExploreScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
 	const { verifyLogin } = useGlobalActions();
-	const { create: createRoute, importFile: importRoute } = useRoutesActions();
+	const { importFile: importRoute } = useRoutesActions();
 	const { setActiveRoute, fitToRoute } = useMapActions();
+
 	const FEATURES_CARDS = useMemo(() => [
 		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },
 		{ title: 'Find a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.blue, onPress: ()=>exploreRoutes() },
@@ -39,9 +42,6 @@ export default function ExploreScreen({ navigation } : PropsType) {
 
 	const routeImport = async () => {
 		if (!verifyLogin()) return;
-
-		await SheetManager.hide(SHEET.SAVED_OPTIONS); 
-		await delay(100);
 		
 		const routeData = await importRoute();
 		if (!routeData) return;
@@ -56,19 +56,17 @@ export default function ExploreScreen({ navigation } : PropsType) {
 		)
 	}
 
-	const confirmRouteImport = async ( data: Route ) => {
-		try {
-			const route = await createRoute(data);
-			if (!route) return;
+	const confirmRouteImport = async ( data: RouteData ) => {
+		navigation.navigate('route-import', {
+			route: data
+		});
+	}
 
-			navigation.navigate('map');
-			await delay(500);
-			setActiveRoute(route);
-			fitToRoute(route);
-		}
-		catch (error) {
-			console.error(error)
-		}
+	const routeSelected = async (route: Route) => {
+		await navigation.navigate('map', { screen: 'map' });
+		await delay(500);
+		setActiveRoute(route);
+		fitToRoute(route);
 	}
 
     return (
@@ -93,9 +91,13 @@ export default function ExploreScreen({ navigation } : PropsType) {
 			<View style={[styles.section, { paddingHorizontal: 0 }]}>
 				<View style={styles.sectionTitleContainer}>
 					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Plan your adventure</Text>
-					<Text style={[TEXT.p, { paddingLeft: normalise(20) }]}>A good scout is always prepared</Text>
+					<Text style={[TEXT.p, { paddingHorizontal: normalise(20) }]}>A good scout is always prepared</Text>
 				</View>
-				<ScrollView contentContainerStyle={styles.sectionScroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+				<ScrollView 
+					contentContainerStyle={styles.sectionScroll} 
+					horizontal={true} 
+					showsHorizontalScrollIndicator={false}
+				>
 					{FEATURES_CARDS.map((card, i) => {
 						return (
 							<LearnCard
@@ -111,6 +113,11 @@ export default function ExploreScreen({ navigation } : PropsType) {
 					})}
 				</ScrollView>
 			</View>
+			<FeaturedRoutes
+				onRouteSelected={(route) => routeSelected(route)}
+				title={'Find a wild camping route'}
+				subTitle={'A route from the Wild Pitch comminity. These routes come with great wild camping spots.'}
+			/>
 			<View style={[styles.section]}>
 				<View style={styles.sectionTitleContainer}>
 					<Text style={[styles.sectionTitle]}>What's New</Text>
@@ -126,13 +133,6 @@ export default function ExploreScreen({ navigation } : PropsType) {
 							<Text style={[TEXT.p]}>Export and share your routes as GPX files with friends.</Text>
 						</View>
 					</View>
-				</View>
-			</View>
-			<View style={[styles.section]}>
-				<View style={styles.sectionTitleContainer}>
-					<Text style={[styles.sectionTitle]}>Coming Soon</Text>
-					<Text style={[TEXT.p]}>We're building a collection of routes and wild camping spots from the WP community. Help us by creating public routes and camping points in the map.</Text>
-					<Text style={[TEXT.p]}>All your routes and pins are private at the moment, but you'll have the option to share these with others soon :)</Text>
 				</View>
 			</View>
 		</ScrollView>            
