@@ -2,7 +2,7 @@ import { normalise } from "../../utils/helpers";
 import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
-import { Route } from "../../classes/route";
+import { Route } from "../../models/route";
 import { Format } from "../../services/formatter";
 
 type PropsType = { route: Route, onPress?: ()=>void, onClose?: ()=>void, belongsToUser: boolean }

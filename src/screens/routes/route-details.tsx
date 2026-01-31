@@ -16,7 +16,7 @@ import { WildPitchApi } from "../../services/api/wild-pitch";
 import { useGlobalState } from "../../contexts/global-context";
 import { useBookmarkedRoutesActions, useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
 import { useRoutesActions } from "../../contexts/routes-context";
-import { Route } from "../../classes/route";
+import { Route } from "../../models/route";
 import { Format } from "../../services/formatter";
 
 type PropsType = { navigation: any, route: any }
@@ -155,17 +155,17 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                                     />
                                 </View>
                             :
-                            <TouchableOpacity
-                                onPress={bookmarkRoute}
-                                disabled={false}
-                                style={styles.bookmarkButton}
-                            >
-                                <Icon
-                                    icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
-                                    size={normalise(18)}
-                                    colour={COLOUR.white}
-                                />
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={bookmarkRoute}
+                                    disabled={false}
+                                    style={styles.bookmarkButton}
+                                >
+                                    <Icon
+                                        icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
+                                        size={normalise(18)}
+                                        colour={COLOUR.white}
+                                    />
+                                </TouchableOpacity>
                             }
                             <TouchableOpacity
                                 onPress={shareRoute}
@@ -248,11 +248,16 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 )}
                 {route.isOwnedByUser(user.id) && 
                 <View>
-                    {route.isPublic() ?
+                    {route.isImport() ?
+                    <View style={[styles.section]}>
+                        <Text style={styles.sectionTitle}>Unable to share</Text>
+                        <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route was imported so we can't let you share it incase it's from another platform.</Text>
+                    </View>  
+                    :route.isPublic() ?
                     <View style={[styles.section]}>
                         <Text style={styles.sectionTitle}>Thanks for sharing</Text>
                         <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route is shared with others to enjoy.</Text>
-                    </View>
+                    </View>  
                     :
                     <View style={[styles.section, { gap: normalise(15) }]}>
                         <Text style={styles.sectionTitle}>Share this route</Text>

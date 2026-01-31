@@ -1,7 +1,7 @@
 import React, { createContext,useContext,RefObject, useState } from 'react';
 import Mapbox from '@rnmapbox/maps';
 import { Coordinate, MapPackGroup, PointOfInterest } from '../types';
-import { Route } from '../classes/route';
+import { Route } from '../models/route';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';

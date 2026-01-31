@@ -6,6 +6,7 @@ import { XMLParser } from "fast-xml-parser";
 import Share from 'react-native-share';
 import { GPX } from "./gpx";
 import { Format } from "./formatter";
+import { CREATION_TYPE, ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_TYPE } from "../consts/enums";
 
 export class RouteService {
 
@@ -98,7 +99,10 @@ export class RouteService {
             longitude: markers[0].longitude,
             elevation_gain: data.gpx?.metadata?.elevation_gain?.length ? parseFloat(data.gpx.metadata.elevation_gain) : undefined,
             elevation_loss: data.gpx?.metadata?.elevation_loss?.length ? parseFloat(data.gpx.metadata.elevation_loss) : undefined,
-            distance: this.calculateDistance(markers)
+            distance: this.calculateDistance(markers),
+            creation_type: CREATION_TYPE.IMPORTED,
+            status: ROUTE_STATUS.PRIVATE,
+            entry_type: ROUTE_ENTRY_TYPE.ROUTE,
         }
     }
 

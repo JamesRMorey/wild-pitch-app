@@ -1,5 +1,7 @@
-import { ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_TYPE } from '../consts/enums';
+import Mapbox from '@rnmapbox/maps';
+import { CREATION_TYPE, ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_TYPE } from '../consts/enums';
 import { GPX } from '../services/gpx';
+import { MapPackService } from '../services/map-pack-service';
 import { RouteService } from '../services/route-service';
 import { Coordinate, RouteData } from '../types';
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
@@ -8,7 +10,7 @@ import Share from 'react-native-share';
 export class Route {
     id?: number;
     server_id?: number;
-    user_id: number;
+    user_id?: number;
     name: string;
     notes?: string;
     markers: Array<Coordinate>;
@@ -25,6 +27,7 @@ export class Route {
     user?: { id: number; name: string };
     type: ROUTE_TYPE;
     difficulty: ROUTE_DIFFICULTY;
+    creation_type: CREATION_TYPE;
 
     constructor (data: RouteData) {
         this.id = data.id;
@@ -43,10 +46,10 @@ export class Route {
         this.status = data.status;
         this.server_id = data.server_id;
         this.entry_type = data.entry_type || 'ROUTE';
-        this.user_id = data.user_id;
         this.user = data.user;
         this.type = data.type;
         this.difficulty = data.difficulty;
+        this.creation_type = data.creation_type;
     }
 
     isBookmark (): boolean {
@@ -84,8 +87,12 @@ export class Route {
         return this.user_id === userId && this.entry_type == ROUTE_ENTRY_TYPE.ROUTE;
     }
 
-    isDownloaded (): boolean {
-        return true;
+    async isDownloaded (): Promise<boolean> {
+        return await MapPackService.getPack(this.getMapPackName()) ? true : false;
+    }
+
+    isImport (): boolean {
+        return this.creation_type == CREATION_TYPE.IMPORTED;
     }
 
     calculateBoundingBox (): { ne: Position, sw: Position } | null {
@@ -94,6 +101,10 @@ export class Route {
 
     getFileName (): string {
         return this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    getMapPackName (): string {
+        return MapPackService.getPackName(this.name, Mapbox.StyleURL.Outdoors);
     }
 
     generateGPX (): string {
@@ -159,7 +170,8 @@ export class Route {
             entry_type: this.entry_type,
             user: this.user,
             difficulty: this.difficulty,
-            type: this.type
+            type: this.type,
+            creation_type: this.creation_type
         };
     }
 }

@@ -10,7 +10,7 @@ import ActiveItemControls from "../../components/map/active-item-controls";
 import { ASSET, SETTING, SHEET } from "../../consts";
 import PointOfInterestMarker from "../../components/map/map-marker";
 import { Place, PointOfInterest, RouteSearchResult } from "../../types";
-import { Route } from "../../classes/route";
+import { Route } from "../../models/route";
 import { SheetManager } from "react-native-actions-sheet";
 import { Format } from "../../services/formatter";
 import ThreeDMode from "../../components/map/three-d-mode";

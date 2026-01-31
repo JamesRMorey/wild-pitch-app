@@ -17,7 +17,7 @@ import IconButton from "../../../components/buttons/icon-button";
 import PointOfInterestMarker from "../../../components/map/map-marker";
 import { RouteService } from "../../../services/route-service";
 import MapStyleButton from "../../../components/buttons/map-style-button";
-import { Route } from "../../../classes/route";
+import { Route } from "../../../models/route";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 

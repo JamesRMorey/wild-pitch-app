@@ -7,6 +7,7 @@ import m006 from './00_00_06_add_published_at_column_to_routes_table';
 import m007 from './00_00_07_add_entry_type_column_to_routes_table';
 import m008 from './00_00_08_add_type_column_to_routes_table';
 import m009 from './00_00_09_add_difficulty_column_to_routes_table';
+import m010 from './00_00_10_add_creation_type_column_to_routes_table';
 
 export default [
     { name: '00_00_00_create_point_types_table', query: m000 },
@@ -18,4 +19,5 @@ export default [
     { name: '00_00_07_add_entry_type_column_to_routes_table', query: m007 },
     { name: '00_00_08_add_type_column_to_routes_table', query: m008 },
     { name: '00_00_09_add_difficulty_column_to_routes_table', query: m009 },
+    { name: '00_00_10_add_creation_type_column_to_routes_table', query: m010 },
 ]

@@ -1,7 +1,7 @@
 import Mapbox from "@rnmapbox/maps";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import type { ImageSourcePropType } from "react-native";
-import { ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_TYPE } from "../consts/enums";
+import { CREATION_TYPE, ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_TYPE } from "../consts/enums";
 
 export type Coordinate = {
   latitude: number;
@@ -112,7 +112,7 @@ export type PublicUser = {
 export type RouteData = {
     id?: number,
     server_id?: number,
-    user_id: number;
+    user_id?: number;
     name: string,
     notes?: string,
     markers: Array<Coordinate>,
@@ -121,14 +121,15 @@ export type RouteData = {
     distance?: number,
     elevation_gain?: number,
     elevation_loss?: number,
-    created_at: string,
-    updated_at: string,
+    created_at?: string,
+    updated_at?: string,
     published_at?: string,
     status: ROUTE_STATUS,
     user?: PublicUser,
     entry_type: ROUTE_ENTRY_TYPE,
     difficulty: ROUTE_DIFFICULTY;
     type: ROUTE_TYPE;
+    creation_type: CREATION_TYPE;
 }
 
 export type RouteSearchResult = {

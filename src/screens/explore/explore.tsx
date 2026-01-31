@@ -12,7 +12,7 @@ import Icon from "../../components/misc/icon";
 import FeaturedRoutes from "../../components/routes/featured-routes";
 import { RouteData } from "../../types";
 import { useMapActions } from "../../contexts/map-context";
-import { Route } from "../../classes/route";
+import { Route } from "../../models/route";
 
 type PropsType = { navigation: any }
 export default function ExploreScreen({ navigation } : PropsType) {
@@ -116,7 +116,7 @@ export default function ExploreScreen({ navigation } : PropsType) {
 			<FeaturedRoutes
 				onRouteSelected={(route) => routeSelected(route)}
 				title={'Find a wild camping route'}
-				subTitle={'A route from the Wild Pitch comminity. These routes come with great wild camping spots.'}
+				subTitle={'A route from the Wild Pitch community. These routes come with great wild camping spots.'}
 			/>
 			<View style={[styles.section]}>
 				<View style={styles.sectionTitleContainer}>

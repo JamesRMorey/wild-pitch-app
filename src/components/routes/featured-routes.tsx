@@ -4,7 +4,7 @@ import { RouteSearchResult } from "../../types";
 import { useEffect, useState } from "react";
 import { WildPitchApi } from "../../services/api/wild-pitch";
 import RouteSearchCardLarge from "./route-search-card-large";
-import { Route } from "../../classes/route";
+import { Route } from "../../models/route";
 import { COLOUR, TEXT } from "../../styles";
 
 type PropsType = { onRouteSelected: (route: Route)=>void, title: string, subTitle: string }

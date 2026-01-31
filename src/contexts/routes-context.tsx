@@ -1,6 +1,6 @@
 import React, { createContext,useContext, useEffect, useState } from 'react';
 import { routeSchema as schema } from '../utils/schema';
-import { Route } from '../classes/route';
+import { Route } from '../models/route';
 import { RouteRepository } from '../database/repositories/route-repository';
 import { useGlobalState } from './global-context';
 import { PointOfInterestRepository } from '../database/repositories/points-of-interest-repository';

@@ -6,7 +6,7 @@ import Mapbox from '@rnmapbox/maps';
 import { MapPackService } from '../services/map-pack-service';
 import { WildPitchApi } from '../services/api/wild-pitch';
 import { ROUTE_ENTRY_TYPE } from '../consts/enums';
-import { Route } from '../classes/route';
+import { Route } from '../models/route';
 import { RouteData } from '../types';
 
 type BookmarkedRoutesContextState = {

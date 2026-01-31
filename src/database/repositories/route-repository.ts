@@ -1,7 +1,7 @@
 import { NITRO_SQLITE_NULL } from 'react-native-nitro-sqlite'
 import { RouteData } from '../../types';
 import { getDB } from '../db';
-import { ROUTE_ENTRY_TYPE } from '../../consts/enums';
+import { CREATION_TYPE, ROUTE_ENTRY_TYPE } from '../../consts/enums';
 import { Format } from '../../services/formatter';
 
 export class RouteRepository {
@@ -44,7 +44,8 @@ export class RouteRepository {
                 status: row.status,
                 entry_type: row.entry_type,
                 type: row.type && row.type.isNitroSQLiteNull ? undefined : row.type,
-                difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty
+                difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty,
+                creation_type: row.creation_type
             })) as RouteData[]
             : [];
     }
@@ -68,9 +69,10 @@ export class RouteRepository {
                 status,
                 entry_type,
                 type,
-                difficulty
+                difficulty,
+                creation_type
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?)
             RETURNING *
         `, [
             data.name, 
@@ -88,7 +90,8 @@ export class RouteRepository {
             data.status || 'PRIVATE',
             entryType || ROUTE_ENTRY_TYPE.ROUTE,
             data.type || NITRO_SQLITE_NULL,
-            data.difficulty || NITRO_SQLITE_NULL
+            data.difficulty || NITRO_SQLITE_NULL,
+            data.creation_type || CREATION_TYPE.CREATED
         ]);
 
         const row = record.rows?._array[0];
@@ -111,7 +114,8 @@ export class RouteRepository {
             status: row.status,
             entry_type: row.entry_type,
             type: row.type && row.type.isNitroSQLiteNull ? undefined : row.type,
-            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty
+            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty,
+            creation_type: row.creation_type
         }
     }
 
@@ -132,7 +136,8 @@ export class RouteRepository {
                 status = ?,
                 updated_at = ?,
                 type = ?,
-                difficulty = ?
+                difficulty = ?,
+                creation_type = ?
             WHERE id = ? 
             AND user_id = ${this.userId}
             RETURNING *
@@ -151,6 +156,7 @@ export class RouteRepository {
             updated || Format.currentTimestamp(),
             data.type || NITRO_SQLITE_NULL,
             data.difficulty || NITRO_SQLITE_NULL,
+            data.creation_type || CREATION_TYPE.CREATED,
             id
         ]);
 
@@ -174,7 +180,8 @@ export class RouteRepository {
             status: row.status,
             entry_type: row.entry_type,
             type: row.type && row.type.isNitroSQLiteNull ? undefined : row.type,
-            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty
+            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty,
+            creation_type: row.creation_type
         };
     }
 
@@ -208,7 +215,8 @@ export class RouteRepository {
             status: row.status,
             entry_type: row.entry_type,
             type: row.type && row.type.isNitroSQLiteNull ? undefined : row.type,
-            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty
+            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty,
+            creation_type: row.creation_type
         }
     }
 
@@ -244,7 +252,8 @@ export class RouteRepository {
             status: row.status,
             entry_type: row.entry_type,
             type: row.type && row.type.isNitroSQLiteNull ? undefined : row.type,
-            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty
+            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty,
+            creation_type: row.creation_type
         }
     }
 
@@ -278,7 +287,8 @@ export class RouteRepository {
             status: row.status,
             entry_type: row.entry_type,
             type: row.type && row.type.isNitroSQLiteNull ? undefined : row.type,
-            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty
+            difficulty: row.difficulty && row.difficulty.isNitroSQLiteNull ? undefined : row.difficulty,
+            creation_type: row.creation_type
         };
     }
 

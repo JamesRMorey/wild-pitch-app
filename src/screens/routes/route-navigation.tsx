@@ -16,7 +16,7 @@ import { RouteService } from "../../services/route-service";
 import Icon from "../../components/misc/icon";
 import Button from "../../components/buttons/button";
 import MapStyleButton from "../../components/buttons/map-style-button";
-import { Route } from "../../classes/route";
+import { Route } from "../../models/route";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
