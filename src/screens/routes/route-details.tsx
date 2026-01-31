@@ -157,8 +157,9 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                             :
                                 <TouchableOpacity
                                     onPress={bookmarkRoute}
-                                    disabled={false}
+                                    disabled={isBookmarked}
                                     style={styles.bookmarkButton}
+                                    activeOpacity={0.8}
                                 >
                                     <Icon
                                         icon={`${isBookmarked ? 'bookmark-check' : 'bookmark'}`}
