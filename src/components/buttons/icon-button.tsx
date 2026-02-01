@@ -3,7 +3,7 @@ import { COLOUR, OPACITY, ROUNDED, SHADOW } from "../../styles";
 import Icon from "../misc/icon";
 import { normalise } from "../../utils/helpers";
 
-type PropsType = { icon: any, onPress: Function, disabled?: boolean, active?: boolean, iconOnly?: boolean, small?: boolean, shadow?: boolean, blocked?: boolean, style?: Object, size: number }
+type PropsType = { icon: any, onPress: Function, disabled?: boolean, active?: boolean, iconOnly?: boolean, small?: boolean, shadow?: boolean, blocked?: boolean, style?: Object, size?: number }
 export default function IconButton({ icon, onPress, disabled=false, active=false, iconOnly=false, small=false, shadow=false, blocked=false, style={}, size=normalise(20) } : PropsType) {
 
     return (

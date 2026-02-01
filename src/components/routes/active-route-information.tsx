@@ -4,10 +4,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 import { Route } from "../../models/route";
 import { Format } from "../../services/formatter";
+import { useGlobalState } from "../../contexts/global-context";
+import { useMemo } from "react";
 
-type PropsType = { route: Route, onPress?: ()=>void, onClose?: ()=>void, belongsToUser: boolean }
-export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose, belongsToUser } : PropsType ) {
+type PropsType = { route: Route, onPress?: ()=>void, onClose?: ()=>void }
+export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose } : PropsType ) {
 
+    const { user } = useGlobalState();
+    const belongsToUser = useMemo(() => route.isOwnedByUser(user.id), [user, route])
     
     return (
         <View

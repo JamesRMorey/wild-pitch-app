@@ -1,183 +1,277 @@
-import { Image, ScrollView, StyleSheet, Text, View, Alert } from "react-native";
-import { COLOUR, TEXT } from "../../styles";
-import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
+import { StyleSheet, Text, View } from "react-native";
+import Mapbox from '@rnmapbox/maps';
+import { useEffect, useMemo, useRef, useState } from "react";
+import UserPosition from "../../components/map/user-position";
+import { normalise } from "../../utils/helpers";
 import { ASSET, SETTING, SHEET } from "../../consts";
-import { delay, normalise } from "../../utils/helpers";
-import { useMemo } from "react";
-import LearnCard from "../../components/cards/learn-card";
-import ImageBackgroundCard from "../../components/cards/image-background-card";
-import { SheetManager } from "react-native-actions-sheet";
-import { useRoutesActions } from "../../contexts/routes-context";
-import Icon from "../../components/misc/icon";
-import FeaturedRoutes from "../../components/routes/featured-routes";
-import { RouteData } from "../../types";
-import { useMapActions } from "../../contexts/map-context";
+import { Bounds, PositionArray, RouteSearchResult } from "../../types";
 import { Route } from "../../models/route";
+import { SheetManager } from "react-native-actions-sheet";
+import { COLOUR } from "../../styles";
+import useHaptic from "../../hooks/useHaptic";
+import Button from "../../components/buttons/button";
+import { useExploreMapActions, useExploreMapState } from "../../contexts/explore-map-context";
+import { useMapSettings } from "../../hooks/useMapSettings";
+import RouteLine from "../../components/routes/route-line";
+import { RouteService } from "../../services/route-service";
+import { useDebouncedCallback } from "../../hooks/useDebouncedCallback";
+import Loader from "../../components/map/loader";
+import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
+import ActiveRouteInformation from "../../components/routes/active-route-information";
+import IconButton from "../../components/buttons/icon-button";
+import { WildPitchApi } from "../../services/api/wild-pitch";
 
-type PropsType = { navigation: any }
-export default function ExploreScreen({ navigation } : PropsType) {
+Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
-	const { user } = useGlobalState();
-	const { verifyLogin } = useGlobalActions();
-	const { importFile: importRoute } = useRoutesActions();
-	const { setActiveRoute, fitToRoute } = useMapActions();
+type PropsType = { navigation: any , route: any }
+export default function HomeScreen({ navigation } : PropsType) {
 
-	const FEATURES_CARDS = useMemo(() => [
-		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },
-		{ title: 'Find a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.blue, onPress: ()=>exploreRoutes() },
-		{ title: 'Import a route', text: 'Import GPX route files directly into Wild Pitch!', buttonText: 'Get started', icon: 'import', colour: COLOUR.wp_purple, onPress: ()=>routeImport() },
-		{ title: 'Offline things', text: 'Save everything offline. See what you have saved here.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_yellow, onPress: ()=>navigateToSaved() },
-	], []);
+	const { styleURL, cameraRef, enable3DMode, activeRoute } = useExploreMapState();
+	const { flyTo, fitToRoute, fitToBounds, setActiveRoute, setActivePOI, reCenter } = useExploreMapActions();
+    const { initialRegion, userPosition, updateUserPosition, loaded } = useMapSettings();
+	const { tick } = useHaptic();
+	const mapRef = useRef<Mapbox.MapView>(null);
+	const [lineKey, setLineKey] = useState<number>(0);
+	const [routes, setRoutes] = useState<{ type: string, features: Array<any>}>({
+		type: 'FeatureCollection',
+		features: []
+	});
+	const { debounce, cancel: cancelDebounce } = useDebouncedCallback();
+	const [loading, setLoading] = useState<boolean>(false);
+	const [currentBounds, setCurrentBounds] = useState<{ bounds: Bounds, zoom: number }>();
+	const mapSearchEnabled = useRef<boolean>(true);
+	const [ready, setReady] = useState(false);
+	
+	const updateActiveRoute = ( route: Route, fit:boolean=true ) => {
+		setActiveRoute(route);
+		reDrawRoute();
 
-	const exploreRoutes =  async() => {
-		navigation.navigate('map');
-		await delay(300);
-		SheetManager.show(SHEET.MAP_SEARCH)
+		if (fit) {
+			fitToRoute(route);
+		}
 	}
 
-	const navigateToSaved = () => {
-		if (!verifyLogin()) return;
-		navigation.navigate('saved')
+	const navigateToRoute = ( route: Route ) => {
+		navigation.navigate('route-details', { route: route });
 	}
 
-	const routeImport = async () => {
-		if (!verifyLogin()) return;
+	const reDrawRoute = () => {
+		setLineKey((prev) => prev + 1);
+	}
+
+	const handleRouteSearchPress = async ( route: RouteSearchResult, fit:boolean=true ) => {
+		try {
+			mapSearchEnabled.current = false;
+			setLoading(true);
+			SheetManager.hide(SHEET.MAP_SEARCH);
+			// const data = await routeProvider.fetchRoute(route.id, route.slug);
+			console.log(data);
+			
+			updateActiveRoute(data, fit);
+		}
+		catch(err) {
+			console.log(err);
+		}
+		finally {
+			setTimeout(() => setLoading(false), 300);
+			setTimeout(() => mapSearchEnabled.current = true, 1000);
+		}
+	}
+
+	const updateClusters = ( routesSearchResults: Array<RouteSearchResult> ) => {
+		const clustered = routesSearchResults.map(r => {
+			return {
+				id: r.id,
+				type: 'Feature',
+				geometry: {
+					type: 'Point',
+					coordinates: [r.longitude, r.latitude]
+				},
+				properties: {
+					slug: r.slug,
+					id: r.id,
+				}
+			}
+		});
 		
-		const routeData = await importRoute();
-		if (!routeData) return;
-
-		Alert.alert(
-			'Import GPX file', 
-			'Are you sure you want to import this GPX file to your account?',
-			[
-				{ text: 'Cancel', onPress: () => {}},
-				{ text: 'Confirm', onPress: () => confirmRouteImport(routeData)}
-			],
-		)
-	}
-
-	const confirmRouteImport = async ( data: RouteData ) => {
-		navigation.navigate('route-import', {
-			route: data
+		setRoutes({
+			type: 'FeatureCollection',
+			features: clustered
 		});
 	}
+	
+	const handleMapRegionChange = async ( bounds: Bounds, zoom: number ) => {
+		if (!mapSearchEnabled.current) return;
 
-	const routeSelected = async (route: Route) => {
-		await navigation.navigate('map', { screen: 'map' });
-		await delay(500);
-		setActiveRoute(route);
-		fitToRoute(route);
+		try {
+			const { ne, sw } = bounds;
+			if (currentBounds && RouteService.boundsInsideBounds({ ne: ne, sw: sw }, currentBounds.bounds) && zoom < (currentBounds.zoom + 2)) return;
+			
+			setLoading(true);
+			const rts = await WildPitchApi.searchRoutes({ bounds: { ne: ne, sw: sw }});
+
+			updateClusters(rts);
+			tick();
+			setCurrentBounds({ bounds: { ne: ne, sw: sw }, zoom: zoom });
+		}
+		catch (err) {
+			console.error(err);
+		}
+		finally {
+			setTimeout(() => setLoading(false), 300);
+		}
 	}
 
+	const debouncedHandleMapRegionChange = debounce(handleMapRegionChange, 300);
+
+	const handleClusterPress = ( points: Array<Position> ) => {
+		if (points.length == 1) {
+			flyTo([points[0][0], points[0][1]], SETTING.MAP_MARKER_ZOOM);
+			return;
+		}
+
+		const bounds = RouteService.calculateBoundingBox(points.map(pt => ({ latitude: pt[1], longitude: pt[0] })));
+		if (!bounds) return;
+
+		fitToBounds(bounds.ne, bounds.sw, 100);
+	}
+
+
+	useEffect(() => {
+		setReady(true);
+	}, [])
+
+
     return (
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-			<View style={styles.titleContainer}>
-				{user ?
-				<Text style={TEXT.h1}>Welcome back {user.name.split(' ')[0] ?? null}</Text>
-				:
-				<Text style={TEXT.h1}>Welcome to Wild Pitch</Text>
-				}
-				<ImageBackgroundCard
-					background={ASSET.LANDING_1}
-					style={{ marginTop: normalise(15) }}
-				>
-					<Image
-						source={ASSET.LOGO_TEXT_WHITE}
-						style={styles.logo}
+        <View style={styles.container}>
+            <Mapbox.MapView
+                style={styles.map}
+                styleURL={styleURL}
+				pitchEnabled={enable3DMode}
+				ref={mapRef}
+				attributionEnabled={true}
+				attributionPosition={{ bottom: 6, left: 90 }}
+				scaleBarPosition={{ bottom: 40,left: 15 }}
+				onRegionIsChanging={(e) => {
+					if (!mapSearchEnabled.current || activeRoute) {
+						cancelDebounce();
+						return;
+					};
+
+					debouncedHandleMapRegionChange({ ne: e.properties.visibleBounds[0], sw: e.properties.visibleBounds[1] }, e.properties.zoomLevel);
+				}}
+            >
+				<Mapbox.Images images={{arrow: ASSET.ROUTE_LINE_ARROW, flag: ASSET.ROUTE_FLAG}} />
+				{initialRegion &&
+					<Mapbox.Camera
+						ref={(ref) => {
+							if (ref) cameraRef.current = ref;
+						}}
+						centerCoordinate={[initialRegion.longitude, initialRegion.latitude]}
+						zoomLevel={SETTING.ROUTE_DEFAULT_ZOOM}
+						animationDuration={loaded ? 500 : 0}
 					/>
-					<Text style={[TEXT.p, { color: COLOUR.white, marginTop: normalise(10) }]}>Download offline routes & maps for FREE, so you don't get lost when signal runs out.</Text>
-				</ImageBackgroundCard>
-			</View>
-			<View style={[styles.section, { paddingHorizontal: 0 }]}>
-				<View style={styles.sectionTitleContainer}>
-					<Text style={[styles.sectionTitle, { paddingLeft: normalise(20) }]}>Plan your adventure</Text>
-					<Text style={[TEXT.p, { paddingHorizontal: normalise(20) }]}>A good scout is always prepared</Text>
-				</View>
-				<ScrollView 
-					contentContainerStyle={styles.sectionScroll} 
-					horizontal={true} 
-					showsHorizontalScrollIndicator={false}
-				>
-					{FEATURES_CARDS.map((card, i) => {
-						return (
-							<LearnCard
-								key={i}
-								title={card.title}
-								text={card.text}
-								icon={card.icon}
-								buttonText={card.buttonText}
-								colour={card.colour}
-								onPress={card.onPress}
-							/>
-						)
-					})}
-				</ScrollView>
-			</View>
-			<FeaturedRoutes
-				onRouteSelected={(route) => routeSelected(route)}
-				title={'Find a wild camping route'}
-				subTitle={'A route from the Wild Pitch community. These routes come with great wild camping spots.'}
-			/>
-			<View style={[styles.section]}>
-				<View style={styles.sectionTitleContainer}>
-					<Text style={[styles.sectionTitle]}>What's New</Text>
-					<View style={styles.bullet}>
-						<Icon icon="dot"></Icon>
-						<View style={styles.bulletDesc}>
-							<Text style={[TEXT.p]}>Import routes by sharing GPX files from other apps or friends.</Text>
-						</View>
+				}
+				{routes &&
+					<RouteClusterMap
+						id="routes-cluster"
+						routes={routes}
+						onRoutePress={(result: RouteSearchResult) => handleRouteSearchPress(result, false)}
+						onClusterPress={(points: PositionArray) => handleClusterPress(points)}
+					/>
+				}
+				{activeRoute &&
+					<RouteLine
+						key={`line-${lineKey}`}
+						start={{ latitude: activeRoute.latitude, longitude: activeRoute.longitude }}
+						end={activeRoute.markers[activeRoute.markers.length - 1]}
+						markers={activeRoute.markers}
+						lineKey={lineKey}
+					/>
+				}
+				{activeRoute &&
+					<View style={styles.activeRouteContainer}>
+						<ActiveRouteInformation
+							route={activeRoute}
+							onPress={() => navigateToRoute(activeRoute)}
+							onClose={() => setActiveRoute()}
+						/>
 					</View>
-					<View style={styles.bullet}>
-						<Icon icon="dot"></Icon>
-						<View style={styles.bulletDesc}>
-							<Text style={[TEXT.p]}>Export and share your routes as GPX files with friends.</Text>
-						</View>
+				}
+				{loading && 
+					<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
+						<Loader />
+					</View>
+				}
+				<UserPosition
+					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
+				/>
+            </Mapbox.MapView>
+            <View style={styles.bottomBar}>
+				<View style={styles.resultsBox}>
+					<View style={styles.resultsBoxResult}>
+						<Text>17</Text>
+						<Text>Routes</Text>
+					</View>
+					<View style={styles.resultsBoxResult}>
+						<Text>17</Text>
+						<Text>Routes</Text>
 					</View>
 				</View>
-			</View>
-		</ScrollView>            
+                <View style={{ flex: 1 }}>
+					<Button
+						title="Filters"
+						// onPress={navigateToBuilder}
+					/>
+				</View>
+            </View>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: COLOUR.wp_brown[100],
-		gap: normalise(15)
+		flex: 1,
+		backgroundColor: COLOUR.wp_brown[100]
 	},
-	titleContainer: {
-		paddingTop: SETTING.TOP_PADDING + normalise(20),
-		backgroundColor: COLOUR.white,
-		paddingHorizontal: normalise(20),
-		paddingBottom: normalise(20)
+	map: {
+		flex: 1
 	},
-	sectionTitle: {
-		...TEXT.h3,
-	},
-	section: {
-		padding: normalise(20),
-		backgroundColor: COLOUR.white,
-		gap: normalise(15)
-	},
-	sectionScroll: {
-		gap: normalise(15),
-		paddingHorizontal: normalise(20)
-	},
-	logo: {
-		width: '40%',
-		height: 'auto',
-		aspectRatio: 400/130
-	},
-	sectionTitleContainer: {
-		gap: normalise(5)
-	},
-	bullet: {
-		justifyContent: 'flex-start',
+	controlsContainer: {
+		position: 'absolute',
+		gap: normalise(8),
 		alignItems: 'flex-start',
+		zIndex: 10,
+	},
+	controls: {
+		gap: normalise(8),
+	},
+    bottomBar: {
+        width: '100%',
+        backgroundColor: COLOUR.white,
+        paddingVertical: normalise(15),
+        paddingHorizontal: normalise(15),
 		flexDirection: 'row',
 		gap: normalise(5)
 	},
-	bulletDesc: {
-		flex: 1, 
-		marginTop: normalise(4)
+	activeRouteContainer: {
+		position: 'absolute',
+		bottom: normalise(10),
+		left: 0,
+		borderRadius: normalise(15),
+		padding: normalise(10),
+		width: '100%',
+	},
+	resultsBox: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'row',
+		gap: normalise(5)
+	},
+	resultsBoxResult: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		flex: 1
 	}
 });

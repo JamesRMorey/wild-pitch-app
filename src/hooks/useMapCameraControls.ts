@@ -2,6 +2,7 @@ import Mapbox from '@rnmapbox/maps';
 import { SETTING } from '../consts';
 import { useRef, useState } from 'react';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
+import { delay } from '../utils/helpers';
 
 export function useMapCameraControls() {
 
@@ -49,7 +50,9 @@ export function useMapCameraControls() {
 		});
 	}
 
-    const fitToBounds = (ne: Position, sw: Position, padding: number = 50, duration: number = 1000): void => {
+    const fitToBounds = async (ne: Position, sw: Position, padding: number = 50, duration: number = 1000): void => {
+        if (!cameraRef.current) return;
+        await delay(300);
         cameraRef.current?.fitBounds(ne, sw, [Math.max(padding, 120), padding, Math.max(padding, 160), padding], duration);
     }
 

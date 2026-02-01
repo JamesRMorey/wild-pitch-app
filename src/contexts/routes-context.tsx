@@ -197,7 +197,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         if (data.status == ROUTE_STATUS.PUBLIC) return data;
 
-        const updated = await WildPitchApi.updateRoute(data.server_id, { ...data, status: ROUTE_STATUS.PUBLIC });
+        const updated = await WildPitchApi.makeRoutePublic(data.server_id);
         
         return await update(data.id, updated, false);
     }

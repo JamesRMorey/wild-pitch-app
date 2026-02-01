@@ -9,6 +9,7 @@ import AuthStack from './navigation/auth-stack';
 import { useGlobalState } from './contexts/global-context';
 import Linker from './Linker';
 import { BookmarkedRoutesProvider } from './contexts/bookmarked-routes-context';
+import { ExploreMapProvider } from './contexts/explore-map-context';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,19 +21,21 @@ function App() {
     
 	return (
         <View key={user?.id} style={{ flex: 1 }}>
-            <PointsOfInterestProvider >
+            <PointsOfInterestProvider>
                 <RoutesProvider>
                     <BookmarkedRoutesProvider>
                         <MapPackGroupsProvider>
                             <MapProvider>
-                                <Linker>
-                                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                                        <Stack.Navigator initialRouteName="main">
-                                            <Stack.Screen name="auth" component={AuthStack} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
-                                            <Stack.Screen name="main" component={MainTabs} options={{...SCREEN_OPTIONS }}/>
-                                        </Stack.Navigator>
-                                    </TouchableWithoutFeedback>
-                                </Linker>
+                                <ExploreMapProvider>
+                                    <Linker>
+                                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                            <Stack.Navigator initialRouteName="main">
+                                                <Stack.Screen name="auth" component={AuthStack} options={{...SCREEN_OPTIONS, presentation: 'pageSheet' }}/>
+                                                <Stack.Screen name="main" component={MainTabs} options={{...SCREEN_OPTIONS }}/>
+                                            </Stack.Navigator>
+                                        </TouchableWithoutFeedback>
+                                    </Linker>
+                                </ExploreMapProvider>
                             </MapProvider>
                         </MapPackGroupsProvider>
                     </BookmarkedRoutesProvider>

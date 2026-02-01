@@ -1,5 +1,5 @@
 import { ENVIRONMENT } from "../../../ENV";
-import { RouteData, RouteSearchResult, User } from "../../types";
+import { Bounds, RouteData, RouteSearchResult, User } from "../../types";
 import * as Keychain from 'react-native-keychain';
 
 
@@ -126,6 +126,31 @@ export class WildPitchApi {
         return result;
     }
 
+    static async makeRoutePublic ( id: number ): Promise<RouteData> {
+        const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
+        if (!credentials) {
+            throw new Error('No credentials found');
+        }
+
+        const response = await fetch(`${ENVIRONMENT.api_url}/routes/${id}/public`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${credentials.password}`
+            }
+        });
+        
+        const result = await response.json();
+        console.log('makeRoutePublic', response, result);
+        
+        if (!response.ok) {
+            throw new Error(result);
+        }
+
+        return result;
+    }
+
     static async fetchUserRoutes (): Promise<Array<RouteData>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
@@ -171,7 +196,7 @@ export class WildPitchApi {
         }
     }
 
-    static async searchRoutes (filters: { query: string }): Promise<Array<RouteSearchResult>> {
+    static async searchRoutes (filters: { query?: string, bounds?: Bounds, latitude?: number, longitude?: number }): Promise<Array<RouteSearchResult>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');

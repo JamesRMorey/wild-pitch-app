@@ -308,7 +308,6 @@ export default function MapScreen({ navigation } : PropsType) {
 							route={activeRoute}
 							onPress={() => navigateToRoute(activeRoute)}
 							onClose={() => clearActiveRoute()}
-							belongsToUser={activeRoute.isOwnedByUser(user.id)}
 						/>
 					</View>
 				:activePackGroup ?
