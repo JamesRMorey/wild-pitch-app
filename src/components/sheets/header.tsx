@@ -9,17 +9,16 @@ export default function Header({ title, onBack } : { title: string, onBack?: ()=
     return (
         <View style={styles.container}>
             {onBack &&
-            <IconButton
-                icon={'chevron-left'}
-                onPress={() => onBack()}
-                iconOnly={true}
-                small={true}
-            />
+            <View style={styles.back}>
+                <IconButton
+                    icon={'chevron-left'}
+                    onPress={() => onBack()}
+                    iconOnly={true}
+                    small={true}
+                />
+            </View>
             }
             <Text style={styles.title}>{title}</Text>
-            {onBack &&
-            <View style={styles.spacer}></View>
-            }
         </View>
     )
 }
@@ -28,14 +27,18 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: normalise(15)
+        justifyContent: 'center',
+        marginBottom: normalise(25),
+        marginTop: normalise(10)
     },
     title: {
         ...TEXT.h4,
-        textAlign: 'center'
+        textAlign: 'center',
     },
-    spacer: {
-        width: normalise(20)
+    back: {
+        position: 'absolute',
+        left: 0,
+        top: '50%',
+        transform: [{ translateY: '-50%' }]
     }
 })

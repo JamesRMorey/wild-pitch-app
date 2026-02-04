@@ -15,7 +15,7 @@ import { useMapActions } from "../../contexts/map-context";
 import { Route } from "../../models/route";
 
 type PropsType = { navigation: any }
-export default function ExploreScreen({ navigation } : PropsType) {
+export default function HomeScreen({ navigation } : PropsType) {
 
 	const { user } = useGlobalState();
 	const { verifyLogin } = useGlobalActions();
@@ -113,11 +113,11 @@ export default function ExploreScreen({ navigation } : PropsType) {
 					})}
 				</ScrollView>
 			</View>
-			<FeaturedRoutes
+			{/* <FeaturedRoutes
 				onRouteSelected={(route) => routeSelected(route)}
 				title={'Find a wild camping route'}
 				subTitle={'A route from the Wild Pitch community. These routes come with great wild camping spots.'}
-			/>
+			/> */}
 			<View style={[styles.section]}>
 				<View style={styles.sectionTitleContainer}>
 					<Text style={[styles.sectionTitle]}>What's New</Text>

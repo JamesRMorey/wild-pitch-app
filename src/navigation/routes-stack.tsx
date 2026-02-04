@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RouteBuilderScreen from '../screens/routes/route-builder/route-builder';
-import RouteSaveScreen from '../screens/routes/route-builder/save';
+import RouteBuilderScreen from '../screens/routes/route-builder';
+import RouteSaveScreen from '../screens/routes/save';
 import RouteDetailsScreen from '../screens/routes/route-details';
 import RouteNavigationScreen from '../screens/routes/route-navigation';
 

@@ -152,6 +152,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                                 onPress={() => onRouteResultPress(route)}
                                 belongsToUser={user.id == route.user?.id}
                                 isBookmarked={isBookmarked(route.server_id)}
+                                isLast={(i + 1) == routeResults.length}
                             />
                         )
                     })}
@@ -168,6 +169,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                                 key={i}
                                 place={p}
                                 onPress={() => onPlaceResultPress(p)}
+                                isLast={(i + 1) == placeResults.length}
                             />
                         )
                     })}

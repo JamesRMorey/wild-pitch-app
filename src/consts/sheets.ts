@@ -13,4 +13,5 @@ export const sheets = {
     MAP_POI_SHEET: 'map-point-of-interest',
     ROUTES_EDIT_OPTIONS: 'routes-edit-options',
     BOOKMARKED_ROUTES_EDIT_OPTIONS: 'bookmarked-routes-edit-options',
+    EXPLORE_FILTERS: 'explore-filters',
 }

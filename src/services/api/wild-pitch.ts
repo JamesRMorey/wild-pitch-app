@@ -150,7 +150,7 @@ export class WildPitchApi {
 
         return result;
     }
-
+    
     static async fetchUserRoutes (): Promise<Array<RouteData>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {

@@ -5,13 +5,16 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 import { Format } from "../../services/formatter";
 
-type PropsType = { route: RouteSearchResult, onPress?: ()=>void, belongsToUser: boolean, isBookmarked: boolean }
-export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser, isBookmarked } : PropsType ) {
+type PropsType = { route: RouteSearchResult, onPress?: ()=>void, belongsToUser: boolean, isBookmarked: boolean, isLast?: boolean }
+export default function RouteSearchCard ({ route, onPress=()=>{}, belongsToUser, isBookmarked, isLast=false } : PropsType ) {
 
 
     return (
         <TouchableOpacity 
-            style={styles.container}
+            style={[
+                styles.container,
+                isLast && { borderBottomWidth: 0 }
+            ]}
             onPress={onPress}
             activeOpacity={0.8}
         >

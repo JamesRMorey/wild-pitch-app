@@ -57,7 +57,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
 
         for (const saved of savedRoutes) {
-            const savedRoute = new Route(saved)
+            const savedRoute = new Route(saved);
             if (!saved.server_id) {
                 upload(savedRoute, saved.status ?? ROUTE_STATUS.PRIVATE)
                     .then((data) => {
@@ -183,7 +183,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         return await update(
             data.id, 
-            route
+            route,
+            false
         );
     }
 

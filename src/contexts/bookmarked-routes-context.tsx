@@ -71,6 +71,10 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         const isExisting = existing.find((bm: RouteData) => bm.server_id == data.server_id);
         if (isExisting) return;
 
+        const routes = repo.get();
+        const isOwnRoute = routes.find((r: RouteData) => r.server_id == r.server_id);
+        if (isOwnRoute) return;
+
         const newRoute = repo.create(data, ROUTE_ENTRY_TYPE.BOOKMARK);
         if (!newRoute || !newRoute.server_id) return;
 

@@ -4,12 +4,15 @@ import { Place } from "../../types"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
 
-type PropsType = { place: Place, onPress?: ()=>void }
-export default function PlaceCard ({ place, onPress=()=>{} } : PropsType ) {
+type PropsType = { place: Place, onPress?: ()=>void, isLast?: boolean }
+export default function PlaceCard ({ place, onPress=()=>{}, isLast=false } : PropsType ) {
 
     return (
         <TouchableOpacity 
-            style={styles.container}
+            style={[
+                styles.container,
+                isLast && { borderBottomWidth: 0 }
+            ]}
             onPress={onPress}
             activeOpacity={0.8}
         >

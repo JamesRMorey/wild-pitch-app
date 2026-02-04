@@ -4,8 +4,8 @@ import AreaBuilderSaveAreaScreen from '../screens/area-builder/save-area';
 import AreaBuilderScreen from '../screens/area-builder/builder';
 import RouteDetailsScreen from '../screens/routes/route-details';
 import RouteNavigationScreen from '../screens/routes/route-navigation';
-import RouteBuilderScreen from '../screens/routes/route-builder/route-builder';
-import RouteSaveScreen from '../screens/routes/route-builder/save';
+import RouteBuilderScreen from '../screens/routes/route-builder';
+import RouteSaveScreen from '../screens/routes/save';
 import RoutesScreen from '../screens/saved/routes';
 
 const Stack = createNativeStackNavigator();

@@ -46,7 +46,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const shareRoute = async () => {
-        RouteService.share(route.toJSON());
+        route.export();
     }
 
     const directionsToStart = async () => {
@@ -110,15 +110,10 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         const found = route.id ? find(route.id) : await WildPitchApi.findRoute(route.server_id);
         if (!found) return;
         
-        setPack({
-            name: MapPackService.getPackName(found.name, Mapbox.StyleURL.Outdoors),
-            styleURL: Mapbox.StyleURL.Outdoors,
-            minZoom: SETTING.MAP_PACK_MIN_ZOOM,
-            maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-            bounds: RouteService.getBounds(found.markers)
-        });
+        const foundRoute = new Route(found);
+        setRoute(foundRoute);
+        setPack(foundRoute.getMapPack());
         
-        setRoute(new Route(found));
         checkDownloaded();
     }
 

@@ -39,7 +39,6 @@ Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm
 type PropsType = { navigation: any }
 export default function MapScreen({ navigation } : PropsType) {
 
-	const { user } = useGlobalState();
 	const { verifyLogin } = useGlobalActions();
 	const { styleURL, activePackGroup, cameraRef, enable3DMode, pointsOfInterest, showPointsOfInterest, activeRoute, showRoutes } = useMapState();
 	const { clearActivePackGroup, flyToLow, resetHeading, reCenter, setActiveRoute, fitToRoute } = useMapActions();
@@ -189,7 +188,7 @@ export default function MapScreen({ navigation } : PropsType) {
 				{enable3DMode && (
 					<ThreeDMode />
 				)}
-                {initialRegion && (
+                {(initialRegion && userPosition) &&
 					<Mapbox.Camera
 						ref={(ref) => {
 							if (ref) cameraRef.current = ref;
@@ -199,7 +198,7 @@ export default function MapScreen({ navigation } : PropsType) {
 						animationDuration={loaded ? 500 : 0}
 						followUserLocation={followUserPosition}
 					/>
-				)}
+				}
                 {pointsOfInterest.map((point, i) => {
 					if (!showPointsOfInterest) return;
 					return (
@@ -237,7 +236,7 @@ export default function MapScreen({ navigation } : PropsType) {
 						/>
 					)
 				})}
-				{activeRoute && (
+				{activeRoute &&
 					<RouteLine
 						key={`line-${lineKey}`}
 						start={{ latitude: activeRoute.latitude, longitude: activeRoute.longitude }}
@@ -245,30 +244,30 @@ export default function MapScreen({ navigation } : PropsType) {
 						markers={activeRoute.markers}
 						lineKey={lineKey}
 					/>
-				)}
-				{(activePOI && !activePOI.id) && (
+				}
+				{(activePOI && !activePOI.id) && 
 					<PointOfInterestMarker
 						coordinate={[activePOI.longitude, activePOI.latitude]}
 						icon={activePOI.point_type?.icon ?? 'flag'}
 						colour={activePOI?.point_type?.colour ?? COLOUR.red[500]}
 						onPress={() => pointOfInterestPress(activePOI)}
 					/>
-				)}
-				{activePackGroup && (
+				}
+				{activePackGroup &&
 					<MapArea 
 						id='test'
 						bounds={activePackGroup.bounds}
 					/>
-				)}
+				}
 				<UserPosition
 					onUpdate={(e) => updateUserPosition(e.coords.latitude, e.coords.longitude)}
 				/>
             </Mapbox.MapView>
-			{loading && (
+			{loading &&
 				<View style={[styles.controlsContainer, { left: '50%', top: SETTING.TOP_PADDING + normalise(30), transform: [{ translateX: '-50%' }]}]}>
 					<Loader />
 				</View>
-			)}
+			}
 			<View style={[styles.controlsContainer, { left: normalise(10), top: SETTING.TOP_PADDING }]}>
 				<IconButton
 					icon={'search'}
@@ -284,15 +283,15 @@ export default function MapScreen({ navigation } : PropsType) {
 				/>
 			</View>
 			<View style={[styles.controlsContainer, { right: normalise(10), bottom: normalise(10) }]}>
-				{heading > 0 && !activeRoute && (
+				{(heading > 0 && !activeRoute) &&
 					<CompassButton
 						onPress={resetHeading}
 						disabled={!userPosition}
 						shadow={true}
 						heading={heading}
 					/>
-				)}
-				{!activeRoute && (
+				}
+				{!activeRoute &&
 					<MultiButtonControl
 						items={[
 							{ icon: 'layers', onPress: () => openStyleSheet() },
@@ -300,24 +299,24 @@ export default function MapScreen({ navigation } : PropsType) {
 							{ icon: followUserPosition ? 'navigation-2-off' : 'navigation-2', onPress: () => setFollowUserPosition(!followUserPosition) },
 						]}
 					/>
-				)}
+				}
 			</View>
-				{activeRoute ?
-					<View style={styles.activeRouteContainer}>
-						<ActiveRouteInformation
-							route={activeRoute}
-							onPress={() => navigateToRoute(activeRoute)}
-							onClose={() => clearActiveRoute()}
-						/>
-					</View>
-				:activePackGroup ?
-					<View style={[styles.controlsContainer, { bottom: normalise(20), width: '100%', alignItems: 'center' }]}>
-						<ActiveItemControls
-							name={activePackGroup.name}
-							onPress={() => clearActivePackGroup()}
-						/>
-					</View>
-				:null}
+			{activeRoute ?
+				<View style={styles.activeRouteContainer}>
+					<ActiveRouteInformation
+						route={activeRoute}
+						onPress={() => navigateToRoute(activeRoute)}
+						onClose={() => clearActiveRoute()}
+					/>
+				</View>
+			:activePackGroup ?
+				<View style={[styles.controlsContainer, { bottom: normalise(20), width: '100%', alignItems: 'center' }]}>
+					<ActiveItemControls
+						name={activePackGroup.name}
+						onPress={() => clearActivePackGroup()}
+					/>
+				</View>
+			:null}
 			<PointOfInterestSheet
 				id={SHEET.MAP_POI_SHEET}
 				point={activePOI}

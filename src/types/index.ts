@@ -170,3 +170,9 @@ export type Colour = {
     "800": string,
     "900": string,
 }
+
+export type Filters = {
+    route_type?: ROUTE_TYPE;
+    route_distance: number;
+    route_difficulty?: ROUTE_DIFFICULTY;
+}

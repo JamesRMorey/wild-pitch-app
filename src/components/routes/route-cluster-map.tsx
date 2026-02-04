@@ -25,8 +25,8 @@ export default function RouteClusterMap({ id="routes-cluster", routes, onRoutePr
         
         if (!onRoutePress) return;
         onRoutePress({
-            id: feature.properties?.id,
-            name: 'test',
+            server_id: feature.properties?.id,
+            name: feature.name,
             slug: feature.properties?.slug,
             latitude: feature.geometry.coordinates[1],
             longitude: feature.geometry.coordinates[0],
@@ -81,7 +81,7 @@ export default function RouteClusterMap({ id="routes-cluster", routes, onRoutePr
                     filter={["!", ["has", "point_count"]]}
                     style={{
                         iconImage: "flag",
-                        iconSize: 0.4,
+                        iconSize: 0.65,
                         iconAllowOverlap: true,
                         iconIgnorePlacement: true,
                     }}

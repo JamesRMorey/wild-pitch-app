@@ -3,9 +3,10 @@ import { CREATION_TYPE, ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_
 import { GPX } from '../services/gpx';
 import { MapPackService } from '../services/map-pack-service';
 import { RouteService } from '../services/route-service';
-import { Coordinate, RouteData } from '../types';
+import { Coordinate, MapPack, RouteData } from '../types';
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import Share from 'react-native-share';
+import { SETTING } from '../consts';
 
 export class Route {
     id?: number;
@@ -107,6 +108,23 @@ export class Route {
         return MapPackService.getPackName(this.name, Mapbox.StyleURL.Outdoors);
     }
 
+    getBounds (): [Position, Position] {
+        const bbox = this.calculateBoundingBox();
+        if (!bbox) return null; 
+
+        return [bbox.sw, bbox.ne];
+    }
+
+    getMapPack (): MapPack {
+        return {
+            name: this.getMapPackName(),
+            styleURL: Mapbox.StyleURL.Outdoors,
+            minZoom: SETTING.MAP_PACK_MIN_ZOOM,
+            maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
+            bounds: this.getBounds()
+        }
+    }
+
     generateGPX (): string {
         const header = `<?xml version="1.0" encoding="UTF-8"?>
             <gpx version="1.1" creator="WildPitch" xmlns="http://www.topografix.com/GPX/1/1">
@@ -135,7 +153,7 @@ export class Route {
         return header + trkpts + footer;
     }
 
-    async export ( message?: string ) {
+    async export ( message: string = `Here\'s a GPX file for a route I've plotted on Wild Pitch Maps` ) {
         const gpx = this.generateGPX();
         const fileName = `${this.getFileName()}.gpx`;
 

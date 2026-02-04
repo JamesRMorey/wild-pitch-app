@@ -3,10 +3,10 @@ import MapScreen from '../screens/map/map';
 import PointOfInterestStack from './point-of-interest-stack';
 import AreaBuilderSaveAreaScreen from '../screens/area-builder/save-area';
 import AreaBuilderScreen from '../screens/area-builder/builder';
-import RouteBuilderScreen from '../screens/routes/route-builder/route-builder';
+import RouteBuilderScreen from '../screens/routes/route-builder';
 import RouteDetailsScreen from '../screens/routes/route-details';
 import RouteNavigationScreen from '../screens/routes/route-navigation';
-import RouteSaveScreen from '../screens/routes/route-builder/save';
+import RouteSaveScreen from '../screens/routes/save';
 
 const Stack = createNativeStackNavigator();
 

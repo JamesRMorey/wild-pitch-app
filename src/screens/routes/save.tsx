@@ -1,18 +1,18 @@
 import { StyleSheet, View, ScrollView, Text } from "react-native";
-import { normalise, parseValidationErrors } from "../../../utils/helpers";
-import { TEXT } from "../../../styles";
-import TextInput from "../../../components/inputs/text-input";
+import { normalise, parseValidationErrors } from "../../utils/helpers";
+import { TEXT } from "../../styles";
+import TextInput from "../../components/inputs/text-input";
 import { useCallback, useMemo, useState } from "react";
-import Button from "../../../components/buttons/button";
-import TextArea from "../../../components/inputs/text-area";
-import { FormErrors, Option, RouteData } from "../../../types";
+import Button from "../../components/buttons/button";
+import TextArea from "../../components/inputs/text-area";
+import { FormErrors, Option, RouteData } from "../../types";
 import { useFocusEffect } from "@react-navigation/native";
-import KeyboardAvoidingView from "../../../components/misc/keyboard-avoiding-view";
-import { RouteService } from "../../../services/route-service";
-import { useRoutesActions } from "../../../contexts/routes-context";
-import { ROUTE_DIFFICULTY, ROUTE_TYPE } from "../../../consts/enums";
-import PillSelectInput from "../../../components/inputs/pill-select-input";
-import Icon from "../../../components/misc/icon";
+import KeyboardAvoidingView from "../../components/misc/keyboard-avoiding-view";
+import { RouteService } from "../../services/route-service";
+import { useRoutesActions } from "../../contexts/routes-context";
+import { ROUTE_DIFFICULTY, ROUTE_TYPE } from "../../consts/enums";
+import PillSelectInput from "../../components/inputs/pill-select-input";
+import Icon from "../../components/misc/icon";
 
 type PropsType = { navigation: any, route: any, popCount?: number };
 export default function RouteSaveScreen({ navigation, route: params, popCount=2 } : PropsType) {

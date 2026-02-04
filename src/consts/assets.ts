@@ -10,6 +10,7 @@ export const ASSETS = {
     COMPASS_NEEDLE: require('../assets/misc/compass-needle.png'),
     ROUTE_LINE_ARROW: require('../assets/misc/route-line-arrow.png'),
     ROUTE_FLAG: require('../assets/misc/route-flag.png'),
+    ROUTE_ICON: require('../assets/misc/route.png'),
 
     LANDING_1: require('../assets/images/landing-2.jpg'),
     BACKGROUND_SMALL_1: require('../assets/images/background-small-1.jpg'),
