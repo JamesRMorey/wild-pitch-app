@@ -225,7 +225,7 @@ export default function RouteBuilderScreen({ navigation, route } : PropsType) {
 					</View>
 				)}
 				<TouchableOpacity 
-					style={[styles.save, { opacity: markers.length === 0 ? 0.5 : 1,  }]}
+					style={[styles.save, { opacity: markers.length < 2 ? 0.5 : 1,  }]}
 					onPress={saveRoute}
 					disabled={markers.length <= 1}
 				>

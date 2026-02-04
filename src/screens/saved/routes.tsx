@@ -125,7 +125,7 @@ export default function RoutesScreen({}) {
                 </View>
                 :
                 <NothingHere
-                    title="No routes saved"
+                    title="No routes"
                     text="Head to the map to find and creates routes. You can also import GPX files using the plus icon in the top right corner."
                 />
                 }

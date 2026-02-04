@@ -22,7 +22,6 @@ type RoutesContextActions = {
     update: (id: number, data: RouteData)=>Promise<Route|void>,
     remove: (route: Route)=>void,
     exists: (id: number)=>boolean,
-    findByLatLng: (latitude: number, longitude: number)=>Route|void
     find: (id: number)=>Route|void
     importFile: ()=>Promise<RouteData|void>
     upload: (data: Route, status: ROUTE_STATUS)=>Promise<Route|void>
@@ -149,19 +148,6 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             return;
         }
     }
-    
-    const findByLatLng = ( latitude: number, longitude: number ): Route|undefined => {
-        try {
-            const route = repo.findByLatLng(latitude, longitude);
-            if (!route) return;
-
-            return new Route(route);
-        }
-        catch (error: any) {
-            console.error(error);
-            return;
-        }
-    }
 
     const remove = async ( route: Route ) => {
         if (!route.id) return;
@@ -245,7 +231,6 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     create,
                     update,
                     remove,
-                    findByLatLng,
                     find,
                     importFile,
                     upload,

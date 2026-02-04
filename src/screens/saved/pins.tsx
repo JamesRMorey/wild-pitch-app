@@ -103,7 +103,7 @@ export default function PinsScreen({  } : PropsType) {
                 </View>
                 :
                 <NothingHere
-                    title="No pins saved"
+                    title="No pins"
                     text="Head to the map and add some pins. You can use the search on the map to find places around the UK."
                     onPress={() => onPoiPress()}
                 />

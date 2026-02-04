@@ -117,9 +117,8 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const findRoute = async () => {
-        let found = route.id ? find(route.id) : route.server_id ? find(route.server_id) : null;        
+        let found = route.id ? find(route.id) : route.server_id ? find(route.server_id) : null; 
         if (!found) return;
-        
         const foundRoute = found;
         setRoute(foundRoute);
         setPack(foundRoute.getMapPack());

@@ -191,7 +191,6 @@ export class RouteRepository {
             FROM ${this.tableName} t
             WHERE t.id = ? OR t.server_id = ?
             AND t.user_id = ${this.userId}
-            AND t.entry_type = 'ROUTE'
             LIMIT 1
         `, [id, id]);
 

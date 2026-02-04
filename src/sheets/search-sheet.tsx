@@ -88,11 +88,6 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
         return () => clearTimeout(handler);
     }, [searchTerm, performPlaceSearch, searchType]);
 
-    useEffect(() => {
-        performPlaceSearch();
-        performRoutesSearch();
-    }, [])
-
 
     return (
         <ActionSheet

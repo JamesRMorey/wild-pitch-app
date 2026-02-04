@@ -50,7 +50,18 @@ export default function ProfileScreen({ navigation } : PropsType) {
         )
     }
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
+        Alert.alert(
+            'Are you sure?', 
+            'Are you sure you want to logout?',
+            [
+                { text: 'Cancel', onPress: () => {}},
+                { text: 'Logout', onPress: confirmLogout},
+            ],
+        )
+    }
+
+    const confirmLogout = async () => {
         await navigation.navigate('map');
         await delay(200);
         logout();

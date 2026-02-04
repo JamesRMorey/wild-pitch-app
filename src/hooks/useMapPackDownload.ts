@@ -39,6 +39,8 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
             if (onSuccess) {
                 onSuccess();
             }
+
+            console.log(`DOWNLOADED: ${pack.current.name}`, pack.current)
         }
     }
 
