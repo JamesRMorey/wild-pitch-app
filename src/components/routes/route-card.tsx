@@ -1,30 +1,25 @@
 import { normalise } from "../../utils/helpers";
 import { COLOUR, OPACITY, SHADOW, TEXT } from "../../styles";
-import { MapPack, Route } from "../../types"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from "../misc/icon";
-import { MapPackService } from "../../services/map-pack-service";
-import { SETTING } from "../../consts";
 import ProgressBar from "../misc/progress-bar";
-import Mapbox from "@rnmapbox/maps";
-import { RouteService } from "../../services/route-service";
 import { useEffect } from "react";
 import { Format } from "../../services/formatter";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
+import { Route } from "../../models/route";
 
 type PropsType = { route: Route, onPress?: ()=>void, onOtherPress?: ()=>void }
 export default function RouteCard ({ route, onPress=()=>{}, onOtherPress=()=>{} } : PropsType ) {
 
-    const pack: MapPack = {
-        name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
-        styleURL: Mapbox.StyleURL.Outdoors,
-        minZoom: SETTING.MAP_PACK_MIN_ZOOM,
-        maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-        bounds: RouteService.getBounds(route.markers)
-    };
     const { progress, errored, downloading, downloaded, offlinePack, checkDownloaded, download } = useMapPackDownload({ 
-        mapPack: pack
+        mapPack: route.getMapPack(),
+        onSuccess: () => {},
+        onFail: () => downloadFailed()
     });
+
+    const downloadFailed = () => {
+        Alert.alert('Error downloading this route', 'There\'s been an error trying to download this route.')
+    }
 
     useEffect(() => {
         checkDownloaded();

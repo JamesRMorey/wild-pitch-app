@@ -1,11 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLOUR, TEXT } from "../../styles";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { COLOUR, SHADOW, TEXT } from "../../styles";
 import { normalise } from "../../utils/helpers";
 import Icon from "../misc/icon";
 import Loader from "../map/loader";
 
-type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, style?: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'white', icon?: string, flex?: boolean, loading?: boolean }
-export default function Button ({ title, onPress, disabled=false, style='primary', padding, icon, flex=false, loading=false } : PropsType) {
+type PropsType = { title: string, onPress?: Function, disabled?: boolean, padding?: number, style?: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'white', icon?: string, flex?: boolean, loading?: boolean, shadow?: boolean }
+export default function Button ({ title, onPress, disabled=false, style='primary', padding, icon, flex=false, loading=false, shadow=false } : PropsType) {
 
     return (
         <TouchableOpacity
@@ -17,26 +17,34 @@ export default function Button ({ title, onPress, disabled=false, style='primary
                 style == 'outline' && { borderColor: COLOUR.wp_brown[700], backgroundColor: COLOUR.transparent },
                 style == 'white' && { borderColor: COLOUR.white, backgroundColor: COLOUR.white },
                 flex && { flex: 1 },
-                padding ? { paddingVertical: padding } : null
+                padding ? { paddingVertical: padding } : null,
+                shadow && SHADOW.xl
             ]}
             activeOpacity={0.8}
             disabled={disabled || !onPress}
         >
+            {loading ?
+                <Loader size={normalise(17)} colour={COLOUR.white}/>
+            :
+            <>
             <Text style={[
                 styles.text,
                 style == 'outline' && { color: COLOUR.wp_brown[700] },
                 style == 'white' && { color: COLOUR.black }
-            ]}>{title}</Text>
+            ]}>
+                {title}
+            </Text>
             {icon && 
-            <Icon
-                icon={icon}
-                size={normalise(16)}
-                colour={style == 'outline' ? COLOUR.wp_brown[700] : COLOUR.white}
-            />
+                <Icon
+                    icon={icon}
+                    size={normalise(16)}
+                    colour={style == 'outline' ? COLOUR.wp_brown[700] : COLOUR.white}
+                />
             }
-            {loading && (
-                <Loader size={normalise(17)} colour={COLOUR.white}/>
-            )}
+            </>
+            }
+            
+            
         </TouchableOpacity>
     )
 }

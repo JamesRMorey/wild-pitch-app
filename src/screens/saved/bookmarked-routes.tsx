@@ -55,7 +55,7 @@ export default function BookmarkedRoutesScreen({}) {
 
     const deleteRoute = async () => {
         if (selectedRoute?.id) {
-            removeBookmark(selectedRoute.id);
+            removeBookmark(selectedRoute);
         }
         closeRouteOptions();
     }

@@ -189,10 +189,11 @@ export class RouteRepository {
         const record = this.db.execute(`
             SELECT *
             FROM ${this.tableName} t
-            WHERE t.id = ?
+            WHERE t.id = ? OR t.server_id = ?
             AND t.user_id = ${this.userId}
+            AND t.entry_type = 'ROUTE'
             LIMIT 1
-        `, [id]);
+        `, [id, id]);
 
         const row = record.rows?._array[0] ?? null
         if (!row) return;

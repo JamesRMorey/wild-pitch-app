@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { MapPackService } from '../services/map-pack-service';
 import { EventBus } from '../services/event-bus';
 import { MapPack } from '../types';
@@ -15,14 +15,18 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
     const [downloaded, setDownloaded] = useState<boolean>(false);
     const [errored, setErrored] = useState<boolean>();
     const [offlinePack, setOfflinePack] = useState<OfflinePack>();
-    const [pack, setPack] = useState<MapPack>(mapPack);
+    const pack = useRef<MapPack>(mapPack);
+
+    const setPack = (p: MapPack) => {
+        pack.current = p;
+    }
 
     const onDownloadProgress = (status: { percentage: number }, refreshOnSuccess: boolean=true) => {
         setProgress(Math.ceil(status.percentage));
         setDownloaded(status.percentage == 100 ? true : false);
 
         if (status.percentage == 100) {
-            EventBus.emit.mapPackDownload(pack.name);
+            EventBus.emit.mapPackDownload(pack.current.name);
             if (refreshOnSuccess) {
                 EventBus.emit.routesRefresh();
                 EventBus.emit.packsRefresh();
@@ -32,12 +36,14 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
             setDownloaded(true);
             fetchPack();
 
-            if (onSuccess) onSuccess();
+            if (onSuccess) {
+                onSuccess();
+            }
         }
     }
 
     const fetchPack = async () => {
-        const p = await MapPackService.getPack(pack.name);
+        const p = await MapPackService.getPack(pack.current.name);
 
         if (!p) {
             setProgress(0);
@@ -60,23 +66,25 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
     }
 
     const download = (refreshOnSuccess: boolean=true) => {
+        const area = MapService.calculateArea(pack.current.bounds);
+        
         setErrored(false);
         setProgress(0);
-
-        const area = MapService.calculateArea(pack.bounds);
-
+        
         if (area > SETTING.MAX_MAP_AREA) {
             Alert.alert("Download Failed", 'The map area is too large.')
             onDownloadError();
             return;
         }
 
+        console.log('downloading', pack.current);
+        
         MapPackService.download({
-            name: pack.name, 
-            styleURL: pack.styleURL, 
+            name: pack.current.name, 
+            styleURL: pack.current.styleURL, 
             minZoom: SETTING.MAP_PACK_MIN_ZOOM, 
             maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-            bounds: pack.bounds
+            bounds: pack.current.bounds
         }, (offlineRegion: any, status: { percentage: number }) => onDownloadProgress(status, refreshOnSuccess), onDownloadError);
 
         setDownloading(true);
@@ -88,7 +96,7 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
         downloading,
         downloaded,
         offlinePack,
-        pack,
+        pack: pack.current,
         setPack,
         download,
         checkDownloaded: fetchPack

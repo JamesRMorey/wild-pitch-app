@@ -3,16 +3,11 @@ import { normalise, stripHtml } from "../../utils/helpers"
 import { COLOUR, OPACITY, TEXT } from "../../styles";
 import { ASSET, SETTING } from "../../consts";
 import Icon from "../../components/misc/icon";
-import { useCallback, useMemo, useState } from "react";
-import { MapPack } from "../../types";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "../../components/buttons/button";
 import SectionItemCard from "../../components/cards/section-item-card";
-import Mapbox from "@rnmapbox/maps";
-import { MapPackService } from "../../services/map-pack-service";
-import { RouteService } from "../../services/route-service";
 import { useMapPackDownload } from "../../hooks/useMapPackDownload";
 import { useFocusEffect } from "@react-navigation/native";
-import { WildPitchApi } from "../../services/api/wild-pitch";
 import { useGlobalState } from "../../contexts/global-context";
 import { useBookmarkedRoutesActions, useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
 import { useRoutesActions } from "../../contexts/routes-context";
@@ -27,17 +22,11 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const { bookmarkedRoutes } = useBookmarkedRoutesState();
     const [sharing, setSharing] = useState<boolean>(false);
     const { create: createBookmarkedRoute } = useBookmarkedRoutesActions();
-    const { makePublic, find } = useRoutesActions();
-    const pack: MapPack = {
-        name: MapPackService.getPackName(route.name, Mapbox.StyleURL.Outdoors),
-        styleURL: Mapbox.StyleURL.Outdoors,
-        minZoom: SETTING.MAP_PACK_MIN_ZOOM,
-        maxZoom: SETTING.MAP_PACK_MAX_ZOOM,
-        bounds: RouteService.getBounds(route.markers)
-    };
+    const { makePublic, find, create } = useRoutesActions();
     const { progress, errored, downloading, downloaded, checkDownloaded, download, setPack } = useMapPackDownload({ 
-        mapPack: pack, 
-        onSuccess: () => bookmarkRoute()
+        mapPack: route.getMapPack(), 
+        onSuccess: () => saveRoute(),
+        onFail: () => downloadFailed()
     });
     const isBookmarked: boolean = useMemo(() => route.isBookmarked(bookmarkedRoutes), [bookmarkedRoutes, route]);
 
@@ -54,12 +43,21 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         Linking.openURL(appleMapsUrl);
     }
 
-    const bookmarkRoute = async () => {
+    const downloadFailed = () => {
+        Alert.alert('Error downloading this route', 'There\'s been an error trying to download this route.')
+    }
+
+    const saveRoute = async (): Promise<Route|void> => {
         try {
-            await createBookmarkedRoute(route);
+            if (route.isOwnedByUser(user.id)) {
+                return await create(route);
+            }
+            else {
+                return await createBookmarkedRoute(route);
+            }
         }
         catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
@@ -106,15 +104,25 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         )
     }
 
+    const triggerDownload = async () => {
+        const saved = await saveRoute();
+        if (!saved) {
+            Alert.alert('Error saving this route', 'There\'s been an error trying to save this route.')
+            return;
+        }
+
+        setRoute(saved);
+        setPack(saved.getMapPack());
+        download();
+    }
+
     const findRoute = async () => {
-        const found = route.id ? find(route.id) : await WildPitchApi.findRoute(route.server_id);
+        let found = route.id ? find(route.id) : route.server_id ? find(route.server_id) : null;        
         if (!found) return;
         
-        const foundRoute = new Route(found);
+        const foundRoute = found;
         setRoute(foundRoute);
         setPack(foundRoute.getMapPack());
-        
-        checkDownloaded();
     }
 
     useFocusEffect(
@@ -122,6 +130,10 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
             findRoute();
         }, [])
     );
+
+    useEffect(() => {
+        checkDownloaded();
+    }, [route])
 
     return (
         <View style={styles.container}>
@@ -151,7 +163,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                                 </View>
                             :
                                 <TouchableOpacity
-                                    onPress={bookmarkRoute}
+                                    onPress={saveRoute}
                                     disabled={isBookmarked}
                                     style={styles.bookmarkButton}
                                     activeOpacity={0.8}
@@ -304,7 +316,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 {errored ?
                 <Button
                     title="Retry"
-                    onPress={download}
+                    onPress={triggerDownload}
                     style='outline'
                     flex={true}
                 />
@@ -324,7 +336,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 :
                 <Button
                     title="Download"
-                    onPress={download}
+                    onPress={triggerDownload}
                     style='outline'
                     flex={true}
                 />

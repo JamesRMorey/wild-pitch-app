@@ -38,11 +38,13 @@ export default function LandingScreen({ navigation } : PropsType) {
                         style="white"
                         onPress={navigateToRegister}
                         title="Register"
+                        shadow={true}
                     />
                     <Button
                         style="primary"
                         onPress={navigateToLogin}
                         title="Log in"
+                        shadow={true}
                     />
                 </View>
             </View>

@@ -21,6 +21,7 @@ type RoutesContextActions = {
     create: (data: any)=>Promise<Route|void>,
     update: (id: number, data: RouteData)=>Promise<Route|void>,
     remove: (route: Route)=>void,
+    exists: (id: number)=>boolean,
     findByLatLng: (latitude: number, longitude: number)=>Route|void
     find: (id: number)=>Route|void
     importFile: ()=>Promise<RouteData|void>
@@ -84,9 +85,18 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         get();
     }
 
+    const exists = (id: number): boolean => {
+        const existing = repo.get();
+        return existing.find(r => r.id == id) ? true : false;
+    }
+
     const create = async ( data: any ): Promise<Route|void> => {
         await schema.validate(data, { abortEarly: false });
         
+        if (data.id && exists(data.id)) {
+            return find(data.id);
+        } 
+
         const created = repo.create(data);
 
         if (!created?.id) return;
@@ -139,7 +149,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             return;
         }
     }
-
+    
     const findByLatLng = ( latitude: number, longitude: number ): Route|undefined => {
         try {
             const route = repo.findByLatLng(latitude, longitude);
@@ -159,8 +169,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         try {
             const deleted = repo.delete(route.id);
             if (deleted) {
-                const packName = MapPackService.getPackName(deleted.name, Mapbox.StyleURL.Outdoors);
-                await MapPackService.removeDownload(packName)
+                await MapPackService.removeDownload(route.getMapPackName())
             }
 
             if (route.server_id) {
@@ -240,7 +249,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     find,
                     importFile,
                     upload,
-                    makePublic
+                    makePublic,
+                    exists
                 }}
             >
                 {children}

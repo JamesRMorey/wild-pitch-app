@@ -16,7 +16,7 @@ type BookmarkedRoutesContextState = {
 type BookmarkedRoutesContextActions = {
     create: (data: any)=>Promise<Route|void>;
     update: (id: number, data: any)=>Promise<Route|void>;
-    remove: (serverId: number)=>void;
+    remove: (route: Route)=>void;
     find: (id: number)=>Route|void;
     upload: (serverId: number)=>Promise<void>;
     isBookmarked: (serverId: number)=>boolean;
@@ -52,7 +52,7 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         for (const saved of savedRoutes) {
             const serverRoute = serverRoutes.find(r => r.server_id == saved.server_id);
             if (!serverRoute) {
-                remove(saved.id);
+                remove(new Route(saved));
                 continue;
             };
 
@@ -69,10 +69,11 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         
         const existing = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
         const isExisting = existing.find((bm: RouteData) => bm.server_id == data.server_id);
-        if (isExisting) return;
-
-        const routes = repo.get();
-        const isOwnRoute = routes.find((r: RouteData) => r.server_id == r.server_id);
+        
+        if (isExisting) return new Route(isExisting);
+        
+        const routes = repo.get(ROUTE_ENTRY_TYPE.ROUTE);
+        const isOwnRoute = routes.find((r: RouteData) => r.server_id == data.server_id);
         if (isOwnRoute) return;
 
         const newRoute = repo.create(data, ROUTE_ENTRY_TYPE.BOOKMARK);
@@ -112,12 +113,12 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
         }
     }
 
-    const remove = async ( id: number ): Promise<void> => {      
-        const deleted = repo.delete(id, ROUTE_ENTRY_TYPE.BOOKMARK);
-
+    const remove = async ( route: Route): Promise<void> => {
+        if (!route.id) return;
+        const deleted = repo.delete(route.id, ROUTE_ENTRY_TYPE.BOOKMARK);
+        
         if (deleted) {
-            const packName = MapPackService.getPackName(deleted.name, Mapbox.StyleURL.Outdoors);
-            await MapPackService.removeDownload(packName);
+            await MapPackService.removeDownload(route.getMapPackName());
 
             if (deleted.server_id) {
                 WildPitchApi.removeBookmarkedRoute(deleted.server_id);

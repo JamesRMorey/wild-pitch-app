@@ -3,7 +3,7 @@ import { CREATION_TYPE, ROUTE_DIFFICULTY, ROUTE_ENTRY_TYPE, ROUTE_STATUS, ROUTE_
 import { GPX } from '../services/gpx';
 import { MapPackService } from '../services/map-pack-service';
 import { RouteService } from '../services/route-service';
-import { Coordinate, MapPack, RouteData } from '../types';
+import { Coordinate, MapPack, PositionArray, RouteData } from '../types';
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 import Share from 'react-native-share';
 import { SETTING } from '../consts';
@@ -105,10 +105,11 @@ export class Route {
     }
 
     getMapPackName (): string {
-        return MapPackService.getPackName(this.name, Mapbox.StyleURL.Outdoors);
+        const name = this.name.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '_');
+        return MapPackService.getPackName(`${this.id}_${name}`, Mapbox.StyleURL.Outdoors);
     }
 
-    getBounds (): [Position, Position] {
+    getBounds (): PositionArray {
         const bbox = this.calculateBoundingBox();
         if (!bbox) return null; 
 
