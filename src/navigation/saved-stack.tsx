@@ -6,7 +6,6 @@ import RouteDetailsScreen from '../screens/routes/route-details';
 import RouteNavigationScreen from '../screens/routes/route-navigation';
 import RouteBuilderScreen from '../screens/routes/route-builder';
 import RouteSaveScreen from '../screens/routes/save';
-import RoutesScreen from '../screens/saved/routes';
 
 const Stack = createNativeStackNavigator();
 

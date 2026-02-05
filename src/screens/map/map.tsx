@@ -33,6 +33,7 @@ import { useRoutesState } from "../../contexts/routes-context";
 import { usePointsOfInterestActions } from "../../contexts/pois-context";
 import { WildPitchApi } from "../../services/api/wild-pitch";
 import { useBookmarkedRoutesState } from "../../contexts/bookmarked-routes-context";
+import RouteDownloadArea from "../../components/routes/route-download-area";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbWl3YjB1dzAwMHN5M2RzYm82NnZyaWdkIn0.y85WCj95c6ibCAuQ4REbIw");
 
@@ -71,7 +72,7 @@ export default function MapScreen({ navigation } : PropsType) {
 		tick();
 		setActivePOI(point);
 		flyToLow([point.longitude, point.latitude], SETTING.MAP_MARKER_ZOOM)
-		navigateToPOI(point);
+		SheetManager.show(SHEET.MAP_POI_SHEET)
 	}
 
 	const handlePlaceResultPress = async (place: Place) => {
@@ -88,10 +89,6 @@ export default function MapScreen({ navigation } : PropsType) {
 
 		await delay(100);
 		pointOfInterestPress(poi);
-	}
-
-	const navigateToPOI = ( point: PointOfInterest ) => {
-		SheetManager.show(SHEET.MAP_POI_SHEET)
 	}
 
 	const openSearch = () => {
@@ -237,6 +234,7 @@ export default function MapScreen({ navigation } : PropsType) {
 					)
 				})}
 				{activeRoute &&
+					<>
 					<RouteLine
 						key={`line-${lineKey}`}
 						start={{ latitude: activeRoute.latitude, longitude: activeRoute.longitude }}
@@ -244,6 +242,10 @@ export default function MapScreen({ navigation } : PropsType) {
 						markers={activeRoute.markers}
 						lineKey={lineKey}
 					/>
+					<RouteDownloadArea
+						route={activeRoute}
+					/>
+					</>
 				}
 				{(activePOI && !activePOI.id) && 
 					<PointOfInterestMarker

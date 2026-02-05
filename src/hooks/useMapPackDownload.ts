@@ -64,7 +64,9 @@ export function useMapPackDownload({ mapPack, onSuccess, onFail }: PropsType) {
         setDownloading(false);
         setProgress(0);
         fetchPack();
-        if (onFail) onFail();
+        if (onFail) {
+            onFail();
+        }
     }
 
     const download = (refreshOnSuccess: boolean=true) => {

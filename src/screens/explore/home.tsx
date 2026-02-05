@@ -128,13 +128,19 @@ export default function HomeScreen({ navigation } : PropsType) {
 					<View style={styles.bullet}>
 						<Icon icon="dot"></Icon>
 						<View style={styles.bulletDesc}>
-							<Text style={[TEXT.p]}>Import routes by sharing GPX files from other apps or friends.</Text>
+							<Text style={[TEXT.p]}>Sync your account with our cloud.</Text>
 						</View>
 					</View>
 					<View style={styles.bullet}>
 						<Icon icon="dot"></Icon>
 						<View style={styles.bulletDesc}>
-							<Text style={[TEXT.p]}>Export and share your routes as GPX files with friends.</Text>
+							<Text style={[TEXT.p]}>Share your routes publically with other Wild Pitch members.</Text>
+						</View>
+					</View>
+					<View style={styles.bullet}>
+						<Icon icon="dot"></Icon>
+						<View style={styles.bulletDesc}>
+							<Text style={[TEXT.p]}>Discover new routes from other Wild Pitch Members via the explore page.</Text>
 						</View>
 					</View>
 				</View>

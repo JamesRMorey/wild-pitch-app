@@ -29,6 +29,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
         onFail: () => downloadFailed()
     });
     const isBookmarked: boolean = useMemo(() => route.isBookmarked(bookmarkedRoutes), [bookmarkedRoutes, route]);
+    const isOwnedByUser: boolean = useMemo(() => user && route.isOwnedByUser(user.id), [user, route]);
 
     const goBack = () => {
         navigation.goBack();
@@ -50,7 +51,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     const saveRoute = async (): Promise<Route|void> => {
 
         try {
-            if (route.isOwnedByUser(user.id)) {
+            if (isOwnedByUser) {
                 return await create(route);
             }
             else {
@@ -152,7 +153,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                             />
                         </TouchableOpacity>
                         <View style={styles.rightIconsContainer}>
-                            {route.isOwnedByUser(user.id) ? 
+                            {isOwnedByUser ? 
                                 <View style={styles.belongsToUser}>
                                     <Text style={[TEXT.sm, { color: COLOUR.white }]}>Created by you</Text>
                                     <Icon
@@ -249,11 +250,11 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 style={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
             >
-                {route.notes && (
+                {route.notes &&
                 <View style={styles.section}>
                     <Text style={TEXT.p}>{stripHtml(route.notes)}</Text>
                 </View>
-                )}
+                }
                 {route.isOwnedByUser(user.id) && 
                 <View>
                     {route.isImport() ?
@@ -267,9 +268,9 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                         <Text style={[TEXT.p, { marginTop: normalise(10)}]}>This route is shared with others to enjoy.</Text>
                     </View>  
                     :
-                    <View style={[styles.section, { gap: normalise(15) }]}>
-                        <Text style={styles.sectionTitle}>Share this route</Text>
-                        <Text style={[TEXT.p]}>This route is currently private but we'd love if you would make it available for other users to discover.</Text>
+                    <View style={[styles.section, { gap: normalise(5) }]}>
+                        <Text style={styles.sectionTitle}>Share this route?</Text>
+                        <Text style={[TEXT.p, { marginBottom: normalise(10) }]}>This route is currently stored privately on your account, but we'd love if you would make it available for other users to discover.</Text>
                         <Button
                             title="Share with Wild Pitch"
                             icon="tent"

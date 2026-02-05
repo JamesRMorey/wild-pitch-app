@@ -28,8 +28,22 @@ export class RouteService {
         const lats = markers.map(marker => marker.latitude);
         const lngs = markers.map(marker => marker.longitude);
 
-        const ne: Position = [Math.max(...lngs), Math.max(...lats)];
-        const sw: Position = [Math.min(...lngs), Math.min(...lats)];
+        const maxLat = Math.max(...lats);
+        const minLat = Math.min(...lats);
+        const maxLng = Math.max(...lngs);
+        const minLng = Math.min(...lngs);
+
+        // --- padding ---
+        const paddingMeters = 200;
+
+        const metersPerDegreeLat = 111_320;
+        const metersPerDegreeLng = 111_320 * Math.cos(((maxLat + minLat) / 2) * Math.PI / 180);
+
+        const latPadding = paddingMeters / metersPerDegreeLat;
+        const lngPadding = paddingMeters / metersPerDegreeLng;
+
+        const ne: Position = [maxLng + lngPadding, maxLat + latPadding];
+        const sw: Position = [minLng - lngPadding, minLat - latPadding];
 
         return { ne, sw };
     }
