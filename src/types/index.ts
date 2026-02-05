@@ -172,7 +172,9 @@ export type Colour = {
 }
 
 export type Filters = {
-    route_type?: ROUTE_TYPE;
-    route_distance: number;
-    route_difficulty?: ROUTE_DIFFICULTY;
+    query?: string;
+    type?: ROUTE_TYPE;
+    max_distance?: number;
+    difficulty?: ROUTE_DIFFICULTY;
+    bounds?: { ne: PositionArray, sw: PositionArray }
 }

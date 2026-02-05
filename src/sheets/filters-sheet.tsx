@@ -9,16 +9,14 @@ import { Filters, Option } from "../types";
 import PillSelectInput from "../components/inputs/pill-select-input";
 import { ROUTE_DIFFICULTY, ROUTE_TYPE } from "../consts/enums";
 import SliderInput from "../components/inputs/slider-input";
+import Button from "../components/buttons/button";
+import { useExploreMapActions, useExploreMapState } from "../contexts/explore-map-context";
 
-type PropsType = { id?: string }
-export default function FiltersSheet ({ id=SHEET.EXPLORE_FILTERS } : PropsType) {
+type PropsType = { id?: string, onSearch:()=>void }
+export default function FiltersSheet ({ id=SHEET.EXPLORE_FILTERS, onSearch } : PropsType) {
 
-    const [searchTerm, setSearchTerm] = useState<string>('');
-    const [filters, setFilters] = useState<Filters>({
-        route_difficulty: undefined,
-        route_distance: 20,
-        route_type: undefined,
-    });
+    const { filters } = useExploreMapState();
+    const { setFilters } = useExploreMapActions();
     const TYPE_FILTERS: Array<Option> = [
         { label: 'Any', value: undefined },
         { label: 'Circular', value: ROUTE_TYPE.CIRCULAR },
@@ -32,6 +30,11 @@ export default function FiltersSheet ({ id=SHEET.EXPLORE_FILTERS } : PropsType) 
         { label: 'Challenging', value: ROUTE_DIFFICULTY.CHALLENGING },
         { label: 'Difficult', value: ROUTE_DIFFICULTY.DIFFICULT },
     ];
+
+    const search = async () => {
+        onSearch();
+        close();
+    }
 
     const close = () => {
         SheetManager.hide(id);
@@ -48,9 +51,9 @@ export default function FiltersSheet ({ id=SHEET.EXPLORE_FILTERS } : PropsType) 
                         <TextInput
                             icon="search"
                             placeHolder={'Search for things...'}
-                            onChangeText={(text) => setSearchTerm(text)}
-                            value={searchTerm}
-                            onClear={() => setSearchTerm('')}
+                            onChangeText={(text) => setFilters(prev => ({...prev, query: text }))}
+                            value={filters.query}
+                            onClear={() => setFilters(prev => ({...prev, query: '' }))}
                         />
                     </View>
                     <TouchableOpacity
@@ -61,28 +64,37 @@ export default function FiltersSheet ({ id=SHEET.EXPLORE_FILTERS } : PropsType) 
                         <Text>close</Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.heading}>Routes</Text>
-                    <View style={styles.filtersContainer}>
-                        <PillSelectInput
-                            label="Type"
-                            options={TYPE_FILTERS}
-                            onChange={(value) => setFilters(prev => ({...prev, route_type: value}))}
-                        />
-                        <PillSelectInput
-                            label="Difficulty"
-                            options={DIFFICULTY_FILTERS}
-                            onChange={(value) => setFilters(prev => ({...prev, route_difficulty: value}))}
-                        />
-                        <SliderInput
-                            label="Distance"
-                            valueLabel={`< ${filters.route_distance} km`}
-                            value={filters.route_distance}
-                            onChange={(value) => setFilters(prev => ({...prev, route_distance: value }))}
-                            min={1}
-                            max={50}
-                            step={5}
-                        />
-                    </View>
+                <Text style={styles.heading}>Refine your routes</Text>
+                <View style={styles.filtersContainer}>
+                    <PillSelectInput
+                        label="Type"
+                        options={TYPE_FILTERS}
+                        value={filters.type}
+                        onChange={(value) => setFilters(prev => ({...prev, type: value}))}
+                    />
+                    <PillSelectInput
+                        label="Difficulty"
+                        options={DIFFICULTY_FILTERS}
+                        value={filters.difficulty}
+                        onChange={(value) => setFilters(prev => ({...prev, difficulty: value}))}
+                    />
+                    <SliderInput
+                        label="Distance"
+                        valueLabel={`< ${filters.max_distance} km`}
+                        value={filters.max_distance ?? 0}
+                        onChange={(value) => setFilters(prev => ({...prev, max_distance: value }))}
+                        min={1}
+                        max={50}
+                        step={5}
+                    />
+                </View>
+                <View>
+                    <Button
+                        title="Search"
+                        onPress={search}
+                        icon="search"
+                    />
+                </View>
             </View>
         </ActionSheet>
     )

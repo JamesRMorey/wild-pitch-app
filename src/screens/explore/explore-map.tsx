@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import { normalise } from "../../utils/helpers";
 import { ASSET, SCREEN, SETTING, SHEET } from "../../consts";
-import { Bounds, PositionArray, RouteSearchResult } from "../../types";
+import { Bounds, Filters, PositionArray, RouteSearchResult } from "../../types";
 import { Route } from "../../models/route";
 import { SheetManager } from "react-native-actions-sheet";
 import { COLOUR, TEXT } from "../../styles";
@@ -30,8 +30,8 @@ type PropsType = { navigation: any , route: any }
 export default function ExploreMapScreen({ navigation } : PropsType) {
 
 	const { verifyLogin } = useGlobalActions();
-	const { styleURL, cameraRef, enable3DMode, activeRoute } = useExploreMapState();
-	const { flyTo, fitToRoute, fitToBounds, setActiveRoute, setActivePOI, reCenter } = useExploreMapActions();
+	const { styleURL, cameraRef, enable3DMode, activeRoute, filters } = useExploreMapState();
+	const { flyTo, fitToRoute, fitToBounds, setActiveRoute, setFilters } = useExploreMapActions();
     const { initialRegion, updateUserPosition, loaded } = useMapSettings();
 	const { tick } = useHaptic();
 	const mapRef = useRef<Mapbox.MapView>(null);
@@ -109,22 +109,33 @@ export default function ExploreMapScreen({ navigation } : PropsType) {
 	const handleMapRegionChange = async ( bounds: Bounds, zoom: number ) => {
 		if (!mapSearchEnabled.current) return;
 
-		try {
-			const { ne, sw } = bounds;
-			if (currentBounds && RouteService.boundsInsideBounds({ ne: ne, sw: sw }, currentBounds.bounds) && zoom < (currentBounds.zoom + 2)) return;
-			
-			setLoading(true);
-			const rts = await WildPitchApi.searchRoutes({ bounds: { ne: ne, sw: sw }});
+		const { ne, sw } = bounds;
+		if (currentBounds && RouteService.boundsInsideBounds({ ne: ne, sw: sw }, currentBounds.bounds) && zoom < (currentBounds.zoom + 2)) return;
 
-			updateClusters(rts);
-			setCurrentBounds({ bounds: { ne: ne, sw: sw }, zoom: zoom });
+		const updatedFilters = {...filters, bounds: { ne: ne, sw: sw }};
+		setFilters(updatedFilters);
+		search(updatedFilters);
+
+		setCurrentBounds({ bounds: { ne: ne, sw: sw }, zoom: zoom });
+	}
+
+	const search = async ( filt: Filters ) => {
+		try {
+			setLoading(true);
+			const data = await WildPitchApi.searchRoutes({
+				...filt,
+				max_distance: filt.max_distance ? filt.max_distance * 1000 : undefined,
+			});
+			updateClusters(data);
 		}
-		catch (err) {
-			console.error(err);
+		catch (error) {
+			console.error(error);
 		}
 		finally {
-			setLoading(false);
-			tick();
+			setTimeout(() => {
+				setLoading(false)
+				tick();
+			}, 300);
 		}
 	}
 
@@ -223,10 +234,6 @@ export default function ExploreMapScreen({ navigation } : PropsType) {
 						<Text style={TEXT.md}>{routes?.features?.length ?? 0}</Text>
 						<Text style={TEXT.xs}>Routes</Text>
 					</View>
-					<View style={styles.resultsBoxResult}>
-						<Text style={TEXT.md}>6</Text>
-						<Text style={TEXT.xs}>Pitches</Text>
-					</View>
 				</View>
                 <View style={{ flex: 1 }}>
 					<Button
@@ -237,6 +244,7 @@ export default function ExploreMapScreen({ navigation } : PropsType) {
             </View>
 			<FiltersSheet
 				id={SHEET.EXPLORE_FILTERS}
+				onSearch={() => search(filters)}
 			/>
         </View>
     )
@@ -264,6 +272,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLOUR.white,
         paddingVertical: normalise(10),
         paddingHorizontal: normalise(15),
+        borderTopWidth: normalise(1),
+        borderTopColor: COLOUR.gray[200],
 		flexDirection: 'row',
 		gap: normalise(5)
 	},

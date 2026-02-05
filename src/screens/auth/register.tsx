@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, ImageBackground } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, ImageBackground, Linking } from "react-native";
 import { ASSET, SETTING } from "../../consts";
 import Button from "../../components/buttons/button";
 import { useGlobalActions } from "../../contexts/global-context";
@@ -75,6 +75,14 @@ export default function RegisterScreen({ navigation } : PropsType) {
         }
     }
 
+    const openPrivacyPolicy = () => {
+        Linking.openURL('https://wild-pitch.co.uk/privacy-policy')
+    }
+    
+    const openTerms = () => {
+        Linking.openURL('https://wild-pitch.co.uk/terms-of-service')
+    }
+
 
     return (
         <KeyboardAvoidingView style={styles.container}>
@@ -145,9 +153,14 @@ export default function RegisterScreen({ navigation } : PropsType) {
                                 onFocus={()=>setErrors({ ...errors, password_confirm: undefined })}
                             />
                         </View>
-                        <TouchableOpacity style={{ marginTop: normalise(15), marginBottom: normalise(30) }}>
-                            <Text style={{ ...TEXT.md, textAlign: 'right' }}>Forgot your password?</Text>
-                        </TouchableOpacity>
+                        <View style={{ marginTop: normalise(15), marginBottom: normalise(30) }}>
+                            <Text style={TEXT.md}>
+                                By signing up you confirm that you have read the 
+                                <Text style={TEXT.link} onPress={openPrivacyPolicy}> Wild Pitch Privacy Policy </Text> 
+                                and agree to the our 
+                                <Text style={TEXT.link} onPress={openTerms}> Terms of Service </Text> 
+                            </Text>
+                        </View>
                         <Button
                             title="Register" 
                             onPress={login}

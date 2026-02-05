@@ -1,5 +1,5 @@
 import { ENVIRONMENT } from "../../../ENV";
-import { Bounds, RouteData, RouteSearchResult, User } from "../../types";
+import { Bounds, Filters, RouteData, RouteSearchResult, User } from "../../types";
 import * as Keychain from 'react-native-keychain';
 
 
@@ -196,12 +196,12 @@ export class WildPitchApi {
         }
     }
 
-    static async searchRoutes (filters: { query?: string, bounds?: Bounds, latitude?: number, longitude?: number }): Promise<Array<RouteSearchResult>> {
+    static async searchRoutes (filters: Filters): Promise<Array<RouteSearchResult>> {
         const credentials = await Keychain.getGenericPassword({ service: 'wild_pitch' });
         if (!credentials) {
             throw new Error('No credentials found');
         }
-
+        console.log(filters)
         const response = await fetch(`${ENVIRONMENT.api_url}/routes/search`, {
             method: 'POST',
             headers: {

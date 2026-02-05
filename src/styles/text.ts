@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { normalise } from "../utils/helpers";
+import { COLOUR } from ".";
 
 
 export const text = StyleSheet.create({
@@ -62,5 +63,8 @@ export const text = StyleSheet.create({
     },
     center: {
         textAlign: 'center'
+    },
+    link: {
+        color: COLOUR.wp_green[700]
     }
 })

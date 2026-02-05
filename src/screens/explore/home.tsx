@@ -1,18 +1,14 @@
 import { Image, ScrollView, StyleSheet, Text, View, Alert } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
 import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
-import { ASSET, NAVIGATOR, SCREEN, SETTING, SHEET } from "../../consts";
-import { delay, normalise } from "../../utils/helpers";
+import { ASSET, NAVIGATOR, SCREEN, SETTING } from "../../consts";
+import { normalise } from "../../utils/helpers";
 import { useMemo } from "react";
 import LearnCard from "../../components/cards/learn-card";
 import ImageBackgroundCard from "../../components/cards/image-background-card";
-import { SheetManager } from "react-native-actions-sheet";
 import { useRoutesActions } from "../../contexts/routes-context";
 import Icon from "../../components/misc/icon";
-import FeaturedRoutes from "../../components/routes/featured-routes";
 import { RouteData } from "../../types";
-import { useMapActions } from "../../contexts/map-context";
-import { Route } from "../../models/route";
 
 type PropsType = { navigation: any }
 export default function HomeScreen({ navigation } : PropsType) {
@@ -20,7 +16,6 @@ export default function HomeScreen({ navigation } : PropsType) {
 	const { user } = useGlobalState();
 	const { verifyLogin } = useGlobalActions();
 	const { importFile: importRoute } = useRoutesActions();
-	const { setActiveRoute, fitToRoute } = useMapActions();
 
 	const FEATURES_CARDS = useMemo(() => [
 		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>exploreMap },
@@ -29,10 +24,9 @@ export default function HomeScreen({ navigation } : PropsType) {
 		{ title: 'Offline things', text: 'Save everything offline. See what you have saved here.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_yellow, onPress: ()=>navigateToSaved() },
 	], []);
 
+	
 	const exploreRoutes =  async() => {
 		navigation.navigate(NAVIGATOR.MAIN_TABS.EXPLORE, { screen: SCREEN.EXPLORE.MAP });
-		await delay(300);
-		SheetManager.show(SHEET.MAP_SEARCH)
 	}
 
 	const navigateToSaved = () => {

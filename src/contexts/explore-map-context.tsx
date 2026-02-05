@@ -3,7 +3,7 @@ import Mapbox from '@rnmapbox/maps';
 import { Position } from '@rnmapbox/maps/lib/typescript/src/types/Position';
 import { useMapCameraControls } from '../hooks/useMapCameraControls';
 import { useMapSettings } from '../hooks/useMapSettings';
-import { PointOfInterest } from '../types';
+import { Filters, PointOfInterest } from '../types';
 import { Route } from '../models/route';
 import { RouteService } from '../services/route-service';
 
@@ -15,6 +15,7 @@ type ExploreMapContextState = {
     followUserLocation: boolean;
     activeRoute?: Route;
     activePOI?: PointOfInterest;
+    filters: Filters;
 };
 
 type ExploreMapContextActions = {
@@ -32,6 +33,7 @@ type ExploreMapContextActions = {
     fitToRoute: (route: Route) => void;
     setActivePOI: (poi?: PointOfInterest) => void;
     reCenter: (position: Position) => void;
+    setFilters: (filters: Filters)=>void
 };
 
 const StateContext = createContext<ExploreMapContextState | undefined>(undefined);
@@ -43,7 +45,14 @@ export const ExploreMapProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const { flyTo, flyToLow, zoomTo, moveTo, resetHeading, fitToBounds, cameraRef, reCenter } = useMapCameraControls();
     const [activeRoute, setActiveRoute] = useState<Route>();
 	const [activePOI, setActivePOI] = useState<PointOfInterest>();
-    
+
+    const [filters, setFilters] = useState<Filters>({
+        query: '',
+        difficulty: undefined,
+        max_distance: 25,
+        type: undefined,
+    });
+
     const setEnable3DMode = ( enabled: boolean ) => {
         cameraRef.current?.setCamera({
             pitch: 0
@@ -68,7 +77,8 @@ export const ExploreMapProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 enable3DMode,
                 followUserLocation,
                 activeRoute,
-                activePOI
+                activePOI,
+                filters
             }}
         >
             <ActionsContext.Provider
@@ -86,7 +96,8 @@ export const ExploreMapProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                     setActiveRoute,
                     fitToRoute,
                     setActivePOI,
-                    reCenter
+                    reCenter,
+                    setFilters
                 }}
             >
                 {children}
