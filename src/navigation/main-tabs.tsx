@@ -18,7 +18,7 @@ export default function MainTabs({}) {
             <Tab.Screen name="home" component={HomeScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'tent-tree', displayName: 'Home', requiresLogin: false}}/>
             <Tab.Screen name={NAVIGATOR.MAIN_TABS.EXPLORE} component={ExploreStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'route', displayName: 'Explore', requiresLogin: false}}/>
             <Tab.Screen name="map" component={MapStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'map', displayName: 'Map', requiresLogin: false}}/>
-            <Tab.Screen name="saved" component={SavedStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder', displayName: 'Saved', requiresLogin: true}}/>
+            <Tab.Screen name={NAVIGATOR.MAIN_TABS.SAVED} component={SavedStack} options={{...SCREEN_OPTIONS, tabBarIcon: 'folder', displayName: 'Saved', requiresLogin: true}}/>
             <Tab.Screen name="account" component={ProfileScreen} options={{...SCREEN_OPTIONS, tabBarIcon: 'user', displayName: 'Profile', requiresLogin: true}}/>
         </Tab.Navigator>
     )

@@ -37,7 +37,7 @@ export default function HomeScreen({ navigation } : PropsType) {
 
 	const navigateToSaved = () => {
 		if (!verifyLogin()) return;
-		navigation.navigate('saved')
+		navigation.navigate(NAVIGATOR.MAIN_TABS.SAVED)
 	}
 
 	const exploreMap = () => {
@@ -61,8 +61,10 @@ export default function HomeScreen({ navigation } : PropsType) {
 	}
 
 	const confirmRouteImport = async ( data: RouteData ) => {
-		navigation.navigate('route-import', {
-			route: data
+		await navigation.navigate(NAVIGATOR.MAIN_TABS.SAVED);
+		await navigation.navigate(NAVIGATOR.MAIN_TABS.SAVED, {
+			screen: SCREEN.SAVED.ROUTE_IMPORT,
+			params: { route: data }
 		});
 	}
 

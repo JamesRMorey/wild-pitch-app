@@ -4,7 +4,7 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import PacksScreen from './packs';
 import PinsScreen from './pins';
 import CustomTabView from '../../components/navigation/custom-tab-view';
-import { SETTING, SHEET } from '../../consts';
+import { SCREEN, SETTING, SHEET } from '../../consts';
 import { COLOUR, TEXT } from '../../styles';
 import { delay, normalise } from '../../utils/helpers';
 import OptionsSheet from '../../sheets/options-sheet';
@@ -89,7 +89,7 @@ export default function SavedTabsView({ navigation } : PropsType) {
     }
 
     const confirmRouteImport = async ( data: RouteData ) => {
-        navigation.navigate('route-import', {
+        navigation.navigate(SCREEN.SAVED.ROUTE_IMPORT, {
 			route: data
 		});
     }

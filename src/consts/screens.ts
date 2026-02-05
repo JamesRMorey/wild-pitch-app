@@ -5,11 +5,16 @@ export const screens = {
         ROUTE_NAVIGATION: 'route-navigation',
         ROUTE_SAVE: 'route-save',
         ROUTE_BUILDER: 'route-builder',
+        ROUTE_IMPORT: 'explore-route-import'
+    },
+    SAVED: {
+        ROUTE_IMPORT: 'saved-route-import'
     }
 }
 
 export const navigators = {
     MAIN_TABS: {
-        EXPLORE: 'explore-tab'
+        EXPLORE: 'explore-tab',
+        SAVED: 'saved-tab'
     }
 }
