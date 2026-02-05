@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useMemo, useState }from 'react';
 import { StyleSheet, View, useWindowDimensions, Text, TouchableOpacity, Alert } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import PacksScreen from './packs';
@@ -14,9 +14,11 @@ import Icon from '../../components/misc/icon';
 import Mapbox from '@rnmapbox/maps';
 import { EventBus } from '../../services/event-bus';
 import { useGlobalState } from '../../contexts/global-context';
-import { useRoutesActions } from '../../contexts/routes-context';
+import { useRoutesActions, useRoutesState } from '../../contexts/routes-context';
 import { RouteData } from '../../types';
 import BookmarkedRoutesScreen from './bookmarked-routes';
+import { useBookmarkedRoutesActions, useBookmarkedRoutesState } from '../../contexts/bookmarked-routes-context';
+import * as Animateable from 'react-native-animatable';
 
 const renderScene = SceneMap({
     packs: PacksScreen,
@@ -36,9 +38,13 @@ type PropsType = { navigation: any };
 export default function SavedTabsView({ navigation } : PropsType) {
     
     const { user } = useGlobalState();
+    const { syncing: routesSyncing } = useRoutesState();
+    const { syncing: bookmarkedRoutesSyncing } = useBookmarkedRoutesState();
+    const { sync: syncBookmarkedRoutes } = useBookmarkedRoutesActions();
     const layout = useWindowDimensions();
-    const [index, setIndex] = React.useState(0);
-    const { importFile: importRoute } = useRoutesActions();
+    const [index, setIndex] = useState(0);
+    const { sync: syncRoutes, importFile: importRoute } = useRoutesActions();
+    const isSyncing: boolean = useMemo(() => bookmarkedRoutesSyncing || routesSyncing, [bookmarkedRoutesSyncing, routesSyncing])
 
     const openOptionsMenu = () => {
         SheetManager.show(SHEET.SAVED_OPTIONS)
@@ -88,7 +94,14 @@ export default function SavedTabsView({ navigation } : PropsType) {
 		});
     }
 
+    const syncProfile = () => {
+        syncBookmarkedRoutes();
+        syncRoutes();
+        closeOptions();
+    }
+
     const OPTIONS = [
+        { label: 'Sync with cloud', icon: 'cloud-check', onPress: syncProfile },
         { label: 'Download map', icon: 'map', onPress: navigateToBuilder },
         { label: 'Create route', icon: 'route', onPress: openRouteBuilder },
         { label: 'Import route', icon: 'import', onPress: routeImport },
@@ -103,8 +116,15 @@ export default function SavedTabsView({ navigation } : PropsType) {
                 <TouchableOpacity 
                     onPress={openOptionsMenu}
                     style={styles.addButton}
+                    disabled={isSyncing}
                 >
+                    {isSyncing ?
+                    <Animateable.View animation={'rotate'} iterationCount={'infinite'}>
+                        <Icon icon={'refresh-cw'} />
+                    </Animateable.View>
+                    :
                     <Icon icon={'plus'} />
+                    }
                 </TouchableOpacity>
             </View>
             <TabView

@@ -9,5 +9,7 @@ export const screens = {
 }
 
 export const navigators = {
-
+    MAIN_TABS: {
+        EXPLORE: 'explore-tab'
+    }
 }

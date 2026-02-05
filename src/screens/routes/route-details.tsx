@@ -48,6 +48,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
     }
 
     const saveRoute = async (): Promise<Route|void> => {
+
         try {
             if (route.isOwnedByUser(user.id)) {
                 return await create(route);
@@ -289,13 +290,13 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                     }
                     <SectionItemCard
                         title="Export GPX"
-                        icon="save"
+                        icon="file-up"
                         onPress={saveGPX}
                         arrow={true}
                     />
                     <SectionItemCard
                         title="Directions to start"
-                        icon="globe"
+                        icon="map-pin"
                         onPress={directionsToStart}
                         arrow={true}
                         last={true}
@@ -304,7 +305,7 @@ export default function RouteDetailsScreen({ navigation, route: navRoute } : Pro
                 <View style={[styles.section, { paddingTop: normalise(0), paddingBottom: normalise(15) }]}>
                     <SectionItemCard
                         title="Send GPX to a friend"
-                        icon="user-star"
+                        icon="external-link"
                         onPress={shareRoute}
                         arrow={true}
                         last={true}

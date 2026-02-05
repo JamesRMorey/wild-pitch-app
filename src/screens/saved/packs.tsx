@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         paddingVertical: normalise(20),
-        paddingHorizontal: normalise(30)
+        paddingHorizontal: normalise(20)
     },
     title: {
         ...TEXT.h4,

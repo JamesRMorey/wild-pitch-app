@@ -145,7 +145,7 @@ export default function SearchSheet ({ id=SHEET.MAP_SEARCH, onPlaceResultPress, 
                                 key={i}
                                 route={route}
                                 onPress={() => onRouteResultPress(route)}
-                                belongsToUser={user.id == route.user?.id}
+                                belongsToUser={user && user?.id == route.user?.id}
                                 isBookmarked={isBookmarked(route.server_id)}
                                 isLast={(i + 1) == routeResults.length}
                             />

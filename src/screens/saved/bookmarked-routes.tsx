@@ -73,7 +73,7 @@ export default function BookmarkedRoutesScreen({}) {
 
     const SHEET_OPTIONS = [
         { label: 'Inspect', icon: 'eye', onPress: ()=>inspectRoute() },
-        { label: 'Send GPX to a friend', icon: 'user-star', onPress: ()=>shareGPX() },
+        { label: 'Send GPX to a friend', icon: 'external-link', onPress: ()=>shareGPX() },
         { label: 'Export GPX', icon: 'save', onPress: ()=>exportGPX() },
         { label: 'Remove bookmark', icon: 'trash', colour: COLOUR.red[500], onPress: ()=>openConfirmDeletePrompt() },
     ];
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         paddingVertical: normalise(20),
-        paddingHorizontal: normalise(30)
+        paddingHorizontal: normalise(20)
     },
     title: {
         ...TEXT.h4,

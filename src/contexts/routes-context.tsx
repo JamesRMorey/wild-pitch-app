@@ -7,25 +7,26 @@ import { PointOfInterestRepository } from '../database/repositories/points-of-in
 import { RouteService } from '../services/route-service';
 import { GPX } from '../services/gpx';
 import { Alert } from 'react-native';
-import Mapbox from '@rnmapbox/maps';
 import { MapPackService } from '../services/map-pack-service';
 import { WildPitchApi } from '../services/api/wild-pitch';
 import { ROUTE_ENTRY_TYPE, ROUTE_STATUS } from '../consts/enums';
 import { RouteData } from '../types';
 
 type RoutesContextState = {
-    routes: Array<Route>
+    routes: Array<Route>;
+    syncing: boolean;
 };
 
 type RoutesContextActions = {
-    create: (data: any)=>Promise<Route|void>,
-    update: (id: number, data: RouteData)=>Promise<Route|void>,
-    remove: (route: Route)=>void,
-    exists: (id: number)=>boolean,
-    find: (id: number)=>Route|void
-    importFile: ()=>Promise<RouteData|void>
-    upload: (data: Route, status: ROUTE_STATUS)=>Promise<Route|void>
-    makePublic: (data: Route)=>Promise<Route|void>
+    create: (data: any)=>Promise<Route|void>;
+    update: (id: number, data: RouteData)=>Promise<Route|void>;
+    remove: (route: Route)=>void;
+    exists: (id: number)=>boolean;
+    find: (id: number)=>Route|void;
+    importFile: ()=>Promise<RouteData|void>;
+    upload: (data: Route, status: ROUTE_STATUS)=>Promise<Route|void>;
+    makePublic: (data: Route)=>Promise<Route|void>;
+    sync: ()=>Promise<void>;
 };
 
 const StateContext = createContext<RoutesContextState | undefined>(undefined);
@@ -35,6 +36,7 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     const { user }  = useGlobalState();
     const [routes, setRoutes] = useState<Array<Route>>([]);
+    const [syncing, setSyncing] = useState<boolean>(false);
 
     const repo = new RouteRepository(user?.id);
     const poiRepo = new PointOfInterestRepository(user?.id);
@@ -48,40 +50,51 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const sync = async (): Promise<void> => {
         if (!user) return;
 
-        const savedRoutes = repo.get();
-        const serverRoutes = await WildPitchApi.fetchUserRoutes();
-        const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find((p: RouteData) => p.server_id == r.server_id));
-        
-        for (const route of unSavedRoutes) {
-            repo.create(route, ROUTE_ENTRY_TYPE.ROUTE, route.updated_at);
+        try {
+            setSyncing(true);
+            const savedRoutes = repo.get();
+            const serverRoutes = await WildPitchApi.fetchUserRoutes();
+            const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find((p: RouteData) => p.server_id == r.server_id));
+            
+            for (const route of unSavedRoutes) {
+                repo.create(route, ROUTE_ENTRY_TYPE.ROUTE, route.updated_at);
+            }
+            
+            await Promise.all(
+                savedRoutes.map((saved) => {
+                    const savedRoute = new Route(saved);
+                    if (!saved.server_id) {
+                        upload(savedRoute, saved.status ?? ROUTE_STATUS.PRIVATE)
+                            .then((data) => {
+                                repo.update(savedRoute.id, data, data?.updated_at);
+                            })
+                            .catch((error) => console.error(error));
+                        return;
+                    }
+
+                    const serverRoute = serverRoutes.find((r: RouteData) => r.server_id == saved.server_id);
+                    if (!serverRoute) {
+                        remove(savedRoute);
+                        return;
+                    };
+
+                    if (serverRoute.updated_at > saved.updated_at && saved.id) {
+                        repo.update(saved.id, {...serverRoute, server_id: saved.server_id}, serverRoute.updated_at);
+                    }
+                    else if (serverRoute.updated_at < saved.updated_at && serverRoute.server_id) {
+                        WildPitchApi.updateRoute(serverRoute.server_id, saved);
+                    }
+                })
+            )
+
+            get();
         }
-
-        for (const saved of savedRoutes) {
-            const savedRoute = new Route(saved);
-            if (!saved.server_id) {
-                upload(savedRoute, saved.status ?? ROUTE_STATUS.PRIVATE)
-                    .then((data) => {
-                        repo.update(savedRoute.id, data, data?.updated_at);
-                    })
-                    .catch((error) => console.error(error));
-                continue;
-            }
-
-            const serverRoute = serverRoutes.find((r: RouteData) => r.server_id == saved.server_id);
-            if (!serverRoute) {
-                remove(savedRoute);
-                continue;
-            };
-
-            if (serverRoute.updated_at > saved.updated_at && saved.id) {
-                repo.update(saved.id, {...serverRoute, server_id: saved.server_id}, serverRoute.updated_at);
-            }
-            else if (serverRoute.updated_at < saved.updated_at && serverRoute.server_id) {
-                WildPitchApi.updateRoute(serverRoute.server_id, saved);
-            }
+        catch (error) {
+            console.error(error)
         }
-
-        get();
+        finally {
+            setTimeout(() => setSyncing(false), 2000)
+        }
     }
 
     const exists = (id: number): boolean => {
@@ -223,7 +236,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return (
         <StateContext.Provider
             value={{
-                routes
+                routes,
+                syncing
             }}
         >
             <ActionsContext.Provider
@@ -235,7 +249,8 @@ export const RoutesProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     importFile,
                     upload,
                     makePublic,
-                    exists
+                    exists,
+                    sync
                 }}
             >
                 {children}

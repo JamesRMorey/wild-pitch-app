@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Mapbox from '@rnmapbox/maps';
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import UserPosition from "../../components/map/user-position";
 import { normalise } from "../../utils/helpers";
 import { ASSET, SCREEN, SETTING, SHEET } from "../../consts";
@@ -22,12 +22,14 @@ import { WildPitchApi } from "../../services/api/wild-pitch";
 import RouteClusterMap from "../../components/routes/route-cluster-map";
 import IconButton from "../../components/buttons/icon-button";
 import FiltersSheet from "../../sheets/filters-sheet";
+import { useGlobalActions } from "../../contexts/global-context";
 
 Mapbox.setAccessToken("pk.eyJ1IjoiamFtZXNtb3JleSIsImEiOiJjbHpueHNyb3IwcXd5MmpxdTF1ZGZibmkyIn0.MSmeb9T4wq0VfDwDGO2okw");
 
 type PropsType = { navigation: any , route: any }
 export default function ExploreMapScreen({ navigation } : PropsType) {
 
+	const { verifyLogin } = useGlobalActions();
 	const { styleURL, cameraRef, enable3DMode, activeRoute } = useExploreMapState();
 	const { flyTo, fitToRoute, fitToBounds, setActiveRoute, setActivePOI, reCenter } = useExploreMapActions();
     const { initialRegion, updateUserPosition, loaded } = useMapSettings();
@@ -53,6 +55,7 @@ export default function ExploreMapScreen({ navigation } : PropsType) {
 	}
 
 	const navigateToRoute = ( route: Route ) => {
+		if (!verifyLogin()) return;
 		navigation.navigate(SCREEN.EXPLORE.ROUTE_DETAILS, { route: route });
 	}
 
@@ -73,7 +76,7 @@ export default function ExploreMapScreen({ navigation } : PropsType) {
 			updateActiveRoute(new Route(data), fit);
 		}
 		catch(err) {
-			console.log(err);
+			console.error(err);
 		}
 		finally {
 			setTimeout(() => setLoading(false), 300);
@@ -197,7 +200,6 @@ export default function ExploreMapScreen({ navigation } : PropsType) {
 						<Loader />
 					</View>
 				}
-
 				{activeRoute &&
 					<View style={styles.activeRouteContainer}>
 						<View style={styles.activeRouteControls}>

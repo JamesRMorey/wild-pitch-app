@@ -11,6 +11,7 @@ import { RouteData } from '../types';
 
 type BookmarkedRoutesContextState = {
     bookmarkedRoutes: Array<Route>;
+    syncing: boolean;
 };
 
 type BookmarkedRoutesContextActions = {
@@ -20,6 +21,7 @@ type BookmarkedRoutesContextActions = {
     find: (id: number)=>Route|void;
     upload: (serverId: number)=>Promise<void>;
     isBookmarked: (serverId: number)=>boolean;
+    sync: ()=>Promise<void>;
 };
 
 const StateContext = createContext<BookmarkedRoutesContextState | undefined>(undefined);
@@ -29,6 +31,7 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
     
     const { user }  = useGlobalState();
     const [bookmarkedRoutes, setBookmarkedRoutes] = useState<Array<Route>>([]);
+    const [syncing, setSyncing] = useState<boolean>(false);
 
     const repo = new RouteRepository(user?.id);
 
@@ -40,28 +43,37 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
 
     const sync = async (): Promise<void> => {
         if (!user) return;
-        
-        const savedRoutes = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
-        const serverRoutes = await WildPitchApi.fetchBookmarkedRoutes();
-        const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.server_id));
-        
-        for (const route of unSavedRoutes) {
-            repo.create(route, ROUTE_ENTRY_TYPE.BOOKMARK);
-        }
-        
-        for (const saved of savedRoutes) {
-            const serverRoute = serverRoutes.find(r => r.server_id == saved.server_id);
-            if (!serverRoute) {
-                remove(new Route(saved));
-                continue;
-            };
 
-            if (serverRoute.updated_at > saved.updated_at && saved.id) {
-                repo.update(saved.id, serverRoute);
+        try {
+            setSyncing(true);
+            const savedRoutes = repo.get(ROUTE_ENTRY_TYPE.BOOKMARK);
+            const serverRoutes = await WildPitchApi.fetchBookmarkedRoutes();
+            const unSavedRoutes = serverRoutes.filter(r => !savedRoutes.find(p => p.server_id == r.server_id));
+            
+            for (const route of unSavedRoutes) {
+                repo.create(route, ROUTE_ENTRY_TYPE.BOOKMARK);
             }
+
+            await Promise.all(savedRoutes.map((saved) => {
+                const serverRoute = serverRoutes.find(r => r.server_id == saved.server_id);
+                if (!serverRoute) {
+                    remove(new Route(saved));
+                    return;
+                };
+                
+                if (serverRoute.updated_at > saved.updated_at && saved.id) {
+                    repo.update(saved.id, serverRoute);
+                }
+            }))
+            
+            get();
         }
-        
-        get();
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            setTimeout(() => setSyncing(false), 500)
+        }
     }
 
     const create = async ( data: any ): Promise<Route|void> => {
@@ -146,7 +158,8 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
     return (
         <StateContext.Provider
             value={{
-                bookmarkedRoutes
+                bookmarkedRoutes,
+                syncing
             }}
         >
             <ActionsContext.Provider
@@ -156,7 +169,8 @@ export const BookmarkedRoutesProvider: React.FC<{ children: React.ReactNode }> =
                     remove,
                     find,
                     upload,
-                    isBookmarked
+                    isBookmarked,
+                    sync
                 }}
             >
                 {children}

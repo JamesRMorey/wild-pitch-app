@@ -11,7 +11,7 @@ type PropsType = { route: Route, onPress?: ()=>void, onClose?: ()=>void }
 export default function ActiveRouteInformation ({ route, onPress=()=>{}, onClose } : PropsType ) {
 
     const { user } = useGlobalState();
-    const belongsToUser = useMemo(() => route.isOwnedByUser(user.id), [user, route])
+    const belongsToUser = useMemo(() => user && route.isOwnedByUser(user.id), [user, route])
     
     return (
         <View

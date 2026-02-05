@@ -1,7 +1,7 @@
 import { Image, ScrollView, StyleSheet, Text, View, Alert } from "react-native";
 import { COLOUR, TEXT } from "../../styles";
 import { useGlobalActions, useGlobalState } from "../../contexts/global-context";
-import { ASSET, SCREEN, SETTING, SHEET } from "../../consts";
+import { ASSET, NAVIGATOR, SCREEN, SETTING, SHEET } from "../../consts";
 import { delay, normalise } from "../../utils/helpers";
 import { useMemo } from "react";
 import LearnCard from "../../components/cards/learn-card";
@@ -23,14 +23,14 @@ export default function HomeScreen({ navigation } : PropsType) {
 	const { setActiveRoute, fitToRoute } = useMapActions();
 
 	const FEATURES_CARDS = useMemo(() => [
-		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>navigation.navigate('map') },
+		{ title: 'Explore the map', text: 'Add places, routes & pins to your map.', buttonText: 'Get started', icon: 'flag', colour: COLOUR.wp_green, onPress: ()=>exploreMap },
 		{ title: 'Find a route', text: 'Explore our small collection of routes.', buttonText: 'Get started', icon: 'bookmark', colour: COLOUR.blue, onPress: ()=>exploreRoutes() },
 		{ title: 'Import a route', text: 'Import GPX route files directly into Wild Pitch!', buttonText: 'Get started', icon: 'import', colour: COLOUR.wp_purple, onPress: ()=>routeImport() },
 		{ title: 'Offline things', text: 'Save everything offline. See what you have saved here.', buttonText: 'Get started', icon: 'cloud-download', colour: COLOUR.wp_yellow, onPress: ()=>navigateToSaved() },
 	], []);
 
 	const exploreRoutes =  async() => {
-		navigation.navigate(SCREEN.EXPLORE.MAP);
+		navigation.navigate(NAVIGATOR.MAIN_TABS.EXPLORE, { screen: SCREEN.EXPLORE.MAP });
 		await delay(300);
 		SheetManager.show(SHEET.MAP_SEARCH)
 	}
@@ -38,6 +38,10 @@ export default function HomeScreen({ navigation } : PropsType) {
 	const navigateToSaved = () => {
 		if (!verifyLogin()) return;
 		navigation.navigate('saved')
+	}
+
+	const exploreMap = () => {
+		navigation.navigate('map')
 	}
 
 	const routeImport = async () => {
@@ -62,12 +66,12 @@ export default function HomeScreen({ navigation } : PropsType) {
 		});
 	}
 
-	const routeSelected = async (route: Route) => {
-		await navigation.navigate('map', { screen: 'map' });
-		await delay(500);
-		setActiveRoute(route);
-		fitToRoute(route);
-	}
+	// const routeSelected = async (route: Route) => {
+	// 	await navigation.navigate('map', { screen: 'map' });
+	// 	await delay(500);
+	// 	setActiveRoute(route);
+	// 	fitToRoute(route);
+	// }
 
     return (
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
